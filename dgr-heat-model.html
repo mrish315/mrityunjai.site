@@ -21,37 +21,39 @@
         .control-group label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-code); }
         .canvas-container { position: relative; width: 100%; height: 500px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); }
         #physicsCanvas { width: 100%; height: 100%; display: block; }
-        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; }
+        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .details-card { background: rgba(17,24,39,0.75); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-top: 2rem; }
-        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; }
+        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; font-size: 1.3rem; }
+        .details-card ul { margin-left: 1.5rem; color: var(--text-muted); }
+        .details-card li { margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
     <nav>
         <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
-        <div style="color:var(--text-main); font-weight:700;">KBS-3 DGR Thermal Layout (Strictly 8 Canisters)</div>
+        <div style="color:var(--text-main); font-weight:700;">KBS-3 DGR Thermal Layout (8 Canisters)</div>
     </nav>
 
     <div class="container">
         <h1>Deep Geological Repository Thermal Layout</h1>
-        <p class="subtitle">KBS-3 concept modeling simulating decay heat transport, bentonite buffer protection, and thermal plume interference across 8 canisters at $-450\text{ m}$ depth.</p>
+        <p class="subtitle">KBS-3 multi-barrier repository model simulating transient decay heat conduction, bentonite buffer thermal limits, and tunnel pitch optimization at -450 m depth.</p>
 
         <div class="physics-lab">
             <div class="lab-controls">
                 <div class="control-group">
-                    <label>Canister & Drift Spacing ($S$ - meters)</label>
+                    <label>Canister & Drift Spacing (S - meters)</label>
                     <input type="range" id="heatSpacing" min="15" max="60" value="35">
                 </div>
                 <div class="control-group">
-                    <label>Host Rock Thermal Cond ($k$)</label>
+                    <label>Host Rock Thermal Cond. (k - W/m·K)</label>
                     <input type="range" id="heatK" min="1" max="10" value="5">
                 </div>
                 <div class="control-group">
-                    <label>Initial Decay Heat ($Q_0$)</label>
+                    <label>Initial Decay Heat (Q<sub>0</sub> - kW)</label>
                     <input type="range" id="heatQ" min="1" max="10" value="7">
                 </div>
                 <div class="control-group">
-                    <label>Elapsed Time ($t$ - Years)</label>
+                    <label>Elapsed Time (t - Years)</label>
                     <input type="range" id="heatTime" min="10" max="1000" value="100" step="10">
                 </div>
             </div>
@@ -67,8 +69,18 @@
         </p>
 
         <div class="details-card">
-            <h2>KBS-3 DGR Safety Concept</h2>
-            <p>High-level nuclear waste is encapsulated in copper-cast iron canisters and deposited in vertical holes at a depth of $-400\text{ m}$ to $-500\text{ m}$ inside crystalline granite rock. The canisters are buffered by compacted bentonite clay. Decay heat dissipation $Q(t) = Q_0 e^{-\lambda t}$ dictates minimum canister spacing $S$ to prevent thermal degradation of bentonite ($T_{\text{max}} < 95^\circ\text{C}$).</p>
+            <h2>KBS-3 Multi-Barrier Safety Concept & Thermal Design Constraints</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                The KBS-3 spent nuclear fuel disposal method (developed by SKB, Sweden and implemented at Posiva's ONKALO repository, Finland) relies on a passive, multi-barrier containment system designed for long-term isolation (>100,000 years):
+            </p>
+            <ul>
+                <li><strong>Engineered Copper-Cast Iron Canister:</strong> A cast-iron inner insert provides structural mechanical strength against glacial loads, surrounded by a corrosion-resistant copper outer shell (50 mm thick).</li>
+                <li><strong>Compacted Bentonite Buffer:</strong> Highly compacted sodium bentonite clay blocks line each vertical deposition hole. Bentonite swells upon water contact, providing low hydraulic conductivity, self-healing against fracturing, and geochemical buffering.</li>
+                <li><strong>Crystalline Rock Matrix:</strong> Low-permeability granitic host bedrock at depths of 400 to 500 m provides a stable, reducing hydrogeological environment.</li>
+            </ul>
+            <p style="color: var(--text-muted); margin-top: 1rem;">
+                <strong>Thermal Engineering Constraint:</strong> Radioactive decay heat <i>Q</i>(<i>t</i>) = <i>Q</i><sub>0</sub> e<sup>-λ<i>t</i></sup> conducts through the buffer into the rock matrix. To prevent mineralogical transformation of montmorillonite in the bentonite buffer, the peak temperature at the canister-buffer interface must remain strictly below <strong>95 °C</strong>. Canister and drift spacing (<i>S</i>) is therefore a critical variable to avoid thermal plume interference between adjacent deposition drifts.
+            </p>
         </div>
     </div>
 
@@ -93,27 +105,27 @@
             rockGrad.addColorStop(0, "#0c1527"); rockGrad.addColorStop(1, "#03060d");
             ctx.fillStyle = rockGrad; ctx.fillRect(0, 0, width, height);
 
-            // Left Depth Axis
+            // Depth Scale Axis
             let axisX = 85; ctx.strokeStyle = "rgba(148, 163, 184, 0.3)"; ctx.lineWidth = 1.5;
             ctx.beginPath(); ctx.moveTo(axisX, 40); ctx.lineTo(axisX, height - 50); ctx.stroke();
             ctx.fillStyle = "#94a3b8"; ctx.font = "10px Fira Code";
             ctx.fillText("0 m (Surface)", 10, 48); ctx.fillText("-250 m (Granite)", 10, 143);
             ctx.fillStyle = "#38bdf8"; ctx.fillText("-450 m (DGR)", 10, 233);
 
-            // Surface Sky & Headframe
+            // Surface Facility & Headframe
             ctx.fillStyle = "#0c182b"; ctx.fillRect(110, 0, width - 110, 45);
             ctx.strokeStyle = "#10b981"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(110, 45); ctx.lineTo(width, 45); ctx.stroke();
             let headframeX = 135; ctx.fillStyle = "rgba(56, 189, 248, 0.25)"; ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.5;
             ctx.fillRect(headframeX, 15, 35, 30); ctx.strokeRect(headframeX, 15, 35, 30);
 
-            // Shaft & Vaulted Gallery
+            // Shaft & Transport Gallery
             let shaftX = headframeX + 12; ctx.fillStyle = "rgba(15, 23, 42, 0.95)"; ctx.strokeStyle = "rgba(148, 163, 184, 0.6)";
             ctx.fillRect(shaftX, 45, 12, 185); ctx.strokeRect(shaftX, 45, 12, 185);
             let galleryY = 215, galleryHeight = 30, galleryStartX = shaftX + 12, galleryEndX = width - 30;
             ctx.fillRect(galleryStartX, galleryY, galleryEndX - galleryStartX, galleryHeight);
             ctx.strokeRect(galleryStartX, galleryY, galleryEndX - galleryStartX, galleryHeight);
 
-            // Strictly 8 Canisters Physics
+            // Thermal Calculation
             let currentQ = Q0 * Math.exp(-0.003 * time);
             let peakTemp = (15 + currentQ * 12.5).toFixed(1);
             let thermalRadius = Math.min(135, Math.sqrt(time) * 4.8 + (currentQ * 5.0) / k);
@@ -154,16 +166,17 @@
                 }
             }
 
-            // Labels
+            // Callout Badges
             ctx.fillStyle = "rgba(9, 13, 22, 0.75)"; ctx.strokeStyle = "rgba(56, 189, 248, 0.3)";
             ctx.fillRect(230, 185, 220, 22); ctx.strokeRect(230, 185, 220, 22);
             ctx.fillStyle = "#38bdf8"; ctx.font = "10px Fira Code"; ctx.fillText("Main Drift Transport Gallery (-450 m)", 240, 200);
 
+            // Clean Telemetry Output (NO RAW LATEX SYMBOLS)
             document.getElementById('telemetryBox').innerHTML = `
                 <span><strong>Layout:</strong> KBS-3 DGR (8 Canisters @ -450m)</span>
-                <span><strong>Spacing ($S$):</strong> ${spacing} m</span>
-                <span><strong>Time ($t$):</strong> ${time} Yrs | <strong>Peak Temp ($T_{max}$):</strong> ${peakTemp} °C</span>
-                <span style="color:${isInterference ? '#ef4444' : '#10b981'};"><strong>Thermal Overlap:</strong> ${isInterference ? 'WARNING' : 'SAFE'}</span>
+                <span><strong>Spacing (<i>S</i>):</strong> ${spacing} m</span>
+                <span><strong>Time (<i>t</i>):</strong> ${time} Yrs | <strong>Peak Temp (<i>T</i><sub>max</sub>):</strong> ${peakTemp} °C</span>
+                <span style="color:${isInterference ? '#ef4444' : '#10b981'};"><strong>Thermal Overlap:</strong> ${isInterference ? 'WARNING (Interference)' : 'SAFE'}</span>
             `;
 
             requestAnimationFrame(render);
