@@ -176,16 +176,17 @@
                 <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
             </div>
 
-            <div class="card">
+            <!-- Dynamic Blog Card (Automatically populated from Notion) -->
+            <div class="card" id="latestBlogCard">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-blog"><i class="fa-solid fa-newspaper"></i> Blog Post</span>
-                        <span class="card-date">July 2026</span>
+                        <span class="badge badge-blog"><i class="fa-solid fa-newspaper"></i> Latest Article</span>
+                        <span class="card-date" id="latestBlogDate">Loading...</span>
                     </div>
-                    <h3>THM Buffer Constraints in Repositories</h3>
-                    <p>Analysis of coupled thermo-hydraulic mechanisms governing canister positioning and preventing montmorillonite alteration in engineered clay barriers.</p>
+                    <h3 id="latestBlogTitle"><i class="fa-solid fa-spinner fa-spin"></i> Fetching latest post...</h3>
+                    <p id="latestBlogSummary">Connecting to Notion proxy...</p>
                 </div>
-                <a href="blog.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-arrow-right"></i> Read Article</a>
+                <a href="blog.html" id="latestBlogLink" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-arrow-right"></i> Read Article</a>
             </div>
 
             <div class="card">
@@ -386,5 +387,53 @@
     <footer>
         <p>&copy; 2026 Dr. Kunwar Mrityunjai Sharma | <a href="http://mrityunjai.site" style="color:var(--accent-cyan)">mrityunjai.site</a></p>
     </footer>
+
+    <!-- Script to dynamically fetch the newest blog post from Notion -->
+    <script>
+        const WORKER_URL = "https://notion-blog-proxy.sharmamrityunjai.workers.dev";
+
+        async function fetchLatestBlogPost() {
+            try {
+                const response = await fetch(WORKER_URL);
+                const data = await response.json();
+
+                if (data.results && data.results.length > 0) {
+                    // Pick the first article (the latest published post)
+                    const latest = data.results[0];
+                    const props = latest.properties;
+                    const pageId = latest.id;
+
+                    // Detect title column dynamically
+                    const titleProperty = Object.values(props).find(prop => prop.type === 'title');
+                    const title = titleProperty?.title[0]?.plain_text || "Latest Research Article";
+
+                    // Date parsing
+                    const dateRaw = props.Date?.date?.start || "";
+                    let formattedDate = "Recent";
+                    if (dateRaw) {
+                        formattedDate = new Date(dateRaw).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                    }
+
+                    // Summary extraction
+                    const summary = props.Summary?.rich_text[0]?.plain_text || "Click below to read the latest research insights.";
+
+                    // Update Card HTML elements
+                    document.getElementById('latestBlogDate').innerText = formattedDate;
+                    document.getElementById('latestBlogTitle').innerText = title;
+                    document.getElementById('latestBlogSummary').innerText = summary;
+                    document.getElementById('latestBlogLink').href = `post.html?id=${pageId}`;
+                } else {
+                    document.getElementById('latestBlogTitle').innerText = "Research Blog";
+                    document.getElementById('latestBlogSummary').innerText = "Check back soon for new articles.";
+                }
+            } catch (err) {
+                console.error("Error updating home page blog card:", err);
+                document.getElementById('latestBlogTitle').innerText = "Research Blog";
+                document.getElementById('latestBlogSummary').innerText = "Read published articles and technical notes.";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchLatestBlogPost);
+    </script>
 </body>
 </html>
