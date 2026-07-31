@@ -67,6 +67,14 @@
             font-size: 0.9em; 
         }
 
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border: 1px solid var(--border-subtle);
+        }
+
         .status-message {
             color: var(--text-muted);
             font-family: var(--font-code);
@@ -96,7 +104,6 @@
     <script>
         const WORKER_URL = "https://notion-blog-proxy.sharmamrityunjai.workers.dev";
 
-        // Helper to format Notion rich text array into HTML with formatting
         function renderRichText(richTextArray) {
             if (!richTextArray || richTextArray.length === 0) return '';
             return richTextArray.map(item => {
@@ -110,7 +117,6 @@
             }).join('');
         }
 
-        // Convert Notion block structures into HTML elements
         function renderBlock(block) {
             const type = block.type;
             const value = block[type];
@@ -132,6 +138,9 @@
                     return `<blockquote>${renderRichText(value.rich_text)}</blockquote>`;
                 case 'code':
                     return `<pre><code>${renderRichText(value.rich_text)}</code></pre>`;
+                case 'image':
+                    const imgUrl = value.type === 'external' ? value.external.url : value.file.url;
+                    return `<img src="${imgUrl}" alt="Article Image" />`;
                 case 'divider':
                     return `<hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 2rem 0;">`;
                 default:
@@ -147,26 +156,23 @@
             if (!pageId) {
                 container.innerHTML = `
                     <div class="status-message" style="color: #ef4444;">
-                        <i class="fa-solid fa-triangle-exclamation"></i> No article ID provided in URL.
+                        <i class="fa-solid fa-triangle-exclamation"></i> No article ID found in URL.
                     </div>
                 `;
                 return;
             }
 
             try {
-                // Fetch page details and content blocks from worker endpoint
                 const response = await fetch(`${WORKER_URL}?id=${pageId}`);
                 const data = await response.json();
 
-                if (data.error || !data) {
-                    throw new Error(data.message || "Article not found");
+                if (data.error) {
+                    throw new Error(data.message || "Failed to load post");
                 }
 
-                // If worker returns blocks array directly or wrapped in results
-                const blocks = data.results || data.blocks || [];
+                const blocks = data.results || [];
                 const pageProps = data.properties || {};
 
-                // Extract metadata
                 const title = pageProps.Name?.title[0]?.plain_text || pageProps.Title?.title[0]?.plain_text || "Untitled Article";
                 const dateRaw = pageProps.Date?.date?.start || "";
                 let formattedDate = "";
@@ -174,10 +180,8 @@
                     formattedDate = new Date(dateRaw).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
                 }
 
-                // Update tab title
                 document.title = `${title} | Dr. Kunwar Mrityunjai Sharma`;
 
-                // Render article HTML
                 const contentHtml = blocks.map(renderBlock).join('');
 
                 container.innerHTML = `
@@ -186,7 +190,7 @@
                         <h1 class="post-title">${title}</h1>
                     </header>
                     <article class="post-content">
-                        ${contentHtml || '<p>No content found in this article body.</p>'}
+                        ${contentHtml || '<p>No written body content found in this Notion page.</p>'}
                     </article>
                 `;
 
