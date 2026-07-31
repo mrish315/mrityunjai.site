@@ -154,7 +154,7 @@
             font-size: 0.9rem;
             outline: none;
             width: 100%;
-            max-width: 520px;
+            max-width: 580px;
         }
         .lab-controls {
             display: grid;
@@ -177,32 +177,29 @@
             position: absolute;
             bottom: 12px;
             left: 12px;
+            right: 12px;
             background: rgba(9, 13, 22, 0.88);
             backdrop-filter: blur(6px);
-            padding: 0.6rem 1rem;
+            padding: 0.65rem 1.1rem;
             border-radius: 6px;
             border: 1px solid var(--border-subtle);
             font-family: var(--font-code);
             font-size: 0.78rem;
             color: var(--accent-cyan);
-            max-width: 80%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
-        .canvas-legend {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(9, 13, 22, 0.88);
-            backdrop-filter: blur(6px);
-            padding: 0.75rem 1rem;
-            border-radius: 6px;
-            border: 1px solid var(--border-subtle);
+        .disclaimer-note {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.78rem;
             font-family: var(--font-code);
-            font-size: 0.75rem;
-            color: var(--text-main);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+            margin-top: 1.2rem;
+            opacity: 0.85;
         }
 
         /* Timeline */
@@ -356,9 +353,9 @@
             <div class="lab-selector">
                 <label style="font-family: var(--font-code); font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Physics Regime:</label>
                 <select id="simRegime" onchange="switchRegime()">
-                    <option value="cnm">1. 2D Channel Network Model (pychan3d FDM Solver & Particle Tracking)</option>
+                    <option value="cnm">1. 2D Channel Network Model (pychan3d FDM Solver & 50 Particle Tracking)</option>
                     <option value="infiltration">2. Unsaturated Matrix Infiltration Dynamics</option>
-                    <option value="heat">3. Nuclear Fuel Canister Heat Transport in DGR</option>
+                    <option value="heat">3. Nuclear Fuel Canister & DGR Subsurface Tunnel Heat Transport</option>
                 </select>
             </div>
 
@@ -367,10 +364,14 @@
 
             <div class="canvas-container">
                 <canvas id="physicsCanvas"></canvas>
-                <div class="canvas-legend" id="legendBox"></div>
                 <div class="canvas-overlay" id="telemetryBox">Initializing Simulation...</div>
             </div>
         </div>
+
+        <!-- Required Disclaimer Note Below Engine -->
+        <p class="disclaimer-note">
+            <i class="fa-solid fa-circle-info"></i> Note: This simulation module is intended strictly for conceptual visualization and interactive representation purposes; it does not represent quantitative site-specific performance assessment accuracy.
+        </p>
     </section>
 
     <!-- Competencies -->
@@ -584,6 +585,8 @@
             flowH: [],       // Horizontal channel flow Q_H[r][c]
             flowV: []        // Vertical channel flow Q_V[r][c]
         };
+
+        // Exactly 50 Particles for Transport Modeling
         let particles = [];
 
         // Box-Muller Transformation for Log-Normal Conductance
@@ -607,9 +610,9 @@
             cnmGrid.flowH = [];
             cnmGrid.flowV = [];
 
-            // 1. Assign Log-Normal Conductances
+            // Assign Log-Normal Conductances to Grid Channels
             for (let r = 0; r < cnmGrid.rows; r++) {
-                let rowC = [], rowH = [], rowQ = [];
+                let rowC = [], rowQ = [];
                 for (let c = 0; c < cnmGrid.cols - 1; c++) {
                     rowC.push(randomLogNormal(meanC, stdC));
                     rowQ.push(0);
@@ -628,14 +631,13 @@
                 cnmGrid.flowV.push(rowQ);
             }
 
-            // Initialize Node Heads array
             for (let r = 0; r < cnmGrid.rows; r++) {
                 let rowHeads = new Array(cnmGrid.cols).fill(0);
                 cnmGrid.heads.push(rowHeads);
             }
 
             solveHydraulicHeadsAndFlow();
-            injectParticles();
+            init50Particles();
         }
 
         // Finite Difference Method (FDM) Solver for Node Hydraulic Heads & Channel Flows
@@ -644,19 +646,18 @@
             let Hin = grad * 10.0;
             let Hout = 0.0;
 
-            // Boundary Conditions: Fixed Heads on Left (c=0) and Right (c=cols-1)
+            // Boundary Conditions: Left Inlet (c=0) & Right Outlet (c=cols-1)
             for (let r = 0; r < cnmGrid.rows; r++) {
                 cnmGrid.heads[r][0] = Hin;
                 cnmGrid.heads[r][cnmGrid.cols - 1] = Hout;
-                // Linear initial guess for interior nodes
                 for (let c = 1; c < cnmGrid.cols - 1; c++) {
                     cnmGrid.heads[r][c] = Hin - (c / (cnmGrid.cols - 1)) * Hin;
                 }
             }
 
-            // Gauss-Seidel Iterative FDM Solver (100 iterations)
-            // Top (r=0) & Bottom (r=rows-1) are NO-FLOW boundaries (no vertical connection outside)
-            for (let iter = 0; iter < 120; iter++) {
+            // Gauss-Seidel Iterative FDM Solver (150 iterations)
+            // Top (r=0) & Bottom (r=rows-1) are NO-FLOW boundaries
+            for (let iter = 0; iter < 150; iter++) {
                 for (let r = 0; r < cnmGrid.rows; r++) {
                     for (let c = 1; c < cnmGrid.cols - 1; c++) {
                         let sumCH = 0.0;
@@ -693,7 +694,7 @@
                 }
             }
 
-            // Calculate Channel Flows: Q_ij = C_ij * (H_i - H_j)
+            // Calculate Channel Flow Fluxes: Q_ij = C_ij * (H_i - H_j)
             for (let r = 0; r < cnmGrid.rows; r++) {
                 for (let c = 0; c < cnmGrid.cols - 1; c++) {
                     cnmGrid.flowH[r][c] = cnmGrid.horizontalC[r][c] * (cnmGrid.heads[r][c] - cnmGrid.heads[r][c + 1]);
@@ -706,19 +707,21 @@
             }
         }
 
-        function injectParticles() {
+        // Initialize exactly 50 particles at the Left Inlet boundary
+        function init50Particles() {
             particles = [];
-            let dx = (width - 120) / (cnmGrid.cols - 1);
             let dy = (height - 80) / (cnmGrid.rows - 1);
 
-            for (let i = 0; i < 45; i++) {
-                let startRow = Math.floor(Math.random() * cnmGrid.rows);
+            for (let i = 0; i < 50; i++) {
+                let startRow = i % cnmGrid.rows;
                 particles.push({
                     r: startRow,
                     c: 0,
                     x: 60,
                     y: 40 + startRow * dy,
-                    life: 0
+                    targetR: startRow,
+                    targetC: 0,
+                    channelQ: 1.0
                 });
             }
         }
@@ -742,8 +745,8 @@
                         <input type="range" id="cnmGrad" min="1" max="10" value="5" oninput="solveHydraulicHeadsAndFlow()">
                     </div>
                     <div class="control-group">
-                        <label>Tracer Particle Injection</label>
-                        <button class="btn btn-outline" style="padding:0.4rem; justify-content:center;" onclick="injectParticles()">Inject Tracer Pulse</button>
+                        <label>Tracer Injection (50 Particles)</label>
+                        <button class="btn btn-outline" style="padding:0.4rem; justify-content:center;" onclick="init50Particles()">Reset Tracer Pulse</button>
                     </div>
                 `;
                 generateCNMGrid();
@@ -769,8 +772,8 @@
             } else if (regime === 'heat') {
                 controls.innerHTML = `
                     <div class="control-group">
-                        <label>Canister Spacing ($S$ - meters)</label>
-                        <input type="range" id="heatSpacing" min="15" max="60" value="30">
+                        <label>Canister & Tunnel Spacing ($S$ - meters)</label>
+                        <input type="range" id="heatSpacing" min="15" max="65" value="35">
                     </div>
                     <div class="control-group">
                         <label>Host Rock Thermal Cond ($k$)</label>
@@ -794,35 +797,31 @@
             ctx.clearRect(0, 0, width, height);
             const regime = document.getElementById('simRegime').value;
             const telemetry = document.getElementById('telemetryBox');
-            const legend = document.getElementById('legendBox');
 
             if (regime === 'cnm') {
                 let grad = parseFloat(document.getElementById('cnmGrad') ? document.getElementById('cnmGrad').value : 5);
                 let std = parseFloat(document.getElementById('cnmStd') ? document.getElementById('cnmStd').value : 3);
                 
-                legend.innerHTML = `
-                    <div style="font-weight:600; color:var(--accent-cyan); margin-bottom:2px;">pychan3d Boundary Conditions</div>
-                    <div>• Left Boundary: Fixed Head H_in = ${(grad*10).toFixed(1)} m</div>
-                    <div>• Right Boundary: Fixed Head H_out = 0.0 m</div>
-                    <div style="color:#ef4444; font-weight:600;">• Top & Bottom: No-Flow Boundary (∂h/∂y = 0)</div>
+                telemetry.innerHTML = `
+                    <span><strong>Regime:</strong> 2D pychan3d CNM (FDM Solver)</span>
+                    <span><strong>Boundary:</strong> Left Inlet ($H_{in}=${(grad*10).toFixed(1)}$m) ➔ Right Outlet ($H_{out}=0$)</span>
+                    <span><strong>Log-Normal $\sigma$:</strong> ${std} | <strong>Particles:</strong> 50 Active</span>
                 `;
-
-                telemetry.innerText = `Regime: 2D pychan3d CNM | FDM Solver Active | Log-Normal σ: ${std} | Head Gradient: ${grad} m/m`;
 
                 let dx = (width - 120) / (cnmGrid.cols - 1);
                 let dy = (height - 80) / (cnmGrid.rows - 1);
 
-                // Draw Top and Bottom No-Flow Boundary Indicators
-                ctx.strokeStyle = "rgba(239, 68, 68, 0.5)";
-                ctx.lineWidth = 2;
-                ctx.setLineDash([6, 4]);
+                // Top & Bottom No-Flow Boundaries
+                ctx.strokeStyle = "rgba(239, 68, 68, 0.4)";
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([5, 4]);
                 ctx.beginPath();
-                ctx.moveTo(50, 25); ctx.lineTo(width - 50, 25); // Top No-Flow
-                ctx.moveTo(50, height - 25); ctx.lineTo(width - 50, height - 25); // Bottom No-Flow
+                ctx.moveTo(50, 25); ctx.lineTo(width - 50, 25);
+                ctx.moveTo(50, height - 25); ctx.lineTo(width - 50, height - 25);
                 ctx.stroke();
                 ctx.setLineDash([]);
 
-                // Render Horizontal Channels (thickness proportional to flow Q)
+                // Render Horizontal Channels
                 for (let r = 0; r < cnmGrid.rows; r++) {
                     for (let c = 0; c < cnmGrid.cols - 1; c++) {
                         let q = Math.abs(cnmGrid.flowH[r][c]);
@@ -836,7 +835,7 @@
                     }
                 }
 
-                // Render Vertical Channels (No-Flow boundaries enforced at r=0 and r=rows-1)
+                // Render Vertical Channels
                 for (let r = 0; r < cnmGrid.rows - 1; r++) {
                     for (let c = 0; c < cnmGrid.cols; c++) {
                         let q = Math.abs(cnmGrid.flowV[r][c]);
@@ -850,38 +849,59 @@
                     }
                 }
 
-                // Particle Tracking in Exact FDM Flow Field
+                // 50 Particle Advection
                 ctx.fillStyle = "#38bdf8";
-                particles.forEach(p => {
-                    let targetX = 60 + p.c * dx;
-                    let targetY = 40 + p.r * dy;
+                particles.forEach((p, idx) => {
+                    let targetX = 60 + p.targetC * dx;
+                    let targetY = 40 + p.targetR * dy;
 
-                    p.x += (targetX - p.x) * 0.2 + grad * 0.2;
-                    p.y += (targetY - p.y) * 0.2;
+                    let moveSpeed = Math.max(1.2, Math.min(10, Math.abs(p.channelQ) * 0.25));
+                    
+                    let dist = Math.hypot(targetX - p.x, targetY - p.y);
+                    if (dist > moveSpeed) {
+                        p.x += ((targetX - p.x) / dist) * moveSpeed;
+                        p.y += ((targetY - p.y) / dist) * moveSpeed;
+                    } else {
+                        p.x = targetX;
+                        p.y = targetY;
+                        p.r = p.targetR;
+                        p.c = p.targetC;
 
-                    if (Math.abs(p.x - targetX) < 4 && Math.abs(p.y - targetY) < 4 && p.c < cnmGrid.cols - 1) {
-                        // Gather positive outgoing fluxes Q_ij
-                        let qRight = Math.max(0, cnmGrid.flowH[p.r][p.c] || 0);
-                        let qLeft = (p.c > 0) ? Math.max(0, -cnmGrid.flowH[p.r][p.c - 1]) : 0;
-                        let qDown = (p.r < cnmGrid.rows - 1) ? Math.max(0, cnmGrid.flowV[p.r][p.c] || 0) : 0;
-                        let qUp = (p.r > 0) ? Math.max(0, -cnmGrid.flowV[p.r - 1][p.c] || 0) : 0;
+                        if (p.c < cnmGrid.cols - 1) {
+                            let qRight = Math.max(0, cnmGrid.flowH[p.r][p.c] || 0);
+                            let qLeft = (p.c > 0) ? Math.max(0, -cnmGrid.flowH[p.r][p.c - 1]) : 0;
+                            let qDown = (p.r < cnmGrid.rows - 1) ? Math.max(0, cnmGrid.flowV[p.r][p.c] || 0) : 0;
+                            let qUp = (p.r > 0) ? Math.max(0, -cnmGrid.flowV[p.r - 1][p.c] || 0) : 0;
 
-                        let totalQ = qRight + qLeft + qDown + qUp;
-                        if (totalQ > 0) {
-                            let rand = Math.random() * totalQ;
-                            if (rand < qRight) { p.c++; }
-                            else if (rand < qRight + qDown && p.r < cnmGrid.rows - 1) { p.r++; }
-                            else if (rand < qRight + qDown + qUp && p.r > 0) { p.r--; }
-                            else if (p.c > 0) { p.c--; }
+                            let totalQ = qRight + qLeft + qDown + qUp;
+                            if (totalQ > 0) {
+                                let rand = Math.random() * totalQ;
+                                if (rand < qRight) {
+                                    p.targetC = p.c + 1;
+                                    p.channelQ = qRight;
+                                } else if (rand < qRight + qDown && p.r < cnmGrid.rows - 1) {
+                                    p.targetR = p.r + 1;
+                                    p.channelQ = qDown;
+                                } else if (rand < qRight + qDown + qUp && p.r > 0) {
+                                    p.targetR = p.r - 1;
+                                    p.channelQ = qUp;
+                                } else if (p.c > 0) {
+                                    p.targetC = p.c - 1;
+                                    p.channelQ = qLeft;
+                                }
+                            } else {
+                                p.targetC = p.c + 1;
+                                p.channelQ = 1.0;
+                            }
                         } else {
-                            p.c++;
+                            let startRow = idx % cnmGrid.rows;
+                            p.r = startRow;
+                            p.c = 0;
+                            p.targetR = startRow;
+                            p.targetC = 0;
+                            p.x = 60;
+                            p.y = 40 + startRow * dy;
                         }
-                    }
-
-                    if (p.x > width - 60 || p.c >= cnmGrid.cols - 1) {
-                        p.x = 60;
-                        p.c = 0;
-                        p.r = Math.floor(Math.random() * cnmGrid.rows);
                     }
 
                     ctx.beginPath();
@@ -894,14 +914,11 @@
                 let psi = parseFloat(document.getElementById('infPsi') ? document.getElementById('infPsi').value : 40);
                 let rain = parseFloat(document.getElementById('infRain') ? document.getElementById('infRain').value : 6);
 
-                legend.innerHTML = `
-                    <div style="font-weight:600; color:var(--accent-cyan);">Unsaturated Infiltration Legend</div>
-                    <div>• Blue Shading: Wetting Front Depth</div>
-                    <div>• Matrix Suction: $\\psi = ${psi}$ kPa</div>
-                    <div>• Hydraulic Conductivity: $K_s = ${Ks}$ mm/h</div>
+                telemetry.innerHTML = `
+                    <span><strong>Regime:</strong> Unsaturated Matrix Infiltration</span>
+                    <span><strong>Conductivity ($K_s$):</strong> ${Ks} mm/h</span>
+                    <span><strong>Suction Head ($\psi$):</strong> ${psi} kPa</span>
                 `;
-
-                telemetry.innerText = `Regime: Unsaturated Matrix Infiltration | Hydraulic Conductivity Ks: ${Ks} | Suction Head ψ: ${psi} kPa`;
 
                 let wetDepth = (frameCount * (Ks * 0.08) + (psi * 0.5)) % (height - 60);
 
@@ -928,65 +945,137 @@
                 }
 
             } else if (regime === 'heat') {
-                let spacing = parseFloat(document.getElementById('heatSpacing') ? document.getElementById('heatSpacing').value : 30);
+                let spacing = parseFloat(document.getElementById('heatSpacing') ? document.getElementById('heatSpacing').value : 35);
                 let k = parseFloat(document.getElementById('heatK') ? document.getElementById('heatK').value : 5);
                 let Q0 = parseFloat(document.getElementById('heatQ') ? document.getElementById('heatQ').value : 7);
                 let time = parseFloat(document.getElementById('heatTime') ? document.getElementById('heatTime').value : 100);
 
-                // Thermal Decay Formulation: Q(t) = Q0 * exp(-lambda * t)
-                let lambda = 0.003; // decay constant
+                // --- 1. EARTH SURFACE & SKY LAYOUT ---
+                ctx.fillStyle = "#0c1322"; // Sky above surface
+                ctx.fillRect(0, 0, width, 45);
+
+                ctx.strokeStyle = "#10b981"; // Green terrain boundary line
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(0, 45); ctx.lineTo(width, 45);
+                ctx.stroke();
+
+                ctx.fillStyle = "#9ca3af";
+                ctx.font = "10px Fira Code";
+                ctx.fillText("Earth Surface (0 m)", 15, 38);
+
+                // Surface Facility / Headframe Building
+                ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.8)";
+                ctx.lineWidth = 1.5;
+                ctx.fillRect(75, 18, 26, 27);
+                ctx.strokeRect(75, 18, 26, 27);
+
+                // --- 2. DEEP SUBSURFACE ROCK MATRIX (-500 m Depth Scale) ---
+                ctx.fillStyle = "#050811";
+                ctx.fillRect(0, 46, width, height - 46);
+
+                // Depth Reference Annotations
+                ctx.fillStyle = "rgba(156, 163, 175, 0.4)";
+                ctx.fillText("-200 m", 15, 115);
+                ctx.fillText("-400 m (DGR Level)", 15, 180);
+                ctx.fillText("-500 m", 15, 305);
+
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(70, 180); ctx.lineTo(width - 20, 180);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // --- 3. DGR ACCESS SHAFT & MAIN GALLERY TUNNEL ---
+                // Vertical Access Shaft
+                ctx.fillStyle = "rgba(30, 41, 59, 0.9)";
+                ctx.strokeStyle = "rgba(148, 163, 184, 0.5)";
+                ctx.fillRect(82, 45, 12, 135);
+                ctx.strokeRect(82, 45, 12, 135);
+
+                // Main Horizontal Access Gallery
+                ctx.fillRect(80, 170, width - 110, 20);
+                ctx.strokeRect(80, 170, width - 110, 20);
+
+                // --- 4. DYNAMIC DEPOSITION TUNNELS & CANISTERS (SPACING S) ---
+                let lambda = 0.003;
                 let currentQ = Q0 * Math.exp(-lambda * time);
                 let peakTemp = (15 + currentQ * 12).toFixed(1);
-                let thermalRadius = Math.min(130, Math.sqrt(time) * 6 + (currentQ * 5) / k);
-
-                // Thermal Interference Calculation
-                let canisterPixelSpacing = spacing * 3.5;
-                let isInterference = (thermalRadius * 2 > canisterPixelSpacing);
-
-                legend.innerHTML = `
-                    <div style="font-weight:600; color:var(--accent-amber); margin-bottom:2px;">DGR Thermal Model Legend</div>
-                    <div>• <strong>Elapsed Time ($t$):</strong> <span style="color:var(--accent-cyan); font-weight:700;">${time} Years</span></div>
-                    <div>• <strong>Peak Canister Temp ($T_{max}$):</strong> ${peakTemp} °C</div>
-                    <div>• <strong>Host Rock Ambient ($T_0$):</strong> 15.0 °C</div>
-                    <div>• <strong>Thermal Plume Radius ($R_{th}$):</strong> ${(thermalRadius*0.4).toFixed(1)} m</div>
-                    <div style="margin-top:2px; font-weight:600; color:${isInterference ? '#ef4444' : '#10b981'};">
-                        • Plume Interaction: ${isInterference ? 'WARNING (Plumes Overlap)' : 'STABLE (No Overlap)'}
-                    </div>
-                `;
-
-                telemetry.innerText = `Regime: DGR Nuclear Fuel Canister Thermal Transport | t = ${time} Years | Spacing S = ${spacing} m | T_max = ${peakTemp} °C`;
+                let thermalRadius = Math.min(125, Math.sqrt(time) * 5.2 + (currentQ * 5) / k);
 
                 let numCanisters = 4;
-                let startX = (width - (numCanisters - 1) * canisterPixelSpacing) / 2;
-                let centerY = height / 2;
+                let canisterPixelSpacing = spacing * 3.8;
+                let startX = 150;
+                let tunnelY = 190;
+                let tunnelWidth = 20;
+                let tunnelHeight = 70;
 
-                // Draw Heat Plumes
+                let isInterference = (thermalRadius * 2 > canisterPixelSpacing);
+
+                // A. Render Thermal Plumes in Host Rock (behind tunnels)
                 for (let c = 0; c < numCanisters; c++) {
                     let cx = startX + c * canisterPixelSpacing;
+                    let canisterY = tunnelY + 38;
 
-                    let radialGrad = ctx.createRadialGradient(cx, centerY, 4, cx, centerY, thermalRadius);
+                    let radialGrad = ctx.createRadialGradient(cx, canisterY, 4, cx, canisterY, thermalRadius);
                     radialGrad.addColorStop(0, "rgba(245, 158, 11, 0.85)");
-                    radialGrad.addColorStop(0.4, "rgba(239, 68, 68, 0.4)");
+                    radialGrad.addColorStop(0.4, "rgba(239, 68, 68, 0.35)");
                     radialGrad.addColorStop(1, "rgba(239, 68, 68, 0)");
 
                     ctx.fillStyle = radialGrad;
                     ctx.beginPath();
-                    ctx.arc(cx, centerY, thermalRadius, 0, Math.PI * 2);
+                    ctx.arc(cx, canisterY, thermalRadius, 0, Math.PI * 2);
                     ctx.fill();
-
-                    // Render Canisters
-                    ctx.fillStyle = "#f3f4f6";
-                    ctx.strokeStyle = "#f59e0b";
-                    ctx.lineWidth = 2;
-                    ctx.fillRect(cx - 7, centerY - 18, 14, 36);
-                    ctx.strokeRect(cx - 7, centerY - 18, 14, 36);
                 }
+
+                // B. Render Vertical Deposition Tunnels, Bentonite Envelope, & Canisters
+                for (let c = 0; c < numCanisters; c++) {
+                    let cx = startX + c * canisterPixelSpacing;
+                    let tunnelX = cx - tunnelWidth / 2;
+
+                    // Vertical Deposition Hole/Tunnel
+                    ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
+                    ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
+                    ctx.lineWidth = 1.5;
+                    ctx.fillRect(tunnelX, tunnelY, tunnelWidth, tunnelHeight);
+                    ctx.strokeRect(tunnelX, tunnelY, tunnelWidth, tunnelHeight);
+
+                    // Compacted Bentonite Buffer Envelope (Amber/Brown)
+                    let bufferX = tunnelX + 3;
+                    let bufferY = tunnelY + 15;
+                    let bufferW = tunnelWidth - 6;
+                    let bufferH = tunnelHeight - 20;
+                    ctx.fillStyle = "rgba(217, 119, 6, 0.4)";
+                    ctx.fillRect(bufferX, bufferY, bufferW, bufferH);
+
+                    // Encapsulated Fuel Canister
+                    let canisterX = cx - 5;
+                    let canisterY = tunnelY + 25;
+                    let canisterW = 10;
+                    let canisterH = 26;
+
+                    ctx.fillStyle = "#f8fafc";
+                    ctx.strokeStyle = "#f59e0b";
+                    ctx.lineWidth = 1.5;
+                    ctx.fillRect(canisterX, canisterY, canisterW, canisterH);
+                    ctx.strokeRect(canisterX, canisterY, canisterW, canisterH);
+                }
+
+                // Telemetry Updates
+                telemetry.innerHTML = `
+                    <span><strong>DGR Depth:</strong> -400 m | <strong>Time ($t$):</strong> ${time} Yrs</span>
+                    <span><strong>Tunnel Spacing ($S$):</strong> ${spacing} m</span>
+                    <span><strong>Peak Temp ($T_{max}$):</strong> ${peakTemp} °C</span>
+                    <span style="color:${isInterference ? '#ef4444' : '#10b981'};"><strong>Tunnel Interference:</strong> ${isInterference ? 'ACTIVE (Overlapping)' : 'SAFE'}</span>
+                `;
             }
 
             requestAnimationFrame(render);
         }
 
-        // Initialize Engine
+        // Initialize Simulation Sandbox
         switchRegime();
         render();
     </script>
