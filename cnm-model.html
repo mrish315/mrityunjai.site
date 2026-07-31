@@ -3,26 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Channel Network Model | Dr. Kunwar Mrityunjai Sharma</title>
+    <title>Interactive 2D Channel Network Builder | Dr. Kunwar Mrityunjai Sharma</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #090d16; --accent-cyan: #38bdf8; --text-main: #f3f4f6; --text-muted: #9ca3af; --border-subtle: rgba(255,255,255,0.08); --font-code: 'Fira Code', monospace; }
+        :root { 
+            --bg-dark: #090d16; 
+            --accent-cyan: #38bdf8; 
+            --accent-blue: #60a5fa;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --text-main: #f3f4f6; 
+            --text-muted: #9ca3af; 
+            --border-subtle: rgba(255,255,255,0.08); 
+            --font-code: 'Fira Code', monospace; 
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.6; }
+        
         nav { padding: 1rem 6%; background: rgba(9,13,22,0.9); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
         nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+        
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 6%; }
         h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
         p.subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+
         .physics-lab { background: rgba(13,19,33,0.95); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 1.5rem; }
-        .lab-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 10px; }
-        .control-group { display: flex; flex-direction: column; gap: 6px; }
-        .control-group label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-code); }
-        .canvas-container { position: relative; width: 100%; height: 500px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); }
+        
+        /* Interactive Toolbar */
+        .toolbar {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+            align-items: center;
+        }
+        .tool-btn {
+            padding: 0.55rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .tool-btn:hover, .tool-btn.active {
+            background: var(--accent-cyan);
+            color: #090d16;
+            font-weight: 700;
+            border-color: var(--accent-cyan);
+        }
+        .tool-btn-danger { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
+        .tool-btn-danger:hover { background: #ef4444; color: #fff; }
+
+        .canvas-container { position: relative; width: 100%; height: 520px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); cursor: crosshair; }
         #physicsCanvas { width: 100%; height: 100%; display: block; }
-        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-        .btn { padding: 0.5rem 1rem; background: var(--accent-cyan); color: #000; border-radius: 6px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; }
+        
+        .canvas-overlay { 
+            position: absolute; 
+            bottom: 12px; 
+            left: 12px; 
+            right: 12px; 
+            background: rgba(9,13,22,0.92); 
+            padding: 0.7rem 1.1rem; 
+            border-radius: 6px; 
+            font-family: var(--font-code); 
+            font-size: 0.78rem; 
+            color: var(--accent-cyan); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            flex-wrap: wrap; 
+            gap: 8px; 
+            border: 1px solid var(--border-subtle);
+        }
+
+        .instructions-panel {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 0.85rem 1.25rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .instructions-panel span { display: flex; align-items: center; gap: 6px; }
+        .instructions-panel i { color: var(--accent-cyan); }
+
         .details-card { background: rgba(17,24,39,0.75); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-top: 2rem; }
         .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; font-size: 1.3rem; }
     </style>
@@ -30,36 +109,45 @@
 <body>
     <nav>
         <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
-        <div style="color:var(--text-main); font-weight:700;">2D Channel Network Model (pychan3d)</div>
+        <div style="color:var(--text-main); font-weight:700;">Interactive 2D Channel Network Builder</div>
     </nav>
 
     <div class="container">
-        <h1>2D Channel Network Model (CNM)</h1>
-        <p class="subtitle">Process-based Finite Difference Method (FDM) hydraulic solver with log-normal channel conductances and 50-particle flux-proportional advective transport.</p>
+        <h1>Custom 2D Channel Network Builder</h1>
+        <p class="subtitle">Construct custom nodes, connect channels by dragging, assign conductances (C), set hydraulic boundary heads (H), and compute steady-state flow and particle transport.</p>
 
         <div class="physics-lab">
-            <div class="lab-controls">
-                <div class="control-group">
-                    <label>Mean Conductance (C<sub>0</sub>)</label>
-                    <input type="range" id="cnmMean" min="1" max="10" value="5" oninput="generateCNMGrid()">
-                </div>
-                <div class="control-group">
-                    <label>Conductance Std Dev (σ Log-Normal)</label>
-                    <input type="range" id="cnmStd" min="0.1" max="10" step="0.3" value="3" oninput="generateCNMGrid()">
-                </div>
-                <div class="control-group">
-                    <label>Hydraulic Head Gradient (∇h)</label>
-                    <input type="range" id="cnmGrad" min="1" max="10" value="5" oninput="solveHydraulicHeadsAndFlow()">
-                </div>
-                <div class="control-group">
-                    <label>Tracer Particle Injection</label>
-                    <button class="btn" onclick="init50Particles()">Reset 50 Particles</button>
-                </div>
+            <!-- Interactive Action Toolbar -->
+            <div class="toolbar">
+                <button class="tool-btn active" id="btnModeAddNode" onclick="setMode('addNode')">
+                    <i class="fa-solid fa-circle-plus"></i> Add Node
+                </button>
+                <button class="tool-btn" id="btnModeConnect" onclick="setMode('connect')">
+                    <i class="fa-solid fa-diagram-project"></i> Drag / Connect Channel
+                </button>
+                <button class="tool-btn" id="btnModeBoundary" onclick="setMode('boundary')">
+                    <i class="fa-solid fa-gauge-high"></i> Toggle Boundary Head (H)
+                </button>
+                <button class="tool-btn" id="btnModeConductance" onclick="setMode('conductance')">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit Conductance (C)
+                </button>
+                <div style="flex-grow: 1;"></div>
+                <button class="tool-btn" onclick="loadPresetNetwork()">
+                    <i class="fa-solid fa-rotate-left"></i> Load Preset Network
+                </button>
+                <button class="tool-btn tool-btn-danger" onclick="clearNetwork()">
+                    <i class="fa-solid fa-trash"></i> Clear Canvas
+                </button>
+            </div>
+
+            <!-- Quick Mode Helper -->
+            <div class="instructions-panel" id="instructionText">
+                <span><i class="fa-solid fa-info-circle"></i> <strong>Add Node Mode:</strong> Click anywhere on the dark canvas to place a new junction node.</span>
             </div>
 
             <div class="canvas-container">
                 <canvas id="physicsCanvas"></canvas>
-                <div class="canvas-overlay" id="telemetryBox">Solving CNM Flow Field...</div>
+                <div class="canvas-overlay" id="telemetryBox">Interactive Network Ready.</div>
             </div>
         </div>
 
@@ -68,15 +156,15 @@
         </p>
 
         <div class="details-card">
-            <h2>Mathematical & Physical Formulation</h2>
+            <h2>Graph-Based FDM Hydraulic Solver Mechanics</h2>
             <p style="color:var(--text-muted);">
-                The Channel Network Model (CNM) represents heterogeneous fractured rock as a discrete network of interconnected 1D channel segments. Node hydraulic heads (<i>H</i><sub>i</sub>) are solved numerically via a Gauss-Seidel Finite Difference scheme:
+                In this custom graph builder, non-boundary internal junction nodes satisfy Mass Conservation ($\sum Q_{ij} = 0$). Steady-state hydraulic heads ($H_i$) are calculated by solving the graph Laplacian system using a converging Gauss-Seidel iterative solver:
             </p>
             <p style="font-family:var(--font-code); color:var(--accent-cyan); margin: 1rem 0;">
-                Σ C<sub>ij</sub> (H<sub>i</sub> - H<sub>j</sub>) = 0
+                H<sub>i</sub> = [ Σ (C<sub>ij</sub> · H<sub>j</sub>) ] / [ Σ C<sub>ij</sub> ]
             </p>
             <p style="color:var(--text-muted);">
-                Channel conductances (<i>C</i><sub>ij</sub>) follow a log-normal distribution generated using Box-Muller transformations. Fluid flow through each channel segment is calculated using Darcy's relation: <i>Q</i><sub>ij</sub> = <i>C</i><sub>ij</sub> (<i>H</i><sub>i</sub> - <i>H</i><sub>j</sub>), and solute transport is simulated by advecting tracer particles with velocity proportional to channel flow fluxes.
+                Channel flow flux is evaluated as $Q_{ij} = C_{ij}(H_i - H_j)$. Advective solute tracer particles are continuously injected at active Inlet nodes ($H > 0$), routing probabilistically through outgoing channels weighted by flux magnitude ($Q_{ij}$).
             </p>
         </div>
     </div>
@@ -86,135 +174,386 @@
         const ctx = canvas.getContext('2d');
         let width, height;
 
-        function resizeCanvas() { width = canvas.parentElement.clientWidth; height = canvas.parentElement.clientHeight; canvas.width = width; canvas.height = height; }
+        function resizeCanvas() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        let cnmGrid = { rows: 9, cols: 15, horizontalC: [], verticalC: [], heads: [], flowH: [], flowV: [] };
+        // Mode Management: 'addNode', 'connect', 'boundary', 'conductance'
+        let currentMode = 'addNode';
+        let dragStartNode = null;
+        let mouseX = 0, mouseY = 0;
+
+        // Custom Graph Data Structures
+        let nodes = [];
+        let channels = [];
         let particles = [];
 
-        function randomLogNormal(mean, stdDev) {
-            let u1 = Math.random(), u2 = Math.random();
-            let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            let sigma2 = Math.log(1 + (stdDev * stdDev) / (mean * mean));
-            return Math.exp((Math.log(mean) - 0.5 * sigma2) + Math.sqrt(sigma2) * z0);
+        function setMode(mode) {
+            currentMode = mode;
+            dragStartNode = null;
+            document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+            
+            const instruction = document.getElementById('instructionText');
+            if (mode === 'addNode') {
+                document.getElementById('btnModeAddNode').classList.add('active');
+                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Add Node Mode:</strong> Click on the canvas to place junction nodes.</span>';
+            } else if (mode === 'connect') {
+                document.getElementById('btnModeConnect').classList.add('active');
+                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Connect Mode:</strong> Click or drag from one node to another to create a connecting channel.</span>';
+            } else if (mode === 'boundary') {
+                document.getElementById('btnModeBoundary').classList.add('active');
+                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Toggle Boundary Mode:</strong> Click any node to cycle between Internal Node, Inlet (H=10m), and Outlet (H=0m).</span>';
+            } else if (mode === 'conductance') {
+                document.getElementById('btnModeConductance').classList.add('active');
+                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Edit Conductance Mode:</strong> Click any channel segment to edit its hydraulic conductance (C).</span>';
+            }
         }
 
-        function generateCNMGrid() {
-            let meanC = parseFloat(document.getElementById('cnmMean').value);
-            let stdC = parseFloat(document.getElementById('cnmStd').value);
-            cnmGrid.horizontalC = []; cnmGrid.verticalC = []; cnmGrid.heads = []; cnmGrid.flowH = []; cnmGrid.flowV = [];
+        // --- Gauss-Seidel FDM Solver for Custom Arbitrary Graph ---
+        function solveGraphFDM() {
+            if (nodes.length < 2) return;
 
-            for (let r = 0; r < cnmGrid.rows; r++) {
-                let rowC = [], rowQ = [];
-                for (let c = 0; c < cnmGrid.cols - 1; c++) { rowC.push(randomLogNormal(meanC, stdC)); rowQ.push(0); }
-                cnmGrid.horizontalC.push(rowC); cnmGrid.flowH.push(rowQ);
-            }
-            for (let r = 0; r < cnmGrid.rows - 1; r++) {
-                let rowC = [], rowQ = [];
-                for (let c = 0; c < cnmGrid.cols; c++) { rowC.push(randomLogNormal(meanC, stdC)); rowQ.push(0); }
-                cnmGrid.verticalC.push(rowC); cnmGrid.flowV.push(rowQ);
-            }
-            for (let r = 0; r < cnmGrid.rows; r++) cnmGrid.heads.push(new Array(cnmGrid.cols).fill(0));
-
-            solveHydraulicHeadsAndFlow();
-            init50Particles();
-        }
-
-        function solveHydraulicHeadsAndFlow() {
-            let grad = parseFloat(document.getElementById('cnmGrad').value);
-            let Hin = grad * 10.0, Hout = 0.0;
-            for (let r = 0; r < cnmGrid.rows; r++) {
-                cnmGrid.heads[r][0] = Hin; cnmGrid.heads[r][cnmGrid.cols - 1] = Hout;
-                for (let c = 1; c < cnmGrid.cols - 1; c++) cnmGrid.heads[r][c] = Hin - (c / (cnmGrid.cols - 1)) * Hin;
-            }
+            // 150 Iterations of Gauss-Seidel for convergence
             for (let iter = 0; iter < 150; iter++) {
-                for (let r = 0; r < cnmGrid.rows; r++) {
-                    for (let c = 1; c < cnmGrid.cols - 1; c++) {
-                        let sumCH = 0.0, sumC = 0.0;
-                        let cL = cnmGrid.horizontalC[r][c - 1]; sumCH += cL * cnmGrid.heads[r][c - 1]; sumC += cL;
-                        let cR = cnmGrid.horizontalC[r][c]; sumCH += cR * cnmGrid.heads[r][c + 1]; sumC += cR;
-                        if (r > 0) { let cU = cnmGrid.verticalC[r - 1][c]; sumCH += cU * cnmGrid.heads[r - 1][c]; sumC += cU; }
-                        if (r < cnmGrid.rows - 1) { let cD = cnmGrid.verticalC[r][c]; sumCH += cD * cnmGrid.heads[r + 1][c]; sumC += cD; }
-                        if (sumC > 0) cnmGrid.heads[r][c] = sumCH / sumC;
+                nodes.forEach((node) => {
+                    if (node.type !== 'internal') return; // Fixed boundary heads stay constant
+
+                    let sumCH = 0.0;
+                    let sumC = 0.0;
+
+                    channels.forEach(ch => {
+                        if (ch.from === node.id) {
+                            let targetNode = nodes.find(n => n.id === ch.to);
+                            if (targetNode) {
+                                sumCH += ch.conductance * targetNode.head;
+                                sumC += ch.conductance;
+                            }
+                        } else if (ch.to === node.id) {
+                            let sourceNode = nodes.find(n => n.id === ch.from);
+                            if (sourceNode) {
+                                sumCH += ch.conductance * sourceNode.head;
+                                sumC += ch.conductance;
+                            }
+                        }
+                    });
+
+                    if (sumC > 0) {
+                        node.head = sumCH / sumC;
+                    }
+                });
+            }
+
+            // Compute Channel Flows Q = C * (H_from - H_to)
+            channels.forEach(ch => {
+                let n1 = nodes.find(n => n.id === ch.from);
+                let n2 = nodes.find(n => n.id === ch.to);
+                if (n1 && n2) {
+                    ch.flow = ch.conductance * (n1.head - n2.head); // Positive means flowing from -> to
+                }
+            });
+        }
+
+        // --- Particle Transport Engine ---
+        function updateParticles() {
+            let inlets = nodes.filter(n => n.type === 'inlet');
+            if (inlets.length === 0 || channels.length === 0) {
+                particles = [];
+                return;
+            }
+
+            // Maintain ~40 active particles
+            if (particles.length < 40 && Math.random() < 0.3) {
+                let startNode = inlets[Math.floor(Math.random() * inlets.length)];
+                particles.push({
+                    x: startNode.x,
+                    y: startNode.y,
+                    currentNodeId: startNode.id,
+                    targetNodeId: null,
+                    channelQ: 1.0,
+                    progress: 0
+                });
+            }
+
+            particles.forEach((p, idx) => {
+                if (!p.targetNodeId) {
+                    // Pick outgoing channel weighted by positive flow Q
+                    let outgoing = [];
+                    channels.forEach(ch => {
+                        if (ch.from === p.currentNodeId && ch.flow > 0.01) {
+                            outgoing.push({ targetId: ch.to, q: ch.flow });
+                        } else if (ch.to === p.currentNodeId && ch.flow < -0.01) {
+                            outgoing.push({ targetId: ch.from, q: Math.abs(ch.flow) });
+                        }
+                    });
+
+                    if (outgoing.length > 0) {
+                        let totalQ = outgoing.reduce((sum, item) => sum + item.q, 0);
+                        let rand = Math.random() * totalQ;
+                        let accum = 0;
+                        for (let item of outgoing) {
+                            accum += item.q;
+                            if (rand <= accum) {
+                                p.targetNodeId = item.targetId;
+                                p.channelQ = item.q;
+                                p.progress = 0;
+                                break;
+                            }
+                        }
+                    } else {
+                        // Dead end or outlet reached: Respawn
+                        let startNode = inlets[Math.floor(Math.random() * inlets.length)];
+                        p.currentNodeId = startNode.id;
+                        p.x = startNode.x;
+                        p.y = startNode.y;
+                        p.targetNodeId = null;
+                    }
+                } else {
+                    // Move along edge toward target node
+                    let currNode = nodes.find(n => n.id === p.currentNodeId);
+                    let targetNode = nodes.find(n => n.id === p.targetNodeId);
+
+                    if (currNode && targetNode) {
+                        let dist = Math.hypot(targetNode.x - currNode.x, targetNode.y - currNode.y);
+                        let speed = Math.max(1.5, Math.min(8.0, p.channelQ * 0.4));
+                        p.progress += speed / dist;
+
+                        p.x = currNode.x + (targetNode.x - currNode.x) * p.progress;
+                        p.y = currNode.y + (targetNode.y - currNode.y) * p.progress;
+
+                        if (p.progress >= 1.0) {
+                            p.currentNodeId = p.targetNodeId;
+                            p.targetNodeId = null;
+                        }
+                    } else {
+                        particles.splice(idx, 1);
+                    }
+                }
+            });
+        }
+
+        // Preset Network Loader
+        function loadPresetNetwork() {
+            nodes = [
+                { id: 1, x: 100, y: 120, head: 10.0, type: 'inlet' },
+                { id: 2, x: 100, y: 380, head: 10.0, type: 'inlet' },
+                { id: 3, x: 300, y: 160, head: 5.0, type: 'internal' },
+                { id: 4, x: 300, y: 340, head: 5.0, type: 'internal' },
+                { id: 5, x: 550, y: 250, head: 5.0, type: 'internal' },
+                { id: 6, x: 800, y: 160, head: 5.0, type: 'internal' },
+                { id: 7, x: 800, y: 340, head: 5.0, type: 'internal' },
+                { id: 8, x: 1050, y: 250, head: 0.0, type: 'outlet' }
+            ];
+
+            channels = [
+                { id: 101, from: 1, to: 3, conductance: 8.0, flow: 0 },
+                { id: 102, from: 2, to: 4, conductance: 4.0, flow: 0 },
+                { id: 103, from: 3, to: 4, conductance: 2.0, flow: 0 },
+                { id: 104, from: 3, to: 5, conductance: 7.0, flow: 0 },
+                { id: 105, from: 4, to: 5, conductance: 3.0, flow: 0 },
+                { id: 106, from: 5, to: 6, conductance: 9.0, flow: 0 },
+                { id: 107, from: 5, to: 7, conductance: 2.0, flow: 0 },
+                { id: 108, from: 6, to: 8, conductance: 8.0, flow: 0 },
+                { id: 109, from: 7, to: 8, conductance: 3.0, flow: 0 }
+            ];
+
+            particles = [];
+            solveGraphFDM();
+        }
+
+        function clearNetwork() {
+            nodes = [];
+            channels = [];
+            particles = [];
+            dragStartNode = null;
+        }
+
+        // --- Mouse Event Handlers ---
+        function getNodeAt(x, y) {
+            return nodes.find(n => Math.hypot(n.x - x, n.y - y) < 18);
+        }
+
+        function getChannelAt(x, y) {
+            return channels.find(ch => {
+                let n1 = nodes.find(n => n.id === ch.from);
+                let n2 = nodes.find(n => n.id === ch.to);
+                if (!n1 || !n2) return false;
+                
+                // Point-to-line segment distance
+                let L2 = (n2.x - n1.x)**2 + (n2.y - n1.y)**2;
+                if (L2 === 0) return false;
+                let t = ((x - n1.x) * (n2.x - n1.x) + (y - n1.y) * (n2.y - n1.y)) / L2;
+                t = Math.max(0, Math.min(1, t));
+                let projX = n1.x + t * (n2.x - n1.x);
+                let projY = n1.y + t * (n2.y - n1.y);
+                return Math.hypot(x - projX, y - projY) < 8;
+            });
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+
+            let clickedNode = getNodeAt(x, y);
+
+            if (currentMode === 'addNode') {
+                if (!clickedNode) {
+                    let newId = nodes.length > 0 ? Math.max(...nodes.map(n => n.id)) + 1 : 1;
+                    nodes.push({ id: newId, x: x, y: y, head: 5.0, type: 'internal' });
+                    solveGraphFDM();
+                }
+            } else if (currentMode === 'connect') {
+                if (clickedNode) {
+                    dragStartNode = clickedNode;
+                }
+            } else if (currentMode === 'boundary') {
+                if (clickedNode) {
+                    if (clickedNode.type === 'internal') {
+                        clickedNode.type = 'inlet';
+                        clickedNode.head = 10.0;
+                    } else if (clickedNode.type === 'inlet') {
+                        clickedNode.type = 'outlet';
+                        clickedNode.head = 0.0;
+                    } else {
+                        clickedNode.type = 'internal';
+                    }
+                    solveGraphFDM();
+                }
+            } else if (currentMode === 'conductance') {
+                let clickedChannel = getChannelAt(x, y);
+                if (clickedChannel) {
+                    let inputC = prompt("Enter Channel Conductance (C):", clickedChannel.conductance);
+                    if (inputC !== null && !isNaN(parseFloat(inputC))) {
+                        clickedChannel.conductance = Math.max(0.1, parseFloat(inputC));
+                        solveGraphFDM();
                     }
                 }
             }
-            for (let r = 0; r < cnmGrid.rows; r++)
-                for (let c = 0; c < cnmGrid.cols - 1; c++) cnmGrid.flowH[r][c] = cnmGrid.horizontalC[r][c] * (cnmGrid.heads[r][c] - cnmGrid.heads[r][c + 1]);
-            for (let r = 0; r < cnmGrid.rows - 1; r++)
-                for (let c = 0; c < cnmGrid.cols; c++) cnmGrid.flowV[r][c] = cnmGrid.verticalC[r][c] * (cnmGrid.heads[r][c] - cnmGrid.heads[r + 1][c]);
-        }
+        });
 
-        function init50Particles() {
-            particles = [];
-            let dy = (height - 90) / (cnmGrid.rows - 1);
-            for (let i = 0; i < 50; i++) {
-                let startRow = i % cnmGrid.rows;
-                particles.push({ r: startRow, c: 0, x: 60, y: 45 + startRow * dy, targetR: startRow, targetC: 0, channelQ: 1.0 });
+        canvas.addEventListener('mouseup', (e) => {
+            if (currentMode === 'connect' && dragStartNode) {
+                const rect = canvas.getBoundingClientRect();
+                let x = e.clientX - rect.left;
+                let y = e.clientY - rect.top;
+                let targetNode = getNodeAt(x, y);
+
+                if (targetNode && targetNode.id !== dragStartNode.id) {
+                    // Avoid duplicate channel
+                    let exists = channels.some(ch => 
+                        (ch.from === dragStartNode.id && ch.to === targetNode.id) ||
+                        (ch.from === targetNode.id && ch.to === dragStartNode.id)
+                    );
+                    if (!exists) {
+                        let newChId = channels.length > 0 ? Math.max(...channels.map(c => c.id)) + 1 : 101;
+                        channels.push({ id: newChId, from: dragStartNode.id, to: targetNode.id, conductance: 5.0, flow: 0 });
+                        solveGraphFDM();
+                    }
+                }
+                dragStartNode = null;
             }
-        }
+        });
 
+        // --- Main Render Loop ---
         function render() {
             ctx.clearRect(0, 0, width, height);
-            let grad = parseFloat(document.getElementById('cnmGrad').value);
-            let std = parseFloat(document.getElementById('cnmStd').value);
 
-            document.getElementById('telemetryBox').innerHTML = `
-                <span><strong>Boundary:</strong> Left Inlet (<i>H</i><sub>in</sub> = ${(grad*10).toFixed(1)} m) ➔ Right Outlet (<i>H</i><sub>out</sub> = 0 m)</span>
-                <span><strong>Log-Normal σ:</strong> ${std} | <strong>Particles:</strong> 50 Active</span>
-            `;
-
-            let dx = (width - 120) / (cnmGrid.cols - 1), dy = (height - 90) / (cnmGrid.rows - 1);
-
-            ctx.strokeStyle = "rgba(239, 68, 68, 0.4)"; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
-            ctx.beginPath(); ctx.moveTo(50, 25); ctx.lineTo(width - 50, 25); ctx.moveTo(50, height - 30); ctx.lineTo(width - 50, height - 30); ctx.stroke(); ctx.setLineDash([]);
-
-            for (let r = 0; r < cnmGrid.rows; r++) {
-                for (let c = 0; c < cnmGrid.cols - 1; c++) {
-                    let q = Math.abs(cnmGrid.flowH[r][c]);
-                    ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, q * 0.05 + 0.15)})`; ctx.lineWidth = Math.min(8, Math.max(0.5, q * 0.12));
-                    ctx.beginPath(); ctx.moveTo(60 + c * dx, 45 + r * dy); ctx.lineTo(60 + (c + 1) * dx, 45 + r * dy); ctx.stroke();
-                }
-            }
-            for (let r = 0; r < cnmGrid.rows - 1; r++) {
-                for (let c = 0; c < cnmGrid.cols; c++) {
-                    let q = Math.abs(cnmGrid.flowV[r][c]);
-                    ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, q * 0.05 + 0.15)})`; ctx.lineWidth = Math.min(8, Math.max(0.5, q * 0.12));
-                    ctx.beginPath(); ctx.moveTo(60 + c * dx, 45 + r * dy); ctx.lineTo(60 + c * dx, 45 + (r + 1) * dy); ctx.stroke();
-                }
+            // Draw Connection Drag Line
+            if (currentMode === 'connect' && dragStartNode) {
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.6)";
+                ctx.lineWidth = 2;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(dragStartNode.x, dragStartNode.y);
+                ctx.lineTo(mouseX, mouseY);
+                ctx.stroke();
+                ctx.setLineDash([]);
             }
 
-            ctx.fillStyle = "#38bdf8";
-            particles.forEach((p, idx) => {
-                let targetX = 60 + p.targetC * dx, targetY = 45 + p.targetR * dy;
-                let moveSpeed = Math.max(1.2, Math.min(11, Math.abs(p.channelQ) * 0.25));
-                let dist = Math.hypot(targetX - p.x, targetY - p.y);
-                if (dist > moveSpeed) { p.x += ((targetX - p.x) / dist) * moveSpeed; p.y += ((targetY - p.y) / dist) * moveSpeed; }
-                else {
-                    p.x = targetX; p.y = targetY; p.r = p.targetR; p.c = p.targetC;
-                    if (p.c < cnmGrid.cols - 1) {
-                        let qR = Math.max(0, cnmGrid.flowH[p.r][p.c] || 0), qL = (p.c > 0) ? Math.max(0, -cnmGrid.flowH[p.r][p.c - 1]) : 0;
-                        let qD = (p.r < cnmGrid.rows - 1) ? Math.max(0, cnmGrid.flowV[p.r][p.c] || 0) : 0, qU = (p.r > 0) ? Math.max(0, -cnmGrid.flowV[p.r - 1][p.c] || 0) : 0;
-                        let totalQ = qR + qL + qD + qU;
-                        if (totalQ > 0) {
-                            let rand = Math.random() * totalQ;
-                            if (rand < qR) { p.targetC = p.c + 1; p.channelQ = qR; }
-                            else if (rand < qR + qD && p.r < cnmGrid.rows - 1) { p.targetR = p.r + 1; p.channelQ = qD; }
-                            else if (rand < qR + qD + qU && p.r > 0) { p.targetR = p.r - 1; p.channelQ = qU; }
-                            else if (p.c > 0) { p.targetC = p.c - 1; p.channelQ = qL; }
-                        } else { p.targetC = p.c + 1; p.channelQ = 1.0; }
-                    } else {
-                        let startRow = idx % cnmGrid.rows; p.r = startRow; p.c = 0; p.targetR = startRow; p.targetC = 0; p.x = 60; p.y = 45 + startRow * dy;
-                    }
-                }
-                ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill();
+            // Render Channels
+            channels.forEach(ch => {
+                let n1 = nodes.find(n => n.id === ch.from);
+                let n2 = nodes.find(n => n.id === ch.to);
+                if (!n1 || !n2) return;
+
+                let absQ = Math.abs(ch.flow);
+                ctx.strokeStyle = absQ > 0.05 ? "rgba(56, 189, 248, 0.85)" : "rgba(148, 163, 184, 0.25)";
+                ctx.lineWidth = Math.min(8, Math.max(1.5, ch.conductance * 0.7));
+
+                ctx.beginPath();
+                ctx.moveTo(n1.x, n1.y);
+                ctx.lineTo(n2.x, n2.y);
+                ctx.stroke();
+
+                // Draw Conductance Text on Channel
+                let midX = (n1.x + n2.x) / 2;
+                let midY = (n1.y + n2.y) / 2;
+                ctx.fillStyle = "#94a3b8";
+                ctx.font = "10px Fira Code";
+                ctx.fillText(`C=${ch.conductance.toFixed(1)}`, midX - 12, midY - 6);
             });
+
+            // Update & Render Particle Transport
+            updateParticles();
+            ctx.fillStyle = "#38bdf8";
+            particles.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Render Nodes
+            nodes.forEach(node => {
+                ctx.lineWidth = 2;
+                if (node.type === 'inlet') {
+                    ctx.fillStyle = "#10b981";
+                    ctx.strokeStyle = "#a7f3d0";
+                } else if (node.type === 'outlet') {
+                    ctx.fillStyle = "#ef4444";
+                    ctx.strokeStyle = "#fca5a5";
+                } else {
+                    ctx.fillStyle = "#0f172a";
+                    ctx.strokeStyle = "#38bdf8";
+                }
+
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 14, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+
+                // Draw Node Label & Head
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "10px Fira Code";
+                ctx.textAlign = "center";
+                ctx.fillText(`H=${node.head.toFixed(1)}`, node.x, node.y + 3);
+                ctx.textAlign = "start";
+            });
+
+            // Clean Overlay Telemetry (No raw LaTeX symbols)
+            let inlets = nodes.filter(n => n.type === 'inlet').length;
+            let outlets = nodes.filter(n => n.type === 'outlet').length;
+            document.getElementById('telemetryBox').innerHTML = `
+                <span><strong>Nodes:</strong> ${nodes.length} (Inlets: ${inlets}, Outlets: ${outlets})</span>
+                <span><strong>Channels:</strong> ${channels.length} Segments</span>
+                <span><strong>Particles:</strong> ${particles.length} Active</span>
+            `;
 
             requestAnimationFrame(render);
         }
 
-        generateCNMGrid();
+        // Initialize with default network
+        loadPresetNetwork();
         render();
     </script>
 </body>
