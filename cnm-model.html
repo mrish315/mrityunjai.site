@@ -15,17 +15,16 @@
         .container { max-width: 1200px; margin: 2rem auto; padding: 0 6%; }
         h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
         p.subtitle { color: var(--text-muted); margin-bottom: 2rem; }
-        
         .physics-lab { background: rgba(13,19,33,0.95); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 1.5rem; }
         .lab-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 10px; }
         .control-group { display: flex; flex-direction: column; gap: 6px; }
         .control-group label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-code); }
         .canvas-container { position: relative; width: 100%; height: 500px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); }
         #physicsCanvas { width: 100%; height: 100%; display: block; }
-        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; }
+        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .btn { padding: 0.5rem 1rem; background: var(--accent-cyan); color: #000; border-radius: 6px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; }
         .details-card { background: rgba(17,24,39,0.75); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-top: 2rem; }
-        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; }
+        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; font-size: 1.3rem; }
     </style>
 </head>
 <body>
@@ -36,20 +35,20 @@
 
     <div class="container">
         <h1>2D Channel Network Model (CNM)</h1>
-        <p class="subtitle">Process-based Finite Difference Method (FDM) hydraulic solver with log-normal channel conductances and 50-particle flux-proportional tracking.</p>
+        <p class="subtitle">Process-based Finite Difference Method (FDM) hydraulic solver with log-normal channel conductances and 50-particle flux-proportional advective transport.</p>
 
         <div class="physics-lab">
             <div class="lab-controls">
                 <div class="control-group">
-                    <label>Mean Conductance ($C_0$)</label>
+                    <label>Mean Conductance (C<sub>0</sub>)</label>
                     <input type="range" id="cnmMean" min="1" max="10" value="5" oninput="generateCNMGrid()">
                 </div>
                 <div class="control-group">
-                    <label>Conductance Std Dev ($\sigma$ Log-Normal)</label>
+                    <label>Conductance Std Dev (σ Log-Normal)</label>
                     <input type="range" id="cnmStd" min="0.1" max="10" step="0.3" value="3" oninput="generateCNMGrid()">
                 </div>
                 <div class="control-group">
-                    <label>Hydraulic Head Gradient ($\nabla h$)</label>
+                    <label>Hydraulic Head Gradient (∇h)</label>
                     <input type="range" id="cnmGrad" min="1" max="10" value="5" oninput="solveHydraulicHeadsAndFlow()">
                 </div>
                 <div class="control-group">
@@ -70,7 +69,15 @@
 
         <div class="details-card">
             <h2>Mathematical & Physical Formulation</h2>
-            <p>The Channel Network Model (CNM) represents low-permeability fractured rock as a discrete network of interconnected 1D channel segments. Node hydraulic heads ($H_i$) are solved numerically via a Gauss-Seidel Finite Difference scheme ($\sum C_{ij} (H_i - H_j) = 0$). Channel conductances ($C_{ij}$) follow a log-normal distribution generated using Box-Muller transformations.</p>
+            <p style="color:var(--text-muted);">
+                The Channel Network Model (CNM) represents heterogeneous fractured rock as a discrete network of interconnected 1D channel segments. Node hydraulic heads (<i>H</i><sub>i</sub>) are solved numerically via a Gauss-Seidel Finite Difference scheme:
+            </p>
+            <p style="font-family:var(--font-code); color:var(--accent-cyan); margin: 1rem 0;">
+                Σ C<sub>ij</sub> (H<sub>i</sub> - H<sub>j</sub>) = 0
+            </p>
+            <p style="color:var(--text-muted);">
+                Channel conductances (<i>C</i><sub>ij</sub>) follow a log-normal distribution generated using Box-Muller transformations. Fluid flow through each channel segment is calculated using Darcy's relation: <i>Q</i><sub>ij</sub> = <i>C</i><sub>ij</sub> (<i>H</i><sub>i</sub> - <i>H</i><sub>j</sub>), and solute transport is simulated by advecting tracer particles with velocity proportional to channel flow fluxes.
+            </p>
         </div>
     </div>
 
@@ -154,8 +161,8 @@
             let std = parseFloat(document.getElementById('cnmStd').value);
 
             document.getElementById('telemetryBox').innerHTML = `
-                <span><strong>Boundary:</strong> Left Inlet ($H_{in}=${(grad*10).toFixed(1)}$m) ➔ Right Outlet ($H_{out}=0$)</span>
-                <span><strong>Log-Normal $\sigma$:</strong> ${std} | <strong>Particles:</strong> 50 Active</span>
+                <span><strong>Boundary:</strong> Left Inlet (<i>H</i><sub>in</sub> = ${(grad*10).toFixed(1)} m) ➔ Right Outlet (<i>H</i><sub>out</sub> = 0 m)</span>
+                <span><strong>Log-Normal σ:</strong> ${std} | <strong>Particles:</strong> 50 Active</span>
             `;
 
             let dx = (width - 120) / (cnmGrid.cols - 1), dy = (height - 90) / (cnmGrid.rows - 1);
