@@ -13,6 +13,8 @@
             --bg-card-hover: rgba(31, 41, 55, 0.85);
             --accent-cyan: #38bdf8;
             --accent-blue: #60a5fa;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -23,16 +25,19 @@
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.6; }
 
+        /* Navigation */
         nav {
-            position: fixed; top: 0; width: 100%; background: rgba(9, 13, 22, 0.9);
+            position: fixed; top: 0; width: 100%; background: rgba(9, 13, 22, 0.92);
             backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle);
             z-index: 1000; padding: 1rem 6%; display: flex; justify-content: space-between; align-items: center;
         }
-        nav .brand { font-weight: 700; font-size: 1.15rem; color: var(--text-main); }
+        nav .brand { font-weight: 700; font-size: 1.15rem; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        nav .brand i { color: var(--accent-cyan); }
         nav ul { display: flex; list-style: none; gap: 1.8rem; }
         nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
         nav a:hover, nav a.active { color: var(--accent-cyan); }
 
+        /* Header / Hero */
         header { padding: 8rem 6% 4rem; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 260px 1fr; gap: 3.5rem; align-items: center; }
         .profile-img { width: 240px; height: 240px; border-radius: 16px; object-fit: cover; border: 1px solid var(--border-glow); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .hero-text h1 { font-size: 2.8rem; font-weight: 700; margin-bottom: 0.4rem; letter-spacing: -0.5px; }
@@ -51,17 +56,45 @@
         .btn-outline { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); color: var(--text-main); }
         .btn-outline:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent-cyan); }
 
-        section { padding: 4.5rem 6%; max-width: 1200px; margin: 0 auto; }
+        /* Shared Section Styles */
+        section { padding: 4rem 6%; max-width: 1200px; margin: 0 auto; }
         .section-tag { font-family: var(--font-code); font-size: 0.8rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.4rem; }
-        .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; }
+        .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
 
+        /* Badges */
+        .badge {
+            font-family: var(--font-code);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-model { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-blog { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-code { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Card Layouts */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-        .card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 1.75rem; transition: all 0.2s; }
-        .card:hover { border-color: var(--border-glow); background: var(--bg-card-hover); }
+        .card { 
+            background: var(--bg-card); 
+            border: 1px solid var(--border-subtle); 
+            border-radius: 12px; 
+            padding: 1.75rem; 
+            transition: all 0.2s ease; 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover { border-color: var(--border-glow); background: var(--bg-card-hover); transform: translateY(-2px); }
+        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+        .card-date { font-family: var(--font-code); font-size: 0.78rem; color: var(--text-muted); }
         .card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 10px; }
         .card h3 i { color: var(--accent-cyan); }
-        .card p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.2rem; }
+        .card p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.4rem; line-height: 1.5; }
 
+        /* Timeline */
         .timeline { position: relative; border-left: 2px solid var(--border-glow); padding-left: 1.8rem; margin-left: 0.5rem; }
         .timeline-item { margin-bottom: 2.5rem; position: relative; }
         .timeline-dot { position: absolute; left: calc(-1.8rem - 5px); top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-cyan); }
@@ -71,9 +104,10 @@
         .timeline-bullets li { position: relative; padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.4rem; }
         .timeline-bullets li::before { content: '•'; position: absolute; left: 0; color: var(--accent-cyan); }
 
-        .pub-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.4rem; margin-bottom: 1rem; transition: border-color 0.2s; }
-        .pub-card:hover { border-color: var(--accent-cyan); }
-        .pub-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
+        /* Publications */
+        .pub-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.4rem; margin-bottom: 1rem; transition: border-color 0.2s, transform 0.2s; }
+        .pub-card:hover { border-color: var(--accent-cyan); transform: translateX(3px); }
+        .pub-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.4; }
         .pub-authors { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.2rem; }
         .pub-journal { font-style: italic; color: var(--accent-blue); font-size: 0.88rem; margin-bottom: 0.8rem; }
         .doi-link { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); text-decoration: none; background: rgba(56, 189, 248, 0.08); padding: 0.35rem 0.75rem; border-radius: 5px; border: 1px solid rgba(56, 189, 248, 0.2); }
@@ -85,10 +119,12 @@
 </head>
 <body>
 
+    <!-- Main Navigation Bar -->
     <nav>
-        <div class="brand">Dr. Kunwar Mrityunjai Sharma</div>
+        <div class="brand"><i class="fa-solid fa-cube"></i> Dr. Kunwar Mrityunjai Sharma</div>
         <ul>
             <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="#latest">What's New</a></li>
             <li><a href="#models">Models</a></li>
             <li><a href="#experience">Experience</a></li>
             <li><a href="#publications">Publications</a></li>
@@ -97,6 +133,7 @@
         </ul>
     </nav>
 
+    <!-- Hero Header -->
     <header id="about">
         <div>
             <img src="profile.jpg" alt="Dr. Kunwar Mrityunjai Sharma" class="profile-img" onerror="this.src='https://via.placeholder.com/240/090d16/38bdf8?text=Dr.+Sharma'">
@@ -121,35 +158,86 @@
         </div>
     </header>
 
-    <!-- Dedicated Interactive Models Section -->
-    <section id="models">
-        <div class="section-tag">Interactive Simulations</div>
-        <h2 class="section-title">Dedicated Computational Process Models</h2>
+    <!-- What's New / Latest Releases Section -->
+    <section id="latest">
+        <div class="section-tag">Recent Updates</div>
+        <h2 class="section-title"><i class="fa-solid fa-sparkles"></i> What's New</h2>
 
         <div class="grid-3">
             <div class="card">
-                <h3><i class="fa-solid fa-network-wired"></i> 2D Channel Network Model</h3>
-                <p>Features FDM Gauss-Seidel hydraulic solver, log-normal conductance distributions ($\sigma$), and flow-proportional 50-particle advective transport built with <code>pychan3d</code> principles.</p>
+                <div>
+                    <div class="card-top">
+                        <span class="badge badge-model"><i class="fa-solid fa-cube"></i> Interactive Model</span>
+                        <span class="card-date">July 2026</span>
+                    </div>
+                    <h3>KBS-3 DGR Thermal Sandbox</h3>
+                    <p>Interactive engineering tool to evaluate canister spacing, thermal decay transport, and bentonite buffer safety limits (&le; 95&deg;C) in granitic host rock.</p>
+                </div>
+                <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
+            </div>
+
+            <div class="card">
+                <div>
+                    <div class="card-top">
+                        <span class="badge badge-blog"><i class="fa-solid fa-newspaper"></i> Blog Post</span>
+                        <span class="card-date">July 2026</span>
+                    </div>
+                    <h3>THM Buffer Constraints in Repositories</h3>
+                    <p>Analysis of coupled thermo-hydraulic mechanisms governing canister positioning and preventing montmorillonite alteration in engineered clay barriers.</p>
+                </div>
+                <a href="blog.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-arrow-right"></i> Read Article</a>
+            </div>
+
+            <div class="card">
+                <div>
+                    <div class="card-top">
+                        <span class="badge badge-code"><i class="fa-solid fa-code"></i> Python Pipeline</span>
+                        <span class="card-date">June 2026</span>
+                    </div>
+                    <h3>pychan3d Framework Update</h3>
+                    <p>Refactored 3D channel network module for particle tracking, advective transport, and Discrete Fracture Network (DFN) upscaling workflows.</p>
+                </div>
+                <a href="cnm-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-network-wired"></i> View CNM Framework</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dedicated Interactive Models Section -->
+    <section id="models">
+        <div class="section-tag">Interactive Simulations</div>
+        <h2 class="section-title"><i class="fa-solid fa-flask"></i> Dedicated Computational Process Models</h2>
+
+        <div class="grid-3">
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-network-wired"></i> 2D Channel Network Model</h3>
+                    <p>Features FDM Gauss-Seidel hydraulic solver, log-normal conductance distributions (&sigma;), and flow-proportional 50-particle advective transport built with <code>pychan3d</code> principles.</p>
+                </div>
                 <a href="cnm-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch CNM Model</a>
             </div>
 
             <div class="card">
-                <h3><i class="fa-solid fa-cloud-rain"></i> Matrix Infiltration Dynamics</h3>
-                <p>Simulates variably saturated infiltration across clay barriers and soil profiles using Richards' equation dynamics, suction head ($\psi$), and transient wetting fronts.</p>
+                <div>
+                    <h3><i class="fa-solid fa-cloud-rain"></i> Matrix Infiltration Dynamics</h3>
+                    <p>Simulates variably saturated infiltration across clay barriers and soil profiles using Richards' equation dynamics, suction head (&psi;), and transient wetting fronts.</p>
+                </div>
                 <a href="infiltration-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Infiltration Model</a>
             </div>
 
             <div class="card">
-                <h3><i class="fa-solid fa-cubes"></i> KBS-3 DGR Thermal Layout</h3>
-                <p>Examines thermal decay and plume interference across 8 KBS-3 canisters at $-450\text{ m}$ depth as a function of canister/drift spacing ($S$) and host rock thermal conductivity ($k$).</p>
+                <div>
+                    <h3><i class="fa-solid fa-cubes"></i> KBS-3 DGR Thermal Layout</h3>
+                    <p>Examines thermal decay and plume interference across 8 KBS-3 canisters at -450 m depth as a function of canister/drift spacing (<i>S</i>) and host rock thermal conductivity (<i>k</i>).</p>
+                </div>
                 <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch DGR Thermal Model</a>
             </div>
         </div>
     </section>
 
+    <!-- Career History Section -->
     <section id="experience">
         <div class="section-tag">Career History</div>
-        <h2 class="section-title">Research Experience</h2>
+        <h2 class="section-title"><i class="fa-solid fa-briefcase"></i> Research Experience</h2>
         <div class="timeline">
             <div class="timeline-item">
                 <div class="timeline-dot"></div>
@@ -172,10 +260,10 @@
         </div>
     </section>
 
-    <!-- Scientific Publications (All 16 Papers Included) -->
+    <!-- Scientific Publications -->
     <section id="publications">
         <div class="section-tag">Peer-Reviewed Research & Proceedings</div>
-        <h2 class="section-title">Scientific Publications</h2>
+        <h2 class="section-title"><i class="fa-solid fa-book-journal-whills"></i> Scientific Publications</h2>
 
         <div class="pub-card">
             <div class="pub-title">1. Impact of Rainfall Patterns on a Near-Surface Radioactive Waste Disposal Facility: Climate Change and Long-Term Perspectives</div>
@@ -285,6 +373,7 @@
         </div>
     </section>
 
+    <!-- Contact Information -->
     <section id="contact">
         <div class="card" style="text-align: center; padding: 3.5rem 2rem; border: 1px solid var(--border-glow);">
             <h2>Contact Information</h2>
@@ -293,6 +382,7 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Dr. Kunwar Mrityunjai Sharma | <a href="http://mrityunjai.site" style="color:var(--accent-cyan)">mrityunjai.site</a></p>
     </footer>
