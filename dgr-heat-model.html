@@ -137,12 +137,12 @@
 
                 <button class="tool-btn" onclick="zoomIn()"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
                 <button class="tool-btn" onclick="zoomOut()"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-                <button class="tool-btn" onclick="resetZoom()"><i class="fa-solid fa-compress"></i> 1:1 Scale</button>
+                <button class="tool-btn" onclick="resetZoom()"><i class="fa-solid fa-compress"></i> Recenter View</button>
 
                 <div style="width: 1px; height: 24px; background: var(--border-subtle); margin: 0 4px;"></div>
 
                 <button class="tool-btn" onclick="load5CanisterPreset()">
-                    <i class="fa-solid fa-rotate-left"></i> 5-Canister Study Preset
+                    <i class="fa-solid fa-rotate-left"></i> 5-Canister Study Preset (9m Spacing)
                 </button>
                 <button class="tool-btn tool-btn-danger" onclick="clearCanisters()">
                     <i class="fa-solid fa-trash"></i> Clear All
@@ -153,11 +153,11 @@
             <div class="lab-controls">
                 <div class="control-group">
                     <label>Host Rock Thermal Cond. (k - W/m·K)</label>
-                    <input type="range" id="heatK" min="1" max="10" value="5">
+                    <input type="range" id="heatK" min="1" max="10" value="3" step="0.1">
                 </div>
                 <div class="control-group">
                     <label>Initial Decay Heat (Q<sub>0</sub> - kW)</label>
-                    <input type="range" id="heatQ" min="1" max="10" value="7">
+                    <input type="range" id="heatQ" min="0.5" max="3" value="1.7" step="0.1">
                 </div>
                 <div class="control-group">
                     <label>Elapsed Time (t - Years)</label>
@@ -167,7 +167,7 @@
 
             <!-- Mode Helper -->
             <div class="instructions-panel" id="instructionText">
-                <span><i class="fa-solid fa-info-circle"></i> <strong>Add Canister Mode:</strong> Click along the transport gallery (-450m level) to drill a vertical deposition hole and place a KBS-3 canister.</span>
+                <span><i class="fa-solid fa-info-circle"></i> <strong>Add Canister Mode:</strong> Click along the transport gallery drift (-450m level) to drill a vertical deposition hole and place a KBS-3 canister.</span>
             </div>
 
             <div class="canvas-container" id="canvasContainer">
@@ -177,21 +177,21 @@
         </div>
 
         <p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-top:1rem; font-family:var(--font-code);">
-            Note: This simulation module is intended strictly for conceptual visualization and interactive representation purposes.
+            Note: Standard KBS-3 canister spacing is 9.0 meters center-to-center along deposition drifts.
         </p>
 
         <div class="details-card">
             <h2>KBS-3 Multi-Barrier Safety Concept & 5-Canister Thermal Study</h2>
             <p style="color: var(--text-muted); margin-bottom: 1rem;">
-                The KBS-3 spent nuclear fuel disposal method (developed by SKB, Sweden and implemented at Posiva's ONKALO repository, Finland) relies on a passive, multi-barrier containment system designed for long-term isolation (>100,000 years):
+                The KBS-3 spent nuclear fuel disposal method (developed by SKB, Sweden and implemented at Posiva's ONKALO repository, Finland) relies on a passive, multi-barrier containment system designed for long-term isolation (&gt;100,000 years):
             </p>
             <ul>
-                <li><strong>Engineered Copper-Cast Iron Canister:</strong> A cast-iron inner insert provides structural mechanical strength against glacial loads, surrounded by a corrosion-resistant copper outer shell (50 mm thick).</li>
-                <li><strong>Compacted Bentonite Buffer:</strong> Highly compacted sodium bentonite clay blocks line each vertical deposition hole. Bentonite swells upon water contact, providing low hydraulic conductivity, self-healing against fracturing, and geochemical buffering.</li>
-                <li><strong>Crystalline Rock Matrix:</strong> Low-permeability granitic host bedrock at depths of 400 to 500 m provides a stable, reducing hydrogeological environment.</li>
+                <li><strong>Engineered Copper-Cast Iron Canister:</strong> Cast-iron insert provides structural mechanical strength against glacial loads, surrounded by a corrosion-resistant copper outer shell (50 mm thick). Canister diameter is 1.05 m and height is 4.83 m.</li>
+                <li><strong>Compacted Bentonite Buffer:</strong> Highly compacted sodium bentonite clay blocks line each 1.75 m diameter vertical deposition hole (7.83 m depth). Bentonite swells upon water contact, providing low hydraulic conductivity and self-healing properties.</li>
+                <li><strong>Crystalline Rock Matrix:</strong> Low-permeability granitic host bedrock at depths of 400 to 500 m provides a stable hydrogeological environment. Canisters are spaced 9.0 m apart along drifts.</li>
             </ul>
             <p style="color: var(--text-muted); margin-top: 1rem;">
-                <strong>Thermal Engineering Constraint:</strong> Radioactive decay heat <i>Q</i>(<i>t</i>) = <i>Q</i><sub>0</sub> e<sup>-λ<i>t</i></sup> conducts through the buffer into the rock matrix. To prevent mineralogical transformation of montmorillonite in the bentonite buffer, the peak temperature at the canister-buffer interface must remain strictly below <strong>95 °C</strong>. Canister and drift spacing (<i>S</i>) is therefore a critical variable to avoid thermal plume interference between adjacent deposition holes.
+                <strong>Thermal Engineering Constraint:</strong> Radioactive decay heat conducts through the buffer into the rock matrix. To prevent mineralogical transformation of montmorillonite in the bentonite buffer, the peak temperature at the canister-buffer interface must remain strictly below <strong>95 °C</strong>.
             </p>
         </div>
     </div>
@@ -207,15 +207,18 @@
             canvas.width = width;
             canvas.height = height;
         }
-        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            recenterCamera();
+        });
         resizeCanvas();
 
         const RULER_OFFSET = 32;
 
-        // Pan & Zoom View State
-        let zoom = 1.0;
-        let panX = 0;
-        let panY = 0;
+        // Viewport State
+        let zoom = 8.0; // 1 meter = 8 pixels at default view
+        let panX = 175;
+        let panY = 210;
         let isPanning = false;
         let panStartX = 0, panStartY = 0;
 
@@ -224,7 +227,7 @@
         let mouseScreenX = 0, mouseScreenY = 0;
         let selectedCanister = null;
 
-        // Canisters Data Array (Stored as World Meter X-Coordinates along Gallery Depth Y=215m)
+        // Canisters Data Array (KBS-3 standard 9m spacing)
         let canisters = [];
 
         // Coordinate Transformations
@@ -233,16 +236,25 @@
         function screenToWorldX(xs) { return panX + (xs - RULER_OFFSET) / zoom; }
         function screenToWorldY(ys) { return panY + (ys - RULER_OFFSET) / zoom; }
 
+        function recenterCamera() {
+            let targetX = canisters.length > 0 ? canisters[Math.floor(canisters.length / 2)].x : 198;
+            panX = targetX - (width - RULER_OFFSET) / (2 * zoom);
+            panY = 215 - (height - RULER_OFFSET) / (2 * zoom) + 10;
+        }
+
         // Zoom & Pan Functions
         function zoomIn() { applyZoom(1.25, width / 2, height / 2); }
         function zoomOut() { applyZoom(0.8, width / 2, height / 2); }
-        function resetZoom() { zoom = 1.0; panX = 0; panY = 0; }
+        function resetZoom() { 
+            zoom = 8.0; 
+            recenterCamera();
+        }
 
         function applyZoom(factor, centerScreenX, centerScreenY) {
             let prevWorldX = screenToWorldX(centerScreenX);
             let prevWorldY = screenToWorldY(centerScreenY);
             
-            zoom = Math.max(0.3, Math.min(6.0, zoom * factor));
+            zoom = Math.max(1.5, Math.min(30.0, zoom * factor));
             
             panX = prevWorldX - (centerScreenX - RULER_OFFSET) / zoom;
             panY = prevWorldY - (centerScreenY - RULER_OFFSET) / zoom;
@@ -259,24 +271,24 @@
             const instruction = document.getElementById('instructionText');
             if (mode === 'addCanister') {
                 document.getElementById('btnModeAdd').classList.add('active');
-                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Add Canister Mode:</strong> Click along the transport gallery (-450m level) to place a KBS-3 canister.</span>';
+                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Add Canister Mode:</strong> Click along the transport drift (-450m level) to place a KBS-3 canister.</span>';
             } else if (mode === 'deleteCanister') {
                 document.getElementById('btnModeDelete').classList.add('active');
                 instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Delete Canister Mode:</strong> Click any canister or deposition hole to remove it.</span>';
             }
         }
 
-        // 5-Canister Thermal Study Preset
+        // 5-Canister Thermal Study Preset (Standard KBS-3 9.0m spacing)
         function load5CanisterPreset() {
-            resetZoom();
             canisters = [
                 { id: 1, x: 180 },
-                { id: 2, x: 300 },
-                { id: 3, x: 420 },
-                { id: 4, x: 540 },
-                { id: 5, x: 660 }
+                { id: 2, x: 189 },
+                { id: 3, x: 198 },
+                { id: 4, x: 207 },
+                { id: 5, x: 216 }
             ];
             selectedCanister = null;
+            resetZoom();
         }
 
         function clearCanisters() {
@@ -296,11 +308,11 @@
             ctx.font = "9px Fira Code";
 
             let targetPxSpacing = 60;
-            let mPerPx = 1.0 / zoom; // 1px = 1m at zoom=1.0
+            let mPerPx = 1.0 / zoom;
             let rawMStep = targetPxSpacing * mPerPx;
             
-            let steps = [1, 2, 5, 10, 20, 50, 100, 200, 500];
-            let mStep = steps.find(s => s >= rawMStep) || 500;
+            let steps = [1, 2, 5, 10, 20, 50, 100, 200];
+            let mStep = steps.find(s => s >= rawMStep) || 200;
 
             // Top Ruler (X-Axis in meters)
             ctx.beginPath();
@@ -394,10 +406,10 @@
             ctx.fillText("15 °C (Ambient)", barX + 18, barY + barH - 2);
         }
 
-        // Click Hit Detection
+        // Click Hit Detection (2.5m threshold around canister center)
         function getCanisterAtScreen(xs, ys) {
             let xw = screenToWorldX(xs);
-            return canisters.find(c => Math.abs(c.x - xw) < (20 / zoom));
+            return canisters.find(c => Math.abs(c.x - xw) < 2.5);
         }
 
         // Mouse Events
@@ -444,7 +456,7 @@
             if (currentMode === 'addCanister') {
                 if (!clickedCanister) {
                     let newId = canisters.length > 0 ? Math.max(...canisters.map(c => c.id)) + 1 : 1;
-                    canisters.push({ id: newId, x: xw });
+                    canisters.push({ id: newId, x: parseFloat(xw.toFixed(1)) });
                     canisters.sort((a, b) => a.x - b.x);
                 }
             } else if (currentMode === 'deleteCanister') {
@@ -456,10 +468,7 @@
             selectedCanister = clickedCanister || null;
         });
 
-        canvas.addEventListener('mouseup', (e) => {
-            if (isPanning) { isPanning = false; }
-        });
-
+        canvas.addEventListener('mouseup', () => { isPanning = false; });
         canvas.addEventListener('contextmenu', e => e.preventDefault());
 
         window.addEventListener('keydown', (e) => {
@@ -485,31 +494,9 @@
             ctx.fillStyle = rockGrad;
             ctx.fillRect(0, 0, width, height);
 
-            // 2. Earth Surface Sky Band
-            let surfaceScreenY = worldToScreenY(45);
-            ctx.fillStyle = "#0c182b";
-            ctx.fillRect(RULER_OFFSET, 0, width - RULER_OFFSET, Math.max(0, surfaceScreenY));
-            ctx.strokeStyle = "#10b981";
-            ctx.lineWidth = 2.5;
-            ctx.beginPath();
-            ctx.moveTo(RULER_OFFSET, surfaceScreenY);
-            ctx.lineTo(width, surfaceScreenY);
-            ctx.stroke();
-
-            // Shaft Headframe
-            let headframeSx = worldToScreenX(120);
-            if (headframeSx > RULER_OFFSET && headframeSx < width) {
-                ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
-                ctx.strokeStyle = "#38bdf8";
-                ctx.lineWidth = 1.5;
-                ctx.fillRect(headframeSx, surfaceScreenY - 30, 35 * Math.min(1.5, Math.sqrt(zoom)), 30 * Math.min(1.5, Math.sqrt(zoom)));
-                ctx.strokeRect(headframeSx, surfaceScreenY - 30, 35 * Math.min(1.5, Math.sqrt(zoom)), 30 * Math.min(1.5, Math.sqrt(zoom)));
-            }
-
-            // Shaft & Transport Drift Gallery (-450m level)
+            // 2. Shaft & Transport Drift Gallery (-450m level)
             let galleryY = 215;
-            let galleryHeight = 30;
-            let shaftSx = worldToScreenX(132);
+            let galleryHeight = 4.8; // Standard 4.8m drift tunnel height
             let gallerySy = worldToScreenY(galleryY);
             let galleryH = galleryHeight * zoom;
 
@@ -517,29 +504,23 @@
             ctx.strokeStyle = "#38bdf8";
             ctx.lineWidth = 1.8;
 
-            // Access Shaft
-            if (shaftSx > RULER_OFFSET && shaftSx < width) {
-                ctx.fillRect(shaftSx, surfaceScreenY, 12 * zoom, Math.max(0, gallerySy - surfaceScreenY));
-                ctx.strokeRect(shaftSx, surfaceScreenY, 12 * zoom, Math.max(0, gallerySy - surfaceScreenY));
-            }
-
-            // Main Drift Gallery
-            ctx.fillRect(RULER_OFFSET + 40, gallerySy, width - RULER_OFFSET - 50, galleryH);
-            ctx.strokeRect(RULER_OFFSET + 40, gallerySy, width - RULER_OFFSET - 50, galleryH);
+            // Main Drift Gallery Excavation
+            ctx.fillRect(RULER_OFFSET + 10, gallerySy, width - RULER_OFFSET - 20, galleryH);
+            ctx.strokeRect(RULER_OFFSET + 10, gallerySy, width - RULER_OFFSET - 20, galleryH);
 
             // Rail Track Floor
             ctx.strokeStyle = "#f59e0b";
             ctx.lineWidth = 1.5;
             ctx.beginPath();
-            ctx.moveTo(RULER_OFFSET + 40, gallerySy + galleryH - 2);
+            ctx.moveTo(RULER_OFFSET + 10, gallerySy + galleryH - 2);
             ctx.lineTo(width - 10, gallerySy + galleryH - 2);
             ctx.stroke();
 
             // 3. Thermal Decay & Plume Radius Calculations
             let lambda = 0.003;
             let currentQ = Q0 * Math.exp(-lambda * time);
-            let peakTemp = (15 + (currentQ * 12.5) / k).toFixed(1);
-            let thermalRadiusWorld = Math.min(140, Math.sqrt(time) * 4.8 + (currentQ * 5.0) / k);
+            let peakTemp = (15 + (currentQ * 35.0) / k).toFixed(1);
+            let thermalRadiusWorld = Math.min(35, Math.sqrt(time) * 0.7 + (currentQ * 6.5) / k);
             let thermalRadiusPx = thermalRadiusWorld * zoom;
 
             // Spacing Calculations
@@ -549,15 +530,15 @@
             }
             let avgSpacing = spacings.length > 0 ? (spacings.reduce((a,b) => a+b, 0) / spacings.length).toFixed(1) : 0;
             let minSpacing = spacings.length > 0 ? Math.min(...spacings) : 999;
-            let isInterference = (minSpacing < thermalRadiusWorld * 1.8);
+            let isInterference = (minSpacing < thermalRadiusWorld * 1.5) || (parseFloat(peakTemp) > 95);
 
             // A. Render Thermal Halos in Host Granite
             canisters.forEach(c => {
                 let cx = worldToScreenX(c.x);
-                let cy = worldToScreenY(galleryY + galleryHeight + 45);
+                let cy = worldToScreenY(galleryY + galleryHeight + 4.0);
 
                 if (cx + thermalRadiusPx > RULER_OFFSET && cx - thermalRadiusPx < width) {
-                    let radialGrad = ctx.createRadialGradient(cx, cy, 4 * zoom, cx, cy, thermalRadiusPx);
+                    let radialGrad = ctx.createRadialGradient(cx, cy, 0.5 * zoom, cx, cy, thermalRadiusPx);
                     radialGrad.addColorStop(0, "rgba(245, 158, 11, 0.85)");
                     radialGrad.addColorStop(0.4, "rgba(239, 68, 68, 0.35)");
                     radialGrad.addColorStop(1, "rgba(239, 68, 68, 0)");
@@ -569,10 +550,10 @@
                 }
             });
 
-            // B. Render Deposition Holes, Bentonite Buffer, and Canisters
+            // B. Render Deposition Holes, Bentonite Buffer, and Canisters (Realistic KBS-3 Dimensions)
             let holeTopY = galleryY + galleryHeight;
-            let holeWidth = 18;
-            let holeHeight = 85;
+            let holeWidth = 1.75; // 1.75m KBS-3 deposition hole diameter
+            let holeHeight = 7.83; // 7.83m KBS-3 deposition hole depth
 
             canisters.forEach(c => {
                 let cx = worldToScreenX(c.x);
@@ -584,15 +565,15 @@
                 if (holeX + holeWSy > RULER_OFFSET && holeX < width) {
                     let isSelected = selectedCanister && selectedCanister.id === c.id;
 
-                    // Hole Outline
+                    // Deposition Hole Outline
                     ctx.fillStyle = "rgba(15, 23, 42, 0.98)";
                     ctx.strokeStyle = isSelected ? "#ef4444" : "rgba(56, 189, 248, 0.6)";
                     ctx.lineWidth = isSelected ? 2.5 : 1.5;
 
                     ctx.beginPath();
                     ctx.moveTo(holeX, holeTopSy);
-                    ctx.lineTo(holeX, holeTopSy + holeHSy - 8 * zoom);
-                    ctx.arc(cx, holeTopSy + holeHSy - 8 * zoom, holeWSy / 2, 0, Math.PI);
+                    ctx.lineTo(holeX, holeTopSy + holeHSy - 0.8 * zoom);
+                    ctx.arc(cx, holeTopSy + holeHSy - 0.8 * zoom, holeWSy / 2, 0, Math.PI);
                     ctx.lineTo(holeX + holeWSy, holeTopSy);
                     ctx.closePath();
                     ctx.fill();
@@ -600,15 +581,17 @@
 
                     // Bentonite Buffer Fill
                     ctx.fillStyle = "rgba(217, 119, 6, 0.45)";
-                    ctx.fillRect(holeX + 2 * zoom, holeTopSy + 14 * zoom, holeWSy - 4 * zoom, holeHSy - 20 * zoom);
+                    ctx.fillRect(holeX + 0.15 * zoom, holeTopSy + 1.0 * zoom, holeWSy - 0.3 * zoom, holeHSy - 1.5 * zoom);
 
-                    // Metallic Copper Canister
-                    let canisterX = cx - 5 * zoom;
-                    let canisterY = holeTopSy + 28 * zoom;
-                    let canisterW = 10 * zoom;
-                    let canisterH = 32 * zoom;
+                    // Metallic Copper Canister (1.05m x 4.83m)
+                    let canisterW = 1.05;
+                    let canisterH = 4.83;
+                    let canisterX = cx - (canisterW * zoom) / 2;
+                    let canisterY = holeTopSy + 2.0 * zoom;
+                    let canisterWSy = canisterW * zoom;
+                    let canisterHSy = canisterH * zoom;
 
-                    let copperGrad = ctx.createLinearGradient(canisterX, 0, canisterX + canisterW, 0);
+                    let copperGrad = ctx.createLinearGradient(canisterX, 0, canisterX + canisterWSy, 0);
                     copperGrad.addColorStop(0, "#fef3c7");
                     copperGrad.addColorStop(0.5, "#f59e0b");
                     copperGrad.addColorStop(1, "#b45309");
@@ -616,16 +599,47 @@
                     ctx.fillStyle = copperGrad;
                     ctx.strokeStyle = isSelected ? "#ef4444" : "#fef3c7";
                     ctx.lineWidth = 1.2;
-                    ctx.fillRect(canisterX, canisterY, canisterW, canisterH);
-                    ctx.strokeRect(canisterX, canisterY, canisterW, canisterH);
+                    ctx.fillRect(canisterX, canisterY, canisterWSy, canisterHSy);
+                    ctx.strokeRect(canisterX, canisterY, canisterWSy, canisterHSy);
+
+                    // Dimension Label for Canister Distance
+                    ctx.fillStyle = "#38bdf8";
+                    ctx.font = `${Math.max(9, Math.min(12, zoom * 1.1))}px Fira Code`;
+                    ctx.textAlign = "center";
+                    ctx.fillText(`C${c.id}`, cx, holeTopSy - 6);
                 }
             });
+
+            // C. Spacing Measurement Lines between Adjacent Canisters
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
+            ctx.lineWidth = 1;
+            ctx.font = `${Math.max(9, Math.min(11, zoom * 1.0))}px Fira Code`;
+            ctx.fillStyle = "#38bdf8";
+
+            for (let i = 0; i < canisters.length - 1; i++) {
+                let c1 = canisters[i];
+                let c2 = canisters[i+1];
+                let x1 = worldToScreenX(c1.x);
+                let x2 = worldToScreenX(c2.x);
+                let dist = (c2.x - c1.x).toFixed(1);
+                let lineY = gallerySy + galleryH / 2;
+
+                if (x2 > RULER_OFFSET && x1 < width) {
+                    ctx.beginPath();
+                    ctx.moveTo(x1, lineY);
+                    ctx.lineTo(x2, lineY);
+                    ctx.stroke();
+
+                    ctx.textAlign = "center";
+                    ctx.fillText(`${dist}m`, (x1 + x2) / 2, lineY - 6);
+                }
+            }
 
             // 4. On-Canvas Elements
             drawRulers();
             drawTemperatureLegend();
 
-            // Clean Telemetry Output (No Raw LaTeX Syntax)
+            // Telemetry Output
             document.getElementById('telemetryBox').innerHTML = `
                 <span><strong>Canister Count (<i>N</i>):</strong> ${canisters.length}</span>
                 <span><strong>Avg Spacing (<i>S</i>):</strong> ${avgSpacing} m</span>
