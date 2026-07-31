@@ -21,9 +21,9 @@
         .control-group label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-code); }
         .canvas-container { position: relative; width: 100%; height: 500px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); }
         #physicsCanvas { width: 100%; height: 100%; display: block; }
-        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; }
+        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
         .details-card { background: rgba(17,24,39,0.75); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-top: 2rem; }
-        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; }
+        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; font-size: 1.3rem; }
     </style>
 </head>
 <body>
@@ -34,20 +34,20 @@
 
     <div class="container">
         <h1>Unsaturated Matrix Infiltration Dynamics</h1>
-        <p class="subtitle">Transient rainfall seepage through compacted bentonite clay barriers and mountain soil profiles governed by Richards' equation and matrix suction head ($\psi$).</p>
+        <p class="subtitle">Transient rainfall seepage through compacted bentonite clay barriers and mountain soil profiles governed by Richards' equation and matrix suction head (ψ).</p>
 
         <div class="physics-lab">
             <div class="lab-controls">
                 <div class="control-group">
-                    <label>Hydraulic Conductivity ($K_s$ - mm/h)</label>
+                    <label>Hydraulic Conductivity (K<sub>s</sub> - mm/h)</label>
                     <input type="range" id="infKs" min="1" max="10" value="5">
                 </div>
                 <div class="control-group">
-                    <label>Matrix Suction Head ($\psi$ - kPa)</label>
+                    <label>Matrix Suction Head (ψ - kPa)</label>
                     <input type="range" id="infPsi" min="10" max="100" value="40">
                 </div>
                 <div class="control-group">
-                    <label>Rainfall Intensity ($I$)</label>
+                    <label>Rainfall Intensity (I)</label>
                     <input type="range" id="infRain" min="1" max="10" value="6">
                 </div>
             </div>
@@ -64,7 +64,15 @@
 
         <div class="details-card">
             <h2>Richards' Equation Framework</h2>
-            <p>Variably saturated flow through engineered soil caps and clay barriers is modeled using Richards' equation: $\frac{\partial \theta}{\partial t} = \nabla \cdot \left( K(\psi) \nabla (\psi + z) \right)$. Matrix suction loss and wetting front propagation are controlled by non-linear soil-water retention curves (SWRC).</p>
+            <p style="color:var(--text-muted);">
+                Variably saturated flow through engineered soil caps and clay barriers is modeled using Richards' equation:
+            </p>
+            <p style="font-family:var(--font-code); color:var(--accent-cyan); margin: 1rem 0;">
+                ∂θ / ∂t = ∇ · [ K(ψ) ∇(ψ + z) ]
+            </p>
+            <p style="color:var(--text-muted);">
+                Matrix suction loss and wetting front propagation are controlled by non-linear soil-water retention curves (SWRC). As moisture infiltrates, suction head decreases, driving effective permeability toward saturated hydraulic conductivity (<i>K</i><sub>s</sub>).
+            </p>
         </div>
     </div>
 
@@ -86,8 +94,8 @@
 
             document.getElementById('telemetryBox').innerHTML = `
                 <span><strong>Regime:</strong> Unsaturated Matrix Infiltration</span>
-                <span><strong>Hydraulic Conductivity ($K_s$):</strong> ${Ks} mm/h</span>
-                <span><strong>Suction Head ($\psi$):</strong> ${psi} kPa</span>
+                <span><strong>Hydraulic Conductivity (<i>K</i><sub>s</sub>):</strong> ${Ks} mm/h</span>
+                <span><strong>Suction Head (ψ):</strong> ${psi} kPa</span>
             `;
 
             let wetDepth = (frameCount * (Ks * 0.08) + (psi * 0.5)) % (height - 60);
