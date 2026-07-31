@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article | Dr. Kunwar Mrityunjai Sharma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --bg-dark: #090d16; 
+            --bg-card: rgba(17, 24, 39, 0.75); 
+            --accent-cyan: #38bdf8; 
+            --text-main: #f3f4f6; 
+            --text-muted: #9ca3af; 
+            --border-subtle: rgba(255,255,255,0.08); 
+            --font-code: 'Fira Code', monospace; 
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.8; }
+        
+        nav { padding: 1rem 6%; background: rgba(9,13,22,0.9); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+        
+        .container { max-width: 800px; margin: 3rem auto; padding: 0 6%; }
+        
+        .post-header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .post-meta { font-family: var(--font-code); font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.8rem; }
+        .post-title { font-size: 2.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 1rem; }
+        
+        .post-content { font-size: 1.05rem; color: #e5e7eb; }
+        .post-content h1, .post-content h2, .post-content h3 { color: var(--text-main); margin: 2rem 0 1rem 0; font-weight: 700; }
+        .post-content h1 { font-size: 1.75rem; }
+        .post-content h2 { font-size: 1.4rem; }
+        .post-content h3 { font-size: 1.2rem; }
+        .post-content p { margin-bottom: 1.4rem; }
+        .post-content ul, .post-content ol { margin: 0 0 1.4rem 1.5rem; }
+        .post-content li { margin-bottom: 0.4rem; }
+        
+        .post-content blockquote { 
+            border-left: 3px solid var(--accent-cyan); 
+            padding: 0.8rem 1.2rem; 
+            margin: 1.5rem 0; 
+            background: rgba(56, 189, 248, 0.05); 
+            border-radius: 0 8px 8px 0;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .post-content pre { 
+            background: #0d1117; 
+            border: 1px solid var(--border-subtle); 
+            border-radius: 8px; 
+            padding: 1.2rem; 
+            overflow-x: auto; 
+            font-family: var(--font-code); 
+            font-size: 0.9rem; 
+            margin: 1.5rem 0; 
+            color: #38bdf8;
+        }
+
+        .post-content code { 
+            font-family: var(--font-code); 
+            background: rgba(255,255,255,0.08); 
+            padding: 0.2rem 0.4rem; 
+            border-radius: 4px; 
+            font-size: 0.9em; 
+        }
+
+        .status-message {
+            color: var(--text-muted);
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            padding: 3rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div><a href="blog.html"><i class="fa-solid fa-arrow-left"></i> Back to Blog</a></div>
+        <div style="color:var(--text-main); font-weight:700;">Research Insights</div>
+    </nav>
+
+    <div class="container">
+        <div id="postContainer">
+            <div class="status-message">
+                <i class="fa-solid fa-spinner fa-spin"></i> Loading article content...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const WORKER_URL = "https://notion-blog-proxy.sharmamrityunjai.workers.dev";
+
+        // Helper to format Notion rich text array into HTML with formatting
+        function renderRichText(richTextArray) {
+            if (!richTextArray || richTextArray.length === 0) return '';
+            return richTextArray.map(item => {
+                let text = item.plain_text || '';
+                if (item.annotations?.bold) text = `<strong>${text}</strong>`;
+                if (item.annotations?.italic) text = `<em>${text}</em>`;
+                if (item.annotations?.code) text = `<code>${text}</code>`;
+                if (item.annotations?.strikethrough) text = `<del>${text}</del>`;
+                if (item.href) text = `<a href="${item.href}" target="_blank" style="color: var(--accent-cyan);">${text}</a>`;
+                return text;
+            }).join('');
+        }
+
+        // Convert Notion block structures into HTML elements
+        function renderBlock(block) {
+            const type = block.type;
+            const value = block[type];
+
+            switch (type) {
+                case 'paragraph':
+                    return `<p>${renderRichText(value.rich_text)}</p>`;
+                case 'heading_1':
+                    return `<h1>${renderRichText(value.rich_text)}</h1>`;
+                case 'heading_2':
+                    return `<h2>${renderRichText(value.rich_text)}</h2>`;
+                case 'heading_3':
+                    return `<h3>${renderRichText(value.rich_text)}</h3>`;
+                case 'bulleted_list_item':
+                    return `<ul><li>${renderRichText(value.rich_text)}</li></ul>`;
+                case 'numbered_list_item':
+                    return `<ol><li>${renderRichText(value.rich_text)}</li></ol>`;
+                case 'quote':
+                    return `<blockquote>${renderRichText(value.rich_text)}</blockquote>`;
+                case 'code':
+                    return `<pre><code>${renderRichText(value.rich_text)}</code></pre>`;
+                case 'divider':
+                    return `<hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 2rem 0;">`;
+                default:
+                    return '';
+            }
+        }
+
+        async function loadArticle() {
+            const container = document.getElementById('postContainer');
+            const urlParams = new URLSearchParams(window.location.search);
+            const pageId = urlParams.get('id');
+
+            if (!pageId) {
+                container.innerHTML = `
+                    <div class="status-message" style="color: #ef4444;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> No article ID provided in URL.
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                // Fetch page details and content blocks from worker endpoint
+                const response = await fetch(`${WORKER_URL}?id=${pageId}`);
+                const data = await response.json();
+
+                if (data.error || !data) {
+                    throw new Error(data.message || "Article not found");
+                }
+
+                // If worker returns blocks array directly or wrapped in results
+                const blocks = data.results || data.blocks || [];
+                const pageProps = data.properties || {};
+
+                // Extract metadata
+                const title = pageProps.Name?.title[0]?.plain_text || pageProps.Title?.title[0]?.plain_text || "Untitled Article";
+                const dateRaw = pageProps.Date?.date?.start || "";
+                let formattedDate = "";
+                if (dateRaw) {
+                    formattedDate = new Date(dateRaw).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                }
+
+                // Update tab title
+                document.title = `${title} | Dr. Kunwar Mrityunjai Sharma`;
+
+                // Render article HTML
+                const contentHtml = blocks.map(renderBlock).join('');
+
+                container.innerHTML = `
+                    <header class="post-header">
+                        ${formattedDate ? `<div class="post-meta">${formattedDate}</div>` : ''}
+                        <h1 class="post-title">${title}</h1>
+                    </header>
+                    <article class="post-content">
+                        ${contentHtml || '<p>No content found in this article body.</p>'}
+                    </article>
+                `;
+
+            } catch (err) {
+                console.error("Error loading article:", err);
+                container.innerHTML = `
+                    <div class="status-message" style="color: #ef4444;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Unable to load article content.
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadArticle);
+    </script>
+</body>
+</html>
