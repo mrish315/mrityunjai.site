@@ -71,9 +71,10 @@
         .timeline-bullets li { position: relative; padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.4rem; }
         .timeline-bullets li::before { content: '•'; position: absolute; left: 0; color: var(--accent-cyan); }
 
-        .pub-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.4rem; margin-bottom: 1rem; }
+        .pub-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.4rem; margin-bottom: 1rem; transition: border-color 0.2s; }
+        .pub-card:hover { border-color: var(--accent-cyan); }
         .pub-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; }
-        .pub-authors { font-size: 0.88rem; color: var(--text-muted); }
+        .pub-authors { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.2rem; }
         .pub-journal { font-style: italic; color: var(--accent-blue); font-size: 0.88rem; margin-bottom: 0.8rem; }
         .doi-link { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); text-decoration: none; background: rgba(56, 189, 248, 0.08); padding: 0.35rem 0.75rem; border-radius: 5px; border: 1px solid rgba(56, 189, 248, 0.2); }
         .doi-link:hover { background: var(--accent-cyan); color: #090d16; font-weight: 600; }
@@ -115,7 +116,7 @@
                 <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>200+</h4><p>Citations</p></a></div>
                 <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>8</h4><p>h-index</p></a></div>
                 <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>7</h4><p>i10-index</p></a></div>
-                <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>15+</h4><p>Publications</p></a></div>
+                <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>16</h4><p>Publications</p></a></div>
             </div>
         </div>
     </header>
@@ -171,20 +172,116 @@
         </div>
     </section>
 
+    <!-- Scientific Publications (All 16 Papers Included) -->
     <section id="publications">
-        <div class="section-tag">Peer-Reviewed Research</div>
+        <div class="section-tag">Peer-Reviewed Research & Proceedings</div>
         <h2 class="section-title">Scientific Publications</h2>
+
         <div class="pub-card">
-            <div class="pub-title">Characteristics of flow and transport in low-permeability fractured rock based on a channel network model</div>
+            <div class="pub-title">1. Impact of Rainfall Patterns on a Near-Surface Radioactive Waste Disposal Facility: Climate Change and Long-Term Perspectives</div>
+            <div class="pub-authors">Park, J.B., Sharma, K.M. (2025)</div>
+            <div class="pub-journal">Journal of Nuclear Fuel Cycle and Waste Technology, 23(2), 239-264.</div>
+            <a href="https://doi.org/10.7733/jnfcwt.2025.016" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.7733/jnfcwt.2025.016</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">2. Characteristics of flow and transport in low-permeability fractured rock based on a channel network model</div>
             <div class="pub-authors">Sharma, K.M., Tsang, C.-F., Geier, J., Pensado, O., Stothoff, S., Niemi, A. (2025)</div>
             <div class="pub-journal">Advances in Water Resources, 202, 105016.</div>
             <a href="https://doi.org/10.1016/j.advwatres.2025.105016" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1016/j.advwatres.2025.105016</a>
         </div>
+
         <div class="pub-card">
-            <div class="pub-title">Channel network modeling of flow and transport in fractured rock at the Äspö HRL: Data-worth analysis</div>
+            <div class="pub-title">3. Channel Network Model of Flow and Transport in Low-Permeability Fractured Rock and its Characteristics</div>
+            <div class="pub-authors">Sharma, K.M., Tsang, C.F., Geier, J., Pensado, O., Stothoff, S., Niemi, A. (2023)</div>
+            <div class="pub-journal">SSRN Electronic Journal, 5012672.</div>
+            <a href="https://doi.org/10.2139/ssrn.5012672" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.2139/ssrn.5012672</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">4. Channel network modeling of flow and transport in fractured rock at the Äspö HRL: Data-worth analysis for model development, calibration and prediction</div>
             <div class="pub-authors">Dessirier, B., Sharma, K.M., Pedersen, J., Tsang, C.F., Niemi, A. (2023)</div>
             <div class="pub-journal">Water Resources Research, 59(5), e2022WR033816.</div>
             <a href="https://doi.org/10.1029/2022WR033816" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1029/2022WR033816</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">5. Apparent flow-dimension approach to the study of heterogeneous fracture network systems</div>
+            <div class="pub-authors">Sharma, K.M., Dessirier, B., Tsang, C.F., Niemi, A. (2023)</div>
+            <div class="pub-journal">Hydrogeology Journal, 31(4), 873-891.</div>
+            <a href="https://doi.org/10.1007/s10040-023-02796-3" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s10040-023-02796-3</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">6. An investigation into flow and transport in a complex fracture network in deep crystalline rock based on a channel network model</div>
+            <div class="pub-authors">Sharma, K.M., Geier, J., Dessirier, B., Stothoff, S., Pensado, O., Tsang, C.F. (2022)</div>
+            <div class="pub-journal">The XXIV International Conference on Computational Methods in Water Resources (CMWR 2022), Gdańsk, Poland.</div>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">7. Calibration of a channel network model against Äspö field data and its application to long term prediction of tracer transport</div>
+            <div class="pub-authors">Dessirier, B., Sharma, K.M., Tsang, C.F., Niemi, A. (2022)</div>
+            <div class="pub-journal">European Geosciences Union (EGU) General Assembly 2022, Vienna, Austria.</div>
+            <a href="https://doi.org/10.5194/egusphere-egu22-9706" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.5194/egusphere-egu22-9706</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">8. Simplified Computations of Radionuclide Transport in Complex Fracture Networks in Deep Crystalline Rock</div>
+            <div class="pub-authors">Pensado, O., Stothoff, S., Sharma, K.M., Geier, J., Niemi, A., Tsang, C.F. (2022)</div>
+            <div class="pub-journal">Proceedings of the 2022 International High-Level Radioactive Waste Conference.</div>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">9. Use of apparent flow dimension in transient pressure analysis to evaluate non-uniform flow in heterogeneous porous media</div>
+            <div class="pub-authors">Sharma, K.M., Dessirier, B., Tsang, C.F., Niemi, A. (2022)</div>
+            <div class="pub-journal">EGU General Assembly Conference Abstracts, EGU22-9617.</div>
+            <a href="https://doi.org/10.5194/egusphere-egu22-9617" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.5194/egusphere-egu22-9617</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">10. Three-dimensional simulation of fluid flow through a discrete fracture and matrix</div>
+            <div class="pub-authors">Sharma, K.M., Sharma, L.K., Ansari, M.T.A., Singh, T.N. (2021)</div>
+            <div class="pub-journal">Geolinks Conference Proceedings.</div>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">11. Empirical Slope Stability Assessment Along the Road Corridor NH-7, in the Lesser Himalayan</div>
+            <div class="pub-authors">Ansari, T.A., Sharma, K.M., Singh, T.N. (2019)</div>
+            <div class="pub-journal">Geotechnical and Geological Engineering, 37, 5391-5407.</div>
+            <a href="https://doi.org/10.1007/s10706-019-00988-w" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s10706-019-00988-w</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">12. Micro-pores and fluid flow - a numerical study</div>
+            <div class="pub-authors">Sharma, K.M., Sirdesai, N.N., Tripathy, A., Singh, T.N. (2018)</div>
+            <div class="pub-journal">ARMA US Rock Mechanics/Geomechanics Symposium, ARMA-2018-933.</div>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">13. Experimental study to examine the independent roles of lime and cement on the stabilization of a mountain soil: A comparative study</div>
+            <div class="pub-authors">Sharma, L.K., Sirdesai, N.N., Sharma, K.M., Singh, T.N. (2018)</div>
+            <div class="pub-journal">Applied Clay Science, 152, 183-195.</div>
+            <a href="https://doi.org/10.1016/j.clay.2017.11.012" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1016/j.clay.2017.11.012</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">14. Physical and Numerical Model to Investigate Shallow Tunnel Instabilities in Loose Soil</div>
+            <div class="pub-authors">Das, R., Sharma, K.M. (2018)</div>
+            <div class="pub-journal">International Conference on Geomechanics, Geo-energy and Geo-resources (IC3G-2018), Chengdu, China.</div>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">15. Parametric study of factors affecting fluid flow through a fracture</div>
+            <div class="pub-authors">Sharma, K.M., Roy, D.G., Singh, P.K., Singh, T.N. (2017)</div>
+            <div class="pub-journal">Arabian Journal of Geosciences, 10, 362.</div>
+            <a href="https://doi.org/10.1007/s12517-017-3142-6" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s12517-017-3142-6</a>
+        </div>
+
+        <div class="pub-card">
+            <div class="pub-title">16. Evaluating the modulus of elasticity of soil using soft computing system</div>
+            <div class="pub-authors">Sharma, L.K., Singh, R., Umrao, R.K., Sharma, K.M., Singh, T.N. (2017)</div>
+            <div class="pub-journal">Engineering with Computers, 33(3), 497-507.</div>
+            <a href="https://doi.org/10.1007/s00366-016-0486-6" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s00366-016-0486-6</a>
         </div>
     </section>
 
