@@ -86,8 +86,9 @@
                     const props = page.properties;
                     const pageId = page.id;
 
-                    // Title extraction
-                    const title = props.Title?.title[0]?.plain_text || "Untitled Article";
+                    // Automatically detect whichever column is the main Title property in Notion
+                    const titleProperty = Object.values(props).find(prop => prop.type === 'title');
+                    const title = titleProperty?.title[0]?.plain_text || "Untitled Article";
 
                     // Date parsing & formatting
                     const dateRaw = props.Date?.date?.start || "";
@@ -97,7 +98,7 @@
                         formattedDate = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
                     }
 
-                    // Type / Category tag
+                    // Category tag fallback
                     const category = props.Type?.select?.name || props.Category?.select?.name || "Subsurface Modeling";
 
                     // Excerpt / Summary
