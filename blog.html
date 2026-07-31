@@ -7,21 +7,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-dark: #090d16; --bg-card: rgba(17, 24, 39, 0.75); --accent-cyan: #38bdf8; --text-main: #f3f4f6; --text-muted: #9ca3af; --border-subtle: rgba(255,255,255,0.08); --font-code: 'Fira Code', monospace; }
+        :root { 
+            --bg-dark: #090d16; 
+            --bg-card: rgba(17, 24, 39, 0.75); 
+            --accent-cyan: #38bdf8; 
+            --text-main: #f3f4f6; 
+            --text-muted: #9ca3af; 
+            --border-subtle: rgba(255,255,255,0.08); 
+            --font-code: 'Fira Code', monospace; 
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.6; }
+        
         nav { padding: 1rem 6%; background: rgba(9,13,22,0.9); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
         nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+        
         .container { max-width: 1000px; margin: 3rem auto; padding: 0 6%; }
         h1 { font-size: 2.5rem; margin-bottom: 0.5rem; }
         p.subtitle { color: var(--text-muted); margin-bottom: 3rem; }
         
-        .blog-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; transition: border-color 0.2s; }
-        .blog-card:hover { border-color: var(--accent-cyan); }
+        .blog-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; transition: border-color 0.2s, transform 0.2s; }
+        .blog-card:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
         .blog-meta { font-family: var(--font-code); font-size: 0.8rem; color: var(--accent-cyan); margin-bottom: 0.5rem; }
         .blog-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.8rem; }
         .blog-excerpt { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.2rem; }
-        .read-more { color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        .read-more { color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+        .read-more:hover { text-decoration: underline; }
+
+        .status-message {
+            color: var(--text-muted);
+            font-family: var(--font-code);
+            font-size: 0.9rem;
+            padding: 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
@@ -34,35 +55,75 @@
         <h1>Research Insights & Technical Notes</h1>
         <p class="subtitle">Articles on computational hydrogeology, Channel Network Modeling, unsaturated soil mechanics, and radioactive waste safety assessments.</p>
 
-        <!-- Article 1 -->
-        <article class="blog-card">
-            <div class="blog-meta">October 2025 • Subsurface Modeling</div>
-            <h2 class="blog-title">Pioneering Channel Network Modeling with pychan3d</h2>
-            <p class="blog-excerpt">
-                Evaluating solute breakthrough times in crystalline rock requires bridging site-scale Discrete Fracture Networks (DFN) with computationally efficient Channel Network Models (CNM). Here is how `pychan3d` converts dense fracture intersection topologies into high-performance calculation matrices.
-            </p>
-            <a href="#" class="read-more">Read Full Article <i class="fa-solid fa-arrow-right"></i></a>
-        </article>
-
-        <!-- Article 2 -->
-        <article class="blog-card">
-            <div class="blog-meta">June 2025 • Multiphysics & Risk</div>
-            <h2 class="blog-title">Coupling COMSOL Finite-Element Fields with GoldSim Probabilistic Pipelines</h2>
-            <p class="blog-excerpt">
-                Bridging detailed transient unsaturated seepage (Richards' equation) in engineered clay barriers with thousand-year system-level safety assessment models. A guide to automated Python data assimilation pipelines.
-            </p>
-            <a href="#" class="read-more">Read Full Article <i class="fa-solid fa-arrow-right"></i></a>
-        </article>
-
-        <!-- Article 3 -->
-        <article class="blog-card">
-            <div class="blog-meta">January 2025 • Deep Geological Repositories</div>
-            <h2 class="blog-title">Thermal Interference and Spacing Optimization in KBS-3 Repositories</h2>
-            <p class="blog-excerpt">
-                How decay heat output $Q(t)$ dictates deposition tunnel geometry, bentonite clay buffer stability, and safe canister pitch in crystalline host granite rock.
-            </p>
-            <a href="#" class="read-more">Read Full Article <i class="fa-solid fa-arrow-right"></i></a>
-        </article>
+        <!-- Dynamic Container for Notion Articles -->
+        <div id="blogContainer">
+            <div class="status-message">
+                <i class="fa-solid fa-spinner fa-spin"></i> Fetching latest articles from Notion...
+            </div>
+        </div>
     </div>
+
+    <script>
+        const WORKER_URL = "https://notion-blog-proxy.sharmamrityunjai.workers.dev";
+
+        async function fetchNotionBlogPosts() {
+            const container = document.getElementById('blogContainer');
+
+            try {
+                const response = await fetch(WORKER_URL);
+                const data = await response.json();
+
+                if (!data.results || data.results.length === 0) {
+                    container.innerHTML = `
+                        <div class="status-message">
+                            <i class="fa-solid fa-circle-info"></i> No published articles found in database.
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = data.results.map(page => {
+                    const props = page.properties;
+                    const pageId = page.id;
+
+                    // Title extraction
+                    const title = props.Title?.title[0]?.plain_text || "Untitled Article";
+
+                    // Date parsing & formatting
+                    const dateRaw = props.Date?.date?.start || "";
+                    let formattedDate = "";
+                    if (dateRaw) {
+                        const dateObj = new Date(dateRaw);
+                        formattedDate = dateObj.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+                    }
+
+                    // Type / Category tag
+                    const category = props.Type?.select?.name || props.Category?.select?.name || "Subsurface Modeling";
+
+                    // Excerpt / Summary
+                    const summary = props.Summary?.rich_text[0]?.plain_text || "No summary provided.";
+
+                    return `
+                        <article class="blog-card">
+                            <div class="blog-meta">${formattedDate ? formattedDate + ' • ' : ''}${category}</div>
+                            <h2 class="blog-title">${title}</h2>
+                            <p class="blog-excerpt">${summary}</p>
+                            <a href="post.html?id=${pageId}" class="read-more">Read Full Article <i class="fa-solid fa-arrow-right"></i></a>
+                        </article>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error("Error fetching posts from Notion Worker:", err);
+                container.innerHTML = `
+                    <div class="status-message" style="color: #ef4444;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Unable to load blog posts at this time.
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", fetchNotionBlogPosts);
+    </script>
 </body>
 </html>
