@@ -33,7 +33,7 @@
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Navigation */
+        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -136,7 +136,7 @@
         .card h3 i { color: var(--accent-cyan); }
         .card p { color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; }
 
-        /* Simulation Controls & Expanded Canvas */
+        /* Simulation Sandbox & Controls */
         .physics-lab {
             background: rgba(13, 19, 33, 0.95);
             border: 1px solid var(--border-subtle);
@@ -177,7 +177,7 @@
         .control-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); font-family: var(--font-code); }
         .control-group input[type="range"] { accent-color: var(--accent-cyan); }
         
-        /* Larger 500px Canvas + Native Fullscreen Styling */
+        /* Expanded 500px Canvas Container */
         .canvas-container { 
             position: relative; 
             width: 100%; 
@@ -361,7 +361,7 @@
         </div>
     </header>
 
-    <!-- Interactive Simulation Models -->
+    <!-- Interactive Simulation Sandbox -->
     <section id="physics">
         <div class="section-header">
             <div class="section-tag">Computational Sandbox</div>
@@ -374,7 +374,7 @@
                     <select id="simRegime" onchange="switchRegime()">
                         <option value="cnm">1. 2D Channel Network Model (pychan3d FDM Solver & 50 Particle Tracking)</option>
                         <option value="infiltration">2. Unsaturated Matrix Infiltration Dynamics</option>
-                        <option value="heat">3. Nuclear Fuel Canister & DGR Subsurface Layout (12 Canisters)</option>
+                        <option value="heat">3. Nuclear Fuel Canister & DGR Subsurface Layout (Strictly 8 Canisters)</option>
                     </select>
                 </div>
                 <button class="btn btn-outline" onclick="toggleFullscreen()"><i class="fa-solid fa-expand"></i> Fullscreen View</button>
@@ -389,7 +389,7 @@
             </div>
         </div>
 
-        <!-- Required Disclaimer Note Below Engine -->
+        <!-- Required Disclaimer Note -->
         <p class="disclaimer-note">
             <i class="fa-solid fa-circle-info"></i> Note: This simulation module is intended strictly for conceptual visualization and interactive representation purposes; it does not represent quantitative site-specific performance assessment accuracy.
         </p>
@@ -596,7 +596,7 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Native Fullscreen Toggle Functionality
+        // Native Fullscreen Toggle
         function toggleFullscreen() {
             const container = document.getElementById('canvasContainer');
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -811,7 +811,7 @@
                 controls.innerHTML = `
                     <div class="control-group">
                         <label>Canister & Drift Spacing ($S$ - meters)</label>
-                        <input type="range" id="heatSpacing" min="12" max="50" value="28">
+                        <input type="range" id="heatSpacing" min="15" max="60" value="35">
                     </div>
                     <div class="control-group">
                         <label>Host Rock Thermal Cond ($k$)</label>
@@ -983,139 +983,225 @@
                 }
 
             } else if (regime === 'heat') {
-                let spacing = parseFloat(document.getElementById('heatSpacing') ? document.getElementById('heatSpacing').value : 28);
+                let spacing = parseFloat(document.getElementById('heatSpacing') ? document.getElementById('heatSpacing').value : 35);
                 let k = parseFloat(document.getElementById('heatK') ? document.getElementById('heatK').value : 5);
                 let Q0 = parseFloat(document.getElementById('heatQ') ? document.getElementById('heatQ').value : 7);
                 let time = parseFloat(document.getElementById('heatTime') ? document.getElementById('heatTime').value : 100);
 
-                // --- 1. EARTH SURFACE & ACCESS SHAFT LAYOUT ---
-                ctx.fillStyle = "#0b1220";
-                ctx.fillRect(0, 0, width, 50);
+                // --- 1. HOST GRANITE ROCK MATRIX BACKGROUND ---
+                let rockGrad = ctx.createLinearGradient(0, 0, 0, height);
+                rockGrad.addColorStop(0, "#0c1527");
+                rockGrad.addColorStop(0.2, "#070d18");
+                rockGrad.addColorStop(1, "#03060d");
+                ctx.fillStyle = rockGrad;
+                ctx.fillRect(0, 0, width, height);
 
-                ctx.strokeStyle = "#10b981";
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(0, 50); ctx.lineTo(width, 50);
-                ctx.stroke();
+                // Subtle Fracture Lines in Granite Bedrock
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.04)";
+                ctx.lineWidth = 1;
+                for (let f = 0; f < 8; f++) {
+                    ctx.beginPath();
+                    ctx.moveTo(120 + f * 90, 60);
+                    ctx.lineTo(160 + f * 90, height - 40);
+                    ctx.stroke();
+                }
 
-                ctx.fillStyle = "#9ca3af";
-                ctx.font = "10px Fira Code";
-                ctx.fillText("Earth Surface (0 m Ground Level)", 15, 42);
-
-                // Surface Facility Building
-                ctx.fillStyle = "rgba(56, 189, 248, 0.2)";
-                ctx.strokeStyle = "rgba(56, 189, 248, 0.8)";
+                // --- 2. ISOLATED LEFT MARGIN: DEPTH AXIS (NO OVERLAPS) ---
+                let axisX = 85;
+                ctx.strokeStyle = "rgba(148, 163, 184, 0.3)";
                 ctx.lineWidth = 1.5;
-                ctx.fillRect(60, 18, 30, 32);
-                ctx.strokeRect(60, 18, 30, 32);
-
-                // --- 2. DEEP SUBSURFACE GEOLOGY (-500 m Depth) ---
-                ctx.fillStyle = "#050811";
-                ctx.fillRect(0, 51, width, height - 51);
-
-                // Vertical Depth Annotations
-                ctx.fillStyle = "rgba(156, 163, 175, 0.4)";
-                ctx.fillText("-200 m Host Granite Rock", 15, 130);
-                ctx.fillText("-450 m DGR Deposition Level", 15, 230);
-
-                ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-                ctx.setLineDash([3, 3]);
                 ctx.beginPath();
-                ctx.moveTo(10, 230); ctx.lineTo(width - 10, 230);
+                ctx.moveTo(axisX, 40); ctx.lineTo(axisX, height - 50);
                 ctx.stroke();
-                ctx.setLineDash([]);
 
-                // Main Access Shaft (-450 m depth)
-                ctx.fillStyle = "rgba(30, 41, 59, 0.9)";
-                ctx.strokeStyle = "rgba(148, 163, 184, 0.5)";
-                ctx.fillRect(70, 50, 12, 180);
-                ctx.strokeRect(70, 50, 12, 180);
+                // Depth Ticks & Text Labels
+                ctx.fillStyle = "#94a3b8";
+                ctx.font = "10px Fira Code";
+                
+                // Tick 0 m
+                ctx.beginPath(); ctx.moveTo(axisX - 5, 45); ctx.lineTo(axisX + 5, 45); ctx.stroke();
+                ctx.fillText("0 m (Surface)", 10, 48);
 
-                // Main Gallery Access Transport Tunnel
-                ctx.fillRect(70, 220, width - 90, 20);
-                ctx.strokeRect(70, 220, width - 90, 20);
+                // Tick -250 m
+                ctx.beginPath(); ctx.moveTo(axisX - 5, 140); ctx.lineTo(axisX + 5, 140); ctx.stroke();
+                ctx.fillText("-250 m (Granite)", 10, 143);
 
-                // --- 3. EXACT 12 DGR CANISTERS & DEPOSITION TUNNELS (KBS-3 Style) ---
+                // Tick -450 m
+                ctx.beginPath(); ctx.moveTo(axisX - 5, 230); ctx.lineTo(axisX + 5, 230); ctx.stroke();
+                ctx.fillStyle = "#38bdf8";
+                ctx.fillText("-450 m (DGR)", 10, 233);
+
+                // --- 3. EARTH SURFACE & HOIST HEADFRAME STRUCTURE ---
+                // Sky Band (Y: 0 to 45)
+                ctx.fillStyle = "#0c182b";
+                ctx.fillRect(110, 0, width - 110, 45);
+                ctx.strokeStyle = "#10b981";
+                ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(110, 45); ctx.lineTo(width, 45); ctx.stroke();
+
+                // Surface Industrial Facility / Shaft Headframe
+                let headframeX = 135;
+                ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
+                ctx.strokeStyle = "#38bdf8";
+                ctx.lineWidth = 1.5;
+                ctx.fillRect(headframeX, 15, 35, 30);
+                ctx.strokeRect(headframeX, 15, 35, 30);
+                // Pulley wheel atop headframe
+                ctx.beginPath(); ctx.arc(headframeX + 17.5, 15, 6, 0, Math.PI * 2); ctx.stroke();
+
+                // Vertical Access Shaft (-450 m depth)
+                let shaftX = headframeX + 12;
+                ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
+                ctx.strokeStyle = "rgba(148, 163, 184, 0.6)";
+                ctx.fillRect(shaftX, 45, 12, 185);
+                ctx.strokeRect(shaftX, 45, 12, 185);
+
+                // Cage Wires
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.3)";
+                ctx.beginPath(); ctx.moveTo(shaftX + 6, 15); ctx.lineTo(shaftX + 6, 230); ctx.stroke();
+
+                // --- 4. VAULTED DRIFT GALLERY & TRACK (-450 m) ---
+                let galleryY = 215;
+                let galleryHeight = 30;
+                let galleryStartX = shaftX + 12;
+                let galleryEndX = width - 30;
+
+                // Main Gallery Chamber (Vaulted Concrete Tunnel Profile)
+                ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
+                ctx.strokeStyle = "#38bdf8";
+                ctx.lineWidth = 1.8;
+
+                // Vaulted Ceilings
+                ctx.fillRect(galleryStartX, galleryY, galleryEndX - galleryStartX, galleryHeight);
+                ctx.strokeRect(galleryStartX, galleryY, galleryEndX - galleryStartX, galleryHeight);
+
+                // Rail Track along Floor
+                ctx.strokeStyle = "#f59e0b";
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(galleryStartX, galleryY + galleryHeight - 2);
+                ctx.lineTo(galleryEndX, galleryY + galleryHeight - 2);
+                ctx.stroke();
+
+                // --- 5. STRICTLY 8 CANISTERS & DEPOSITION HOLES (KBS-3 DESIGN) ---
                 let lambda = 0.003;
                 let currentQ = Q0 * Math.exp(-lambda * time);
                 let peakTemp = (15 + currentQ * 12.5).toFixed(1);
-                let thermalRadius = Math.min(135, Math.sqrt(time) * 5.0 + (currentQ * 5.2) / k);
+                let thermalRadius = Math.min(135, Math.sqrt(time) * 4.8 + (currentQ * 5.0) / k);
 
-                let numCanisters = 12; // Exactly 12 Canisters
-                let canisterPixelSpacing = spacing * 2.8;
-                let startX = 110;
-                let tunnelY = 240;
-                let tunnelWidth = 14;
-                let tunnelHeight = 65;
+                let numCanisters = 8; // STRICTLY 8 CANISTERS
+                let canisterPixelSpacing = spacing * 4.2;
+                let startCanisterX = galleryStartX + 45;
+                let holeTopY = galleryY + galleryHeight;
+                let holeWidth = 18;
+                let holeHeight = 85;
 
                 let isInterference = (thermalRadius * 2 > canisterPixelSpacing);
 
-                // A. Render Thermal Plumes across all 12 Canisters
+                // A. Render Thermal Plumes in Host Rock (behind deposition holes)
                 for (let c = 0; c < numCanisters; c++) {
-                    let cx = startX + c * canisterPixelSpacing;
-                    let canisterY = tunnelY + 36;
+                    let cx = startCanisterX + c * canisterPixelSpacing;
+                    let canisterCenterY = holeTopY + 45;
 
                     if (cx + thermalRadius > 0 && cx - thermalRadius < width) {
-                        let radialGrad = ctx.createRadialGradient(cx, canisterY, 3, cx, canisterY, thermalRadius);
+                        let radialGrad = ctx.createRadialGradient(cx, canisterCenterY, 4, cx, canisterCenterY, thermalRadius);
                         radialGrad.addColorStop(0, "rgba(245, 158, 11, 0.85)");
                         radialGrad.addColorStop(0.4, "rgba(239, 68, 68, 0.35)");
                         radialGrad.addColorStop(1, "rgba(239, 68, 68, 0)");
 
                         ctx.fillStyle = radialGrad;
                         ctx.beginPath();
-                        ctx.arc(cx, canisterY, thermalRadius, 0, Math.PI * 2);
+                        ctx.arc(cx, canisterCenterY, thermalRadius, 0, Math.PI * 2);
                         ctx.fill();
                     }
                 }
 
-                // B. Render Tunnels, Bentonite Buffer & Canisters (12 Units)
+                // B. Render Deposition Holes, Bentonite Buffer & Metallic Canisters (8 Units)
                 for (let c = 0; c < numCanisters; c++) {
-                    let cx = startX + c * canisterPixelSpacing;
-                    let tunnelX = cx - tunnelWidth / 2;
+                    let cx = startCanisterX + c * canisterPixelSpacing;
+                    let holeX = cx - holeWidth / 2;
 
-                    if (tunnelX > 50 && tunnelX < width - 20) {
-                        // Vertical Deposition Tunnel
-                        ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
-                        ctx.strokeStyle = "rgba(56, 189, 248, 0.5)";
-                        ctx.lineWidth = 1.2;
-                        ctx.fillRect(tunnelX, tunnelY, tunnelWidth, tunnelHeight);
-                        ctx.strokeRect(tunnelX, tunnelY, tunnelWidth, tunnelHeight);
+                    if (holeX > 110 && holeX < width - 20) {
+                        // Vertical Deposition Hole (Arched/Rounded Base)
+                        ctx.fillStyle = "rgba(15, 23, 42, 0.98)";
+                        ctx.strokeStyle = "rgba(56, 189, 248, 0.6)";
+                        ctx.lineWidth = 1.5;
 
-                        // Compacted Bentonite Clay Buffer Envelope
-                        let bufferX = tunnelX + 2;
-                        let bufferY = tunnelY + 12;
-                        let bufferW = tunnelWidth - 4;
-                        let bufferH = tunnelHeight - 16;
-                        ctx.fillStyle = "rgba(217, 119, 6, 0.4)";
+                        ctx.beginPath();
+                        ctx.moveTo(holeX, holeTopY);
+                        ctx.lineTo(holeX, holeTopY + holeHeight - 8);
+                        ctx.arc(cx, holeTopY + holeHeight - 8, holeWidth / 2, 0, Math.PI); // Rounded bottom
+                        ctx.lineTo(holeX + holeWidth, holeTopY);
+                        ctx.closePath();
+                        ctx.fill();
+                        ctx.stroke();
+
+                        // Compacted Bentonite Clay Buffer (Amber Ochre Fill)
+                        let bufferX = holeX + 2;
+                        let bufferY = holeTopY + 14;
+                        let bufferW = holeWidth - 4;
+                        let bufferH = holeHeight - 20;
+                        ctx.fillStyle = "rgba(217, 119, 6, 0.45)";
                         ctx.fillRect(bufferX, bufferY, bufferW, bufferH);
 
-                        // Copper-Cast Iron Fuel Canister
-                        let canisterX = cx - 4;
-                        let canisterY = tunnelY + 22;
-                        let canisterW = 8;
-                        let canisterH = 24;
+                        // Metallic Copper-Cast Iron Canister
+                        let canisterX = cx - 5;
+                        let canisterY = holeTopY + 28;
+                        let canisterW = 10;
+                        let canisterH = 32;
 
-                        ctx.fillStyle = "#f8fafc";
-                        ctx.strokeStyle = "#f59e0b";
+                        let copperGrad = ctx.createLinearGradient(canisterX, 0, canisterX + canisterW, 0);
+                        copperGrad.addColorStop(0, "#fef3c7");
+                        copperGrad.addColorStop(0.5, "#f59e0b");
+                        copperGrad.addColorStop(1, "#b45309");
+
+                        ctx.fillStyle = copperGrad;
+                        ctx.strokeStyle = "#fef3c7";
                         ctx.lineWidth = 1.2;
                         ctx.fillRect(canisterX, canisterY, canisterW, canisterH);
                         ctx.strokeRect(canisterX, canisterY, canisterW, canisterH);
                     }
                 }
 
-                // Telemetry Outputs
+                // --- 6. NON-OVERLAPPING ANNOTATION BADGES ---
+                // Host Granite Badge
+                ctx.fillStyle = "rgba(9, 13, 22, 0.75)";
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+                ctx.fillRect(160, 110, 160, 22);
+                ctx.strokeRect(160, 110, 160, 22);
+                ctx.fillStyle = "#94a3b8";
+                ctx.font = "10px Fira Code";
+                ctx.fillText("Host Granite Bedrock", 170, 125);
+
+                // Drift Tunnel Gallery Badge
+                ctx.fillStyle = "rgba(9, 13, 22, 0.75)";
+                ctx.strokeStyle = "rgba(56, 189, 248, 0.3)";
+                ctx.fillRect(230, 185, 220, 22);
+                ctx.strokeRect(230, 185, 220, 22);
+                ctx.fillStyle = "#38bdf8";
+                ctx.fillText("Main Drift Transport Gallery (-450 m)", 240, 200);
+
+                // EBS Canisters Badge
+                ctx.fillStyle = "rgba(9, 13, 22, 0.75)";
+                ctx.strokeStyle = "rgba(245, 158, 11, 0.3)";
+                ctx.fillRect(230, 365, 270, 22);
+                ctx.strokeRect(230, 365, 270, 22);
+                ctx.fillStyle = "#f59e0b";
+                ctx.fillText("KBS-3 Copper Canister & Bentonite Array (N=8)", 240, 380);
+
+                // --- 7. TELEMETRY OUTPUT BAR ---
                 telemetry.innerHTML = `
-                    <span><strong>Layout:</strong> KBS-3 DGR (12 Canisters @ -450m)</span>
+                    <span><strong>Layout:</strong> KBS-3 DGR (Strictly 8 Canisters @ -450m)</span>
                     <span><strong>Spacing ($S$):</strong> ${spacing} m</span>
                     <span><strong>Time ($t$):</strong> ${time} Yrs | <strong>Peak Temp ($T_{max}$):</strong> ${peakTemp} °C</span>
-                    <span style="color:${isInterference ? '#ef4444' : '#10b981'};"><strong>Thermal Overlap:</strong> ${isInterference ? 'WARNING (Interference)' : 'SAFE'}</span>
+                    <span style="color:${isInterference ? '#ef4444' : '#10b981'};"><strong>Thermal Overlap:</strong> ${isInterference ? 'WARNING (Interference)' : 'STABLE'}</span>
                 `;
             }
 
             requestAnimationFrame(render);
         }
 
-        // Initialize Simulation Sandbox
+        // Initialize Engine
         switchRegime();
         render();
     </script>
