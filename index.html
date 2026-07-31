@@ -3,70 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Kunwar Mrityunjai Sharma | Hydrogeologist & Subsurface Scientist</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Dr. Kunwar Mrityunjai Sharma | Senior Computational Hydrogeologist</title>
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary: #1e3a8a;
-            --primary-light: #3b82f6;
-            --accent: #0d9488;
-            --bg-dark: #0f172a;
-            --bg-light: #f8fafc;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --card-bg: #ffffff;
+            --bg-dark: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-hover: rgba(30, 41, 59, 0.85);
+            --accent-cyan: #00f2fe;
+            --accent-blue: #4facfe;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-glow: rgba(0, 242, 254, 0.2);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --font-code: 'Fira Code', monospace;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-light); color: var(--text-main); line-height: 1.6; }
-        
-        /* Navigation */
-        nav { background: var(--bg-dark); padding: 1rem 5%; position: fixed; width: 100%; top: 0; z-index: 1000; display: flex; justify-space-between; align-items: center; }
-        nav .logo { color: white; font-weight: 700; font-size: 1.2rem; }
-        nav ul { display: flex; list-style: none; gap: 1.5rem; }
-        nav a { color: #94a3b8; text-decoration: none; font-size: 0.95rem; transition: color 0.2s; }
-        nav a:hover { color: white; }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: 'Inter', sans-serif; 
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(79, 172, 254, 0.05) 0%, transparent 40%);
+        }
+
+        /* Glassmorphism Header & Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(7, 11, 20, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 1000;
+            padding: 1rem 6%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav .brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+        nav ul { display: flex; list-style: none; gap: 2rem; }
+        nav a { 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            font-size: 0.9rem; 
+            font-weight: 500; 
+            transition: all 0.25s ease;
+        }
+        nav a:hover { color: var(--accent-cyan); text-shadow: 0 0 8px rgba(0,242,254,0.4); }
 
         /* Hero Section */
-        header { min-height: 90vh; padding: 8rem 5% 4rem; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; }
-        .hero-container { max-width: 1100px; display: grid; grid-template-columns: 1fr 2fr; gap: 3rem; align-items: center; }
-        .profile-img-container { text-align: center; }
-        .profile-img { width: 260px; height: 260px; border-radius: 50%; object-fit: cover; border: 4px solid var(--accent); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); }
-        .hero-text h1 { font-size: 2.8rem; margin-bottom: 0.5rem; }
-        .hero-text h2 { font-size: 1.3rem; color: var(--accent); font-weight: 400; margin-bottom: 1.5rem; }
-        .hero-text p { color: #cbd5e1; font-size: 1.05rem; margin-bottom: 2rem; max-width: 700px; }
-        .btn-group { display: flex; gap: 1rem; }
-        .btn { padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; text-decoration: none; transition: 0.2s; }
-        .btn-primary { background: var(--accent); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
-        .btn-outline { border: 1px solid #475569; color: white; }
-        .btn-outline:hover { background: #334155; }
+        header {
+            padding: 9rem 6% 4rem;
+            max-width: 1300px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        .profile-container { position: relative; }
+        .profile-img {
+            width: 260px;
+            height: 260px;
+            border-radius: 24px;
+            object-fit: cover;
+            border: 2px solid var(--border-glow);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.15);
+            transition: transform 0.3s ease;
+        }
+        .profile-img:hover { transform: scale(1.02); }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+            padding: 0.35rem 0.85rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .status-pulse { width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; box-shadow: 0 0 8px var(--accent-emerald); }
+        
+        .hero-text h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.15; margin-bottom: 0.5rem; letter-spacing: -1px; }
+        .hero-text h2 { font-size: 1.35rem; color: var(--accent-cyan); font-weight: 500; margin-bottom: 1.5rem; }
+        .hero-text p { color: var(--text-muted); font-size: 1.05rem; line-height: 1.7; margin-bottom: 2rem; max-width: 800px; }
+        
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .stat-card h4 { font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan); font-family: var(--font-code); }
+        .stat-card p { font-size: 0.85rem; color: var(--text-muted); }
 
-        /* General Sections */
-        section { padding: 5rem 5%; max-width: 1100px; margin: 0 auto; }
-        .section-title { font-size: 2rem; color: var(--primary); margin-bottom: 2.5rem; position: relative; }
-        .section-title::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 60px; height: 4px; background: var(--accent); border-radius: 2px; }
+        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .btn {
+            padding: 0.75rem 1.6rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue)); 
+            color: #000; 
+            font-weight: 700;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 30px rgba(0, 242, 254, 0.5); }
+        .btn-outline { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid var(--border-subtle); 
+            color: var(--text-main); 
+        }
+        .btn-outline:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent-cyan); }
 
-        /* Grid Layouts */
-        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
-        .card { background: var(--card-bg); padding: 1.8rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-        .card h3 { color: var(--primary); margin-bottom: 1rem; font-size: 1.15rem; }
-        .tag-list { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
-        .tag { background: #f1f5f9; color: #334155; padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 500; }
+        /* Main Section Container */
+        section { padding: 5rem 6%; max-width: 1300px; margin: 0 auto; }
+        .section-header { margin-bottom: 3rem; }
+        .section-tag { font-family: var(--font-code); font-size: 0.85rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.5rem; }
+        .section-title { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px; }
 
-        /* Timeline */
-        .timeline { position: relative; border-left: 2px solid #cbd5e1; padding-left: 2rem; margin-left: 1rem; }
-        .timeline-item { margin-bottom: 2.5rem; position: relative; }
-        .timeline-item::before { content: ''; position: absolute; left: calc(-2rem - 6px); top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid white; }
-        .timeline-role { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
-        .timeline-meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.75rem; }
+        /* Card Layouts */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1.5rem; }
+        
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: var(--border-glow);
+            transform: translateY(-4px);
+            background: var(--bg-card-hover);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+        .card h3 { font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+        .card h3 i { color: var(--accent-cyan); }
+        .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+        /* Interactive Physics Laboratory Component */
+        .physics-lab {
+            background: rgba(10, 16, 31, 0.95);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+        }
+        .lab-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+        .control-group { display: flex; flex-direction: column; gap: 6px; }
+        .control-group label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); font-family: var(--font-code); }
+        .control-group select, .control-group input {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: var(--accent-cyan);
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-family: var(--font-code);
+            outline: none;
+        }
+        .control-group select:focus, .control-group input:focus { border-color: var(--accent-cyan); }
+        
+        .canvas-container { position: relative; width: 100%; height: 380px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
+        #physicsCanvas { width: 100%; height: 100%; background: #030712; display: block; }
+        .canvas-overlay {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(7, 11, 20, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Timeline Components */
+        .timeline { position: relative; border-left: 2px solid rgba(0, 242, 254, 0.2); padding-left: 2rem; margin-left: 1rem; }
+        .timeline-item { margin-bottom: 3rem; position: relative; }
+        .timeline-dot {
+            position: absolute;
+            left: calc(-2rem - 6px);
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 10px var(--accent-cyan);
+        }
+        .timeline-title { font-size: 1.25rem; font-weight: 700; color: var(--text-main); }
+        .timeline-meta { font-family: var(--font-code); font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.75rem; }
+        .timeline-bullets { list-style: none; padding: 0; }
+        .timeline-bullets li { 
+            position: relative; 
+            padding-left: 1.25rem; 
+            color: var(--text-muted); 
+            font-size: 0.95rem; 
+            margin-bottom: 0.5rem; 
+        }
+        .timeline-bullets li::before { content: '▹'; position: absolute; left: 0; color: var(--accent-cyan); }
+
+        /* Publication Cards with DOI Links */
+        .pub-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .pub-card:hover { border-color: var(--accent-cyan); background: var(--bg-card-hover); }
+        .pub-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; line-height: 1.4; }
+        .pub-authors { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+        .pub-journal { font-style: italic; color: var(--accent-blue); font-size: 0.9rem; margin-bottom: 1rem; }
+        .doi-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            background: rgba(0, 242, 254, 0.08);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            width: fit-content;
+            transition: all 0.2s ease;
+        }
+        .doi-link:hover { background: var(--accent-cyan); color: #000; font-weight: 600; box-shadow: 0 0 12px rgba(0, 242, 254, 0.4); }
+
+        /* Tag Pill Badges */
+        .tag-pill {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-family: var(--font-code);
+            margin-right: 0.4rem;
+            margin-top: 0.4rem;
+        }
 
         /* Footer */
-        footer { background: var(--bg-dark); color: #94a3b8; text-align: center; padding: 3rem 5%; font-size: 0.9rem; }
-        footer a { color: var(--accent); text-decoration: none; }
+        footer {
+            background: #030712;
+            border-top: 1px solid var(--border-subtle);
+            padding: 4rem 6% 2rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
 
-        @media (max-width: 768px) {
-            .hero-container { grid-template-columns: 1fr; text-align: center; }
+        @media (max-width: 900px) {
+            header { grid-template-columns: 1fr; text-align: center; }
+            .profile-img { margin: 0 auto; }
+            .hero-stats { grid-template-columns: repeat(2, 1fr); }
             .btn-group { justify-content: center; }
             nav ul { display: none; }
         }
@@ -74,193 +315,492 @@
 </head>
 <body>
 
+    <!-- Sticky Navigation -->
     <nav>
-        <div class="logo">Dr. K. M. Sharma</div>
+        <div class="brand">Dr. Kunwar Mrityunjai Sharma</div>
         <ul>
             <li><a href="#about">About</a></li>
-            <li><a href="#competence">Competence</a></li>
-            <li><a href="#simulation">Model Explorer</a></li>
+            <li><a href="#physics">Physics Model</a></li>
+            <li><a href="#competence">Competencies</a></li>
             <li><a href="#experience">Experience</a></li>
             <li><a href="#publications">Publications</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
 
+    <!-- Header / Hero Section -->
     <header id="about">
-        <div class="hero-container">
-            <div class="profile-img-container">
-                <!-- Replace 'profile.jpg' with your photo filename -->
-                <img src="profile.jpg" alt="Dr. Kunwar Mrityunjai Sharma" class="profile-img" onerror="this.src='https://via.placeholder.com/260?text=Dr.+Sharma'">
+        <div class="profile-container">
+            <!-- Ensure profile.jpg is in the same folder -->
+            <img src="profile.jpg" alt="Dr. Kunwar Mrityunjai Sharma" class="profile-img" onerror="this.src='https://via.placeholder.com/260/0a1128/00f2fe?text=Dr.+Sharma'">
+        </div>
+        <div class="hero-text">
+            <div class="status-badge">
+                <span class="status-pulse"></span> Senior Scientist @ VTT Finland
             </div>
-            <div class="hero-text">
-                <h1>Dr. Kunwar Mrityunjai Sharma</h1>
-                <h2>Senior Hydrogeologist & Subsurface Computational Scientist</h2>
-                <p>Specializing in 3D fractured rock transport modeling, coupled hydro-mechanical (H-M) processes, Discrete Fracture Networks (DFN/CNM), and variably saturated flow in engineered clay barriers and mountain soils.</p>
-                <div class="btn-group">
-                    <a href="#contact" class="btn btn-primary">Get in Touch</a>
-                    <a href="#simulation" class="btn btn-outline">Explore Subsurface Models</a>
+            <h1>Dr. Kunwar Mrityunjai Sharma</h1>
+            <h2>Senior Computational Hydrogeologist & Subsurface Scientist</h2>
+            <p>Ph.D. holder with 6.5+ years of post-doctoral research experience specializing in process-based numerical modeling, Discrete Fracture Networks (DFN/CNM), coupled hydro-mechanical dynamics, and Python computational tool development (<code>pychan3d</code>) for environmental safety assessments and geothermal systems.</p>
+            
+            <div class="btn-group">
+                <a href="#contact" class="btn btn-primary"><i class="fa-solid me-1 fa-envelope"></i> Contact Me</a>
+                <a href="#physics" class="btn btn-outline"><i class="fa-solid fa-atom"></i> Launch Physics Engine</a>
+                <a href="https://linkedin.com/in/mrityunjaish" target="_blank" class="btn btn-outline"><i class="fa-brands fa-linkedin"></i> LinkedIn</a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <h4>6.5+</h4>
+                    <p>Years Post-Doc</p>
+                </div>
+                <div class="stat-card">
+                    <h4>8+</h4>
+                    <p>High-Impact Papers</p>
+                </div>
+                <div class="stat-card">
+                    <h4>30k+</h4>
+                    <p>Fractures Modeled</p>
+                </div>
+                <div class="stat-card">
+                    <h4>4</h4>
+                    <p>Global Frameworks</p>
                 </div>
             </div>
         </div>
     </header>
 
-    <section id="competence">
-        <h2 class="section-title">Core Competencies</h2>
-        <div class="skills-grid">
-            <div class="card">
-                <h3>Hydrogeology & Transport Modeling</h3>
-                <p>Site-scale Discrete Fracture Networks (DFN), Channel Network Models (CNM), matrix permeability scaling, and contaminant transport pathways in low-permeability granite and complex rock systems.</p>
-                <div class="tag-list">
-                    <span class="tag">DFN / CNM</span>
-                    <span class="tag">pychan3d</span>
-                    <span class="tag">GoldSim</span>
-                    <span class="tag">MODFLOW</span>
-                </div>
-            </div>
-            <div class="card">
-                <h3>Geomechanics & Soil Mechanics</h3>
-                <p>Coupled hydro-mechanical (H-M) modeling, matrix suction loss, swelling pressure evolution in bentonite clay barriers (SAFER/SAGE/HAGEN), and rainfall-induced seepage in mountain soils.</p>
-                <div class="tag-list">
-                    <span class="tag">COMSOL Multiphysics</span>
-                    <span class="tag">Richards' Equation</span>
-                    <span class="tag">Bentonite Barriers</span>
-                    <span class="tag">Effective Stress</span>
-                </div>
-            </div>
-            <div class="card">
-                <h3>Data Science & Scientific Computing</h3>
-                <p>Developing automated Python pipelines for computational physics, non-linear regression calibration on experimental time-series, and stochastic uncertainty modeling.</p>
-                <div class="tag-list">
-                    <span class="tag">Python (NumPy/SciPy)</span>
-                    <span class="tag">GeoPandas</span>
-                    <span class="tag">Git / Automation</span>
-                    <span class="tag">Machine Learning</span>
-                </div>
-            </div>
+    <!-- SECTION: Interactive Physics Engine -->
+    <section id="physics">
+        <div class="section-header">
+            <div class="section-tag">Interactive Simulation Engine</div>
+            <h2 class="section-title">Subsurface Hydro-Mechanical Physics Visualizer</h2>
         </div>
-    </section>
 
-    <!-- Interactive Multiphysics Visualizer -->
-    <section id="simulation">
-        <h2 class="section-title">Subsurface & Hydro-Mechanical Interactive Physics</h2>
-        <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Demonstration of porous vs. fractured media flow regimes, stress-coupled effective permeability, and variably saturated soil mechanics under transient hydraulic loads.</p>
-        
-        <!-- Interactive Widget Component Embedded directly -->
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-            <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
-                <label><strong>Subsurface Regime:</strong>
-                    <select id="regimeSelect" style="padding: 0.4rem; border-radius: 4px; border: 1px solid #94a3b8;" onchange="updateSim()">
-                        <option value="bentonite">Unsaturated Bentonite Barrier (Richards Flow)</option>
-                        <option value="dfn">Crystalline Rock (Stochastic Fracture Channeling)</option>
-                        <option value="soil">Mountain Soil Slope (Rainfall Infiltration)</option>
+        <div class="physics-lab">
+            <div class="lab-controls">
+                <div class="control-group">
+                    <label><i class="fa-solid fa-sliders"></i> Simulation Physics Regime</label>
+                    <select id="simRegime" onchange="resetPhysicsEngine()">
+                        <option value="dfn">1. Stochastic DFN & Channeling (pychan3d)</option>
+                        <option value="forchheimer">2. Non-Linear Forchheimer / Reynolds Flow</option>
+                        <option value="richards">3. Unsaturated Barrier Richards Infiltration</option>
                     </select>
-                </label>
-                <label><strong>Effective Stress / Suction (kPa):</strong>
-                    <input type="range" id="stressRange" min="0" max="100" value="40" oninput="updateSim()">
-                    <span id="stressVal">40</span>
-                </label>
+                </div>
+                <div class="control-group">
+                    <label><i class="fa-solid fa-gauge-high"></i> Hydraulic Head Gradient ($\nabla h$)</label>
+                    <input type="range" id="gradSlider" min="1" max="10" value="5" oninput="updatePhysicsParams()">
+                </div>
+                <div class="control-group">
+                    <label><i class="fa-solid fa-compress"></i> Stress / Suction Pressure (kPa)</label>
+                    <input type="range" id="stressSlider" min="0" max="100" value="45" oninput="updatePhysicsParams()">
+                </div>
+                <div class="control-group">
+                    <label><i class="fa-solid fa-circle-nodes"></i> Particle / Tracer Injection</label>
+                    <button class="btn btn-outline" style="padding:0.5rem; justify-content:center;" onclick="injectParticles()">Inject Tracer Pulse</button>
+                </div>
             </div>
-            <canvas id="simCanvas" width="800" height="300" style="width: 100%; height: 300px; background: #0f172a; border-radius: 6px;"></canvas>
+
+            <div class="canvas-container">
+                <canvas id="physicsCanvas"></canvas>
+                <div class="canvas-overlay" id="telemetryBox">
+                    Flow Regime: Discrete Fracture Channeling | Mean Permeability K: 4.8e-12 m² | Apparent Dim: 1.6D
+                </div>
+            </div>
         </div>
     </section>
 
+    <!-- SECTION: Key Competencies -->
+    <section id="competence">
+        <div class="section-header">
+            <div class="section-tag">Technical Portfolio</div>
+            <h2 class="section-title">Core Scientific Expertise</h2>
+        </div>
+
+        <div class="grid-3">
+            <div class="card">
+                <h3><i class="fa-solid fa-network-wired"></i> Hydrogeological & DFN Modeling</h3>
+                <p>Advanced Discrete Fracture Network (DFN) generation, Channel Network Modeling (CNM), and tracer transport simulation in low-permeability crystalline rock. Expert in long-term apparent flow dimension analysis.</p>
+                <div>
+                    <span class="tag-pill">pychan3d</span>
+                    <span class="tag-pill">MODFLOW</span>
+                    <span class="tag-pill">GoldSim</span>
+                    <span class="tag-pill">ECOLEGO</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-mountain"></i> Geomechanics & Unsaturated Soil</h3>
+                <p>Coupled hydro-mechanical (H-M) modeling, matrix suction loss, swelling pressure dynamics in compacted bentonite clay engineered barriers (SAFER/SAGE/HAGEN), and Forchheimer non-linear flow transitions.</p>
+                <div>
+                    <span class="tag-pill">COMSOL Multiphysics</span>
+                    <span class="tag-pill">Richards' Equation</span>
+                    <span class="tag-pill">Slope Stability</span>
+                    <span class="tag-pill">ITASCA</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><i class="fa-solid fa-code"></i> Scientific Computing & ML</h3>
+                <p>Developing automated Python processing toolkits, machine learning regression models for spatial data integration, DEM catchment processing, and time-series parameter estimation.</p>
+                <div>
+                    <span class="tag-pill">Python (NumPy/SciPy)</span>
+                    <span class="tag-pill">GeoPandas</span>
+                    <span class="tag-pill">ArcGIS / QGIS</span>
+                    <span class="tag-pill">MATLAB</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Career History -->
     <section id="experience">
-        <h2 class="section-title">Research & Professional Experience</h2>
+        <div class="section-header">
+            <div class="section-tag">Professional Trajectory</div>
+            <h2 class="section-title">Research & Industrial Experience</h2>
+        </div>
+
         <div class="timeline">
+            <!-- VTT -->
             <div class="timeline-item">
-                <div class="timeline-role">Senior Scientist</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Senior Scientist</div>
                 <div class="timeline-meta">VTT Technical Research Centre of Finland | May 2023 – Present</div>
-                <p>Leading numerical flow and contaminant transport modeling in low-permeability rock and engineered barriers for the SAFER, SAGE, and HAGEN safety assessment programs. Expanded the <code>pychan3d</code> Python package and coupled COMSOL multiphysics fields with GoldSim systems models.</p>
+                <ul class="timeline-bullets">
+                    <li>Led process-based numerical modeling of fluid flow, solute transport, and environmental safety risks in low-permeability rock and engineered barrier caps.</li>
+                    <li>Developed customized Python packages to convert complex 3D fracture networks into calculation matrices and integrated radionuclide transport models with GoldSim.</li>
+                    <li>Analyzed experimental datasets for the SAFER, SAGE, and HAGEN projects in COMSOL Multiphysics (Richards' equation) to model transient moisture and swelling dynamics.</li>
+                </ul>
             </div>
+
+            <!-- Uppsala Researcher -->
             <div class="timeline-item">
-                <div class="timeline-role">Researcher & Postdoctoral Fellow</div>
-                <div class="timeline-meta">Uppsala University, Sweden | Dec 2019 – Dec 2022</div>
-                <p>Evaluated subsurface flow channeling and structural uncertainty across large-scale stochastic fracture networks (9,000–30,000+ fractures) supporting regulatory safety assessments for the Swedish Radiation Safety Authority (SSM).</p>
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Researcher</div>
+                <div class="timeline-meta">Uppsala University, Sweden | Dec 2021 – Dec 2022</div>
+                <ul class="timeline-bullets">
+                    <li>Developed predictive tracer transport and subsurface breakthrough models supporting safety assessment programs funded by the Swedish Radiation Safety Authority (SSM).</li>
+                    <li>Designed automated long-term simulation pipelines to run anomaly and sensitivity scenarios for fluid migration in deep geological formations.</li>
+                    <li>Processed dense site characterization datasets from Äspö Hard Rock Laboratory (HRL) to map breakthrough arrival times under high data uncertainty.</li>
+                </ul>
             </div>
+
+            <!-- Uppsala Postdoc -->
             <div class="timeline-item">
-                <div class="timeline-role">Doctoral Researcher & Research Associate</div>
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Postdoctoral Researcher</div>
+                <div class="timeline-meta">Uppsala University, Sweden | Dec 2019 – Dec 2021</div>
+                <ul class="timeline-bullets">
+                    <li>Pioneered a novel well-testing methodology utilizing long-term apparent flow-dimension analysis to evaluate subsurface media heterogeneity.</li>
+                    <li>Refactored and optimized the <code>pychan3d</code> Python computational library to programmatically translate 3D Discrete Fracture Networks into Channel Network Models.</li>
+                    <li>Cross-calibrated high-noise hydraulic datasets (dilution, pumping, tracer) with international multidisciplinary research teams.</li>
+                </ul>
+            </div>
+
+            <!-- IIT Bombay RA & PhD -->
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-title">Doctoral Researcher & Research Associate</div>
                 <div class="timeline-meta">IIT Bombay, India | July 2015 – Sept 2019</div>
-                <p>Formulated dual-porosity hydro-mechanical models to evaluate effective stress changes and matrix deformation. Analyzed geotechnical and hydraulic properties of mountain soils to study slope seepage.</p>
+                <ul class="timeline-bullets">
+                    <li>Investigated non-linear flow behavior through rock systems, evaluating critical Reynolds and Forchheimer number data transitions.</li>
+                    <li>Formulated dual-porosity math models to simulate fluid exchange dynamics between matrix pores and fracture planes.</li>
+                    <li>Analyzed shear strength, weathering, and rainfall-induced slope seepage in mountain soils.</li>
+                </ul>
             </div>
         </div>
     </section>
 
+    <!-- SECTION: Publications with DOIs -->
     <section id="publications">
-        <h2 class="section-title">Selected Peer-Reviewed Publications</h2>
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <div class="card">
-                <strong>Sharma, K.M.</strong>, Tsang, C.-F., Geier, J., Pensado, O., Stothoff, S., Niemi, A. (2025). <em>Characteristics of flow and transport in low-permeability fractured rock based on a channel network model.</em> Advances in Water Resources, 202, 105016.
+        <div class="section-header">
+            <div class="section-tag">Peer-Reviewed Research</div>
+            <h2 class="section-title">High-Impact Scientific Publications</h2>
+        </div>
+
+        <div id="pubList">
+            <!-- Paper 1 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Impact of Rainfall Patterns on a Near-Surface Radioactive Waste Disposal Facility: Climate Change and Long-Term Perspectives</div>
+                    <div class="pub-authors">Park, J.B., Sharma, K.M. (2025)</div>
+                    <div class="pub-journal">Journal of Nuclear Fuel Cycle and Waste Technology, 23(2), 239-264.</div>
+                </div>
+                <a href="https://doi.org/10.7733/jnfcwt.2025.016" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.7733/jnfcwt.2025.016</a>
             </div>
-            <div class="card">
-                Dessirier, B., <strong>Sharma, K.M.</strong>, Pedersen, J., Tsang, C.F., Niemi, A. (2023). <em>Channel network modeling of flow and transport in fractured rock: Data-worth analysis for model development, calibration and prediction.</em> Water Resources Research, 59(5), e2022WR033816.
+
+            <!-- Paper 2 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Characteristics of flow and transport in low-permeability fractured rock based on a channel network model</div>
+                    <div class="pub-authors">Sharma, K.M., Tsang, C.-F., Geier, J., Pensado, O., Stothoff, S., Niemi, A. (2025)</div>
+                    <div class="pub-journal">Advances in Water Resources, 202, 105016.</div>
+                </div>
+                <a href="https://doi.org/10.1016/j.advwatres.2025.105016" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1016/j.advwatres.2025.105016</a>
             </div>
-            <div class="card">
-                <strong>Sharma, K.M.</strong>, Dessirier, B., Tsang, C.F., Niemi, A. (2023). <em>Apparent flow-dimension approach to the study of heterogeneous fracture network systems.</em> Hydrogeology Journal, 31(4), 873–891.
+
+            <!-- Paper 3 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Channel Network Model of Flow and Transport in Low-Permeability Fractured Rock and its Characteristics</div>
+                    <div class="pub-authors">Sharma, K.M., Tsang, C.F., Geier, J., Pensado, O., Stothoff, S., Niemi, A. (2023)</div>
+                    <div class="pub-journal">SSRN Electronic Journal, 5012672.</div>
+                </div>
+                <a href="https://doi.org/10.2139/ssrn.5012672" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.2139/ssrn.5012672</a>
+            </div>
+
+            <!-- Paper 4 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Channel network modeling of flow and transport in fractured rock at the Äspö HRL: Data-worth analysis for model development, calibration and prediction</div>
+                    <div class="pub-authors">Dessirier, B., Sharma, K.M., Pedersen, J., Tsang, C.F., Niemi, A. (2023)</div>
+                    <div class="pub-journal">Water Resources Research, 59(5), e2022WR033816.</div>
+                </div>
+                <a href="https://doi.org/10.1029/2022WR033816" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1029/2022WR033816</a>
+            </div>
+
+            <!-- Paper 5 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Apparent flow-dimension approach to the study of heterogeneous fracture network systems</div>
+                    <div class="pub-authors">Sharma, K.M., Dessirier, B., Tsang, C.F., Niemi, A. (2023)</div>
+                    <div class="pub-journal">Hydrogeology Journal, 31(4), 873-891.</div>
+                </div>
+                <a href="https://doi.org/10.1007/s10040-023-02796-3" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s10040-023-02796-3</a>
+            </div>
+
+            <!-- Paper 6 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Calibration of a channel network model against Äspö field data and its application to long term prediction of tracer transport</div>
+                    <div class="pub-authors">Dessirier, B., Sharma, K.M., Tsang, C.F., Niemi, A. (2022)</div>
+                    <div class="pub-journal">EGU General Assembly 2022, Vienna, Austria.</div>
+                </div>
+                <a href="https://doi.org/10.5194/egusphere-egu22-9706" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.5194/egusphere-egu22-9706</a>
+            </div>
+
+            <!-- Paper 7 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Empirical Slope Stability Assessment Along the Road Corridor NH-7, in the Lesser Himalayan</div>
+                    <div class="pub-authors">Ansari, T.A., Sharma, K.M., Singh, T.N. (2019)</div>
+                    <div class="pub-journal">Geotechnical and Geological Engineering, 37, 5391-5407.</div>
+                </div>
+                <a href="https://doi.org/10.1007/s10706-019-00988-w" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s10706-019-00988-w</a>
+            </div>
+
+            <!-- Paper 8 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Experimental study to examine the independent roles of lime and cement on the stabilization of a mountain soil: A comparative study</div>
+                    <div class="pub-authors">Sharma, L.K., Sirdesai, N.N., Sharma, K.M., Singh, T.N. (2018)</div>
+                    <div class="pub-journal">Applied Clay Science, 152, 183-195.</div>
+                </div>
+                <a href="https://doi.org/10.1016/j.clay.2017.11.012" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1016/j.clay.2017.11.012</a>
+            </div>
+
+            <!-- Paper 9 -->
+            <div class="pub-card">
+                <div>
+                    <div class="pub-title">Parametric study of factors affecting fluid flow through a fracture</div>
+                    <div class="pub-authors">Sharma, K.M., Roy, D.G., Singh, P.K., Singh, T.N. (2017)</div>
+                    <div class="pub-journal">Arabian Journal of Geosciences, 10, 362.</div>
+                </div>
+                <a href="https://doi.org/10.1007/s12517-017-3142-6" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s12517-017-3142-6</a>
             </div>
         </div>
     </section>
 
+    <!-- SECTION: International Academic References -->
+    <section id="references">
+        <div class="section-header">
+            <div class="section-tag">Global Consortium</div>
+            <h2 class="section-title">Academic & Professional References</h2>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3><i class="fa-solid fa-user-graduate"></i> Dr. Auli Niemi</h3>
+                <p><strong>Professor Emeritus</strong><br>Department of Earth Sciences, Uppsala University, Sweden<br>Email: <a href="mailto:auli.niemi@geo.uu.se" style="color:var(--accent-cyan)">auli.niemi@geo.uu.se</a></p>
+            </div>
+            <div class="card">
+                <h3><i class="fa-solid fa-user-gear"></i> Dr. Markus Olin</h3>
+                <p><strong>Research Professor</strong><br>VTT Technical Research Centre of Finland<br>Email: <a href="mailto:markus.olin@vtt.fi" style="color:var(--accent-cyan)">markus.olin@vtt.fi</a></p>
+            </div>
+            <div class="card">
+                <h3><i class="fa-solid fa-flask"></i> Dr. Chin-Fu Tsang</h3>
+                <p><strong>Professor Emeritus</strong><br>Lawrence Berkeley National Laboratory (LBNL), USA<br>Email: <a href="mailto:cftsang@lbl.gov" style="color:var(--accent-cyan)">cftsang@lbl.gov</a></p>
+            </div>
+            <div class="card">
+                <h3><i class="fa-solid fa-building-columns"></i> Dr. T. N. Singh</h3>
+                <p><strong>Director</strong><br>Indian Institute of Technology (IIT) Patna, India<br>Email: <a href="mailto:director@iitp.ac.in" style="color:var(--accent-cyan)">director@iitp.ac.in</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION: Contact -->
     <section id="contact">
-        <h2 class="section-title">Contact Information</h2>
-        <div class="card" style="text-align: center; padding: 3rem;">
-            <p style="font-size: 1.2rem; margin-bottom: 1rem;"><strong>Dr. Kunwar Mrityunjai Sharma</strong></p>
-            <p style="color: var(--text-muted); margin-bottom: 0.5rem;">Espoo, Uusimaa, Finland</p>
-            <p style="margin-bottom: 1.5rem;">Email: <a href="mailto:Sharmamrityunjai@gmail.com" style="color: var(--accent); font-weight: 600;">Sharmamrityunjai@gmail.com</a></p>
-            <p>LinkedIn: <a href="https://linkedin.com/in/mrityunjaish" target="_blank" style="color: var(--primary-light);">linkedin.com/in/mrityunjaish</a></p>
+        <div class="card" style="text-align: center; padding: 4rem 2rem; background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(7,11,20,0.95)); border: 1px solid var(--border-glow);">
+            <h2 style="font-size: 2.2rem; margin-bottom: 1rem;">Let's Collaborate</h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem;">Available for consultancy, senior computational geoscientist roles, and international research initiatives in hydrogeology, geomechanics, and subsurface energy.</p>
+            <div style="display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+                <a href="mailto:Sharmamrityunjai@gmail.com" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Sharmamrityunjai@gmail.com</a>
+                <a href="tel:+358504795111" class="btn btn-outline"><i class="fa-solid fa-phone"></i> +358 504795111</a>
+            </div>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2026 Dr. Kunwar Mrityunjai Sharma. Domain: <a href="http://mrityunjai.site">mrityunjai.site</a></p>
+        <p>&copy; 2026 Dr. Kunwar Mrityunjai Sharma. Hosted on <a href="http://mrityunjai.site" style="color:var(--accent-cyan)">mrityunjai.site</a></p>
     </footer>
 
+    <!-- REAL-TIME JAVASCRIPT PHYSICS ENGINE -->
     <script>
-        // Simple Canvas Visualizer Script
-        const canvas = document.getElementById('simCanvas');
+        const canvas = document.getElementById('physicsCanvas');
         const ctx = canvas.getContext('2d');
+        let width, height;
 
-        function updateSim() {
-            const regime = document.getElementById('regimeSelect').value;
-            const stress = document.getElementById('stressRange').value;
-            document.getElementById('stressVal').innerText = stress;
+        function resizeCanvas() {
+            width = canvas.parentElement.clientWidth;
+            height = canvas.parentElement.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0f172a";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        let particles = [];
+        let channels = [];
 
-            ctx.fillStyle = "#38bdf8";
-            ctx.font = "14px Inter";
-            
-            if (regime === 'bentonite') {
-                ctx.fillText("Model: Unsaturated Flow in Bentonite Matrix (Richards Eq)", 20, 30);
-                let saturation = (100 - stress) / 100;
-                ctx.fillStyle = `rgba(13, 148, 136, ${saturation})`;
-                ctx.fillRect(50, 60, 700, 180);
-                ctx.fillStyle = "#ffffff";
-                ctx.fillText(`Matrix Saturation Degree: ${(saturation*100).toFixed(0)}%`, 60, 150);
-            } else if (regime === 'dfn') {
-                ctx.fillText("Model: Crystalline Rock Discrete Channel Network Flow", 20, 30);
-                ctx.strokeStyle = "#38bdf8";
-                ctx.lineWidth = Math.max(1, (100 - stress) / 15);
-                for(let i=0; i<15; i++) {
-                    ctx.beginPath();
-                    ctx.moveTo(50 + i*45, 60);
-                    ctx.lineTo(80 + i*40, 240);
-                    ctx.stroke();
-                }
-                ctx.fillStyle = "#ffffff";
-                ctx.fillText(`Aperture Width & Flow Channeling Rate linked to Stress`, 60, 150);
-            } else {
-                ctx.fillText("Model: Transient Infiltration in Mountain Soil Profile", 20, 30);
-                ctx.fillStyle = "#b45309";
-                ctx.fillRect(50, 60, 700, 180);
-                ctx.fillStyle = "#60a5fa";
-                ctx.fillRect(50, 60, 700, stress * 1.5);
-                ctx.fillStyle = "#ffffff";
-                ctx.fillText(`Rainfall Seepage Depth: ${(stress*1.5).toFixed(0)} mm`, 60, 200);
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: Math.random() * width * 0.2,
+                    y: Math.random() * height,
+                    vx: Math.random() * 2 + 1,
+                    vy: (Math.random() - 0.5) * 1.5,
+                    life: Math.random() * 100,
+                    size: Math.random() * 2.5 + 1.5
+                });
             }
         }
-        updateSim();
+
+        function generateDFN() {
+            channels = [];
+            let numNodes = 25;
+            let nodes = [];
+            for (let i = 0; i < numNodes; i++) {
+                nodes.push({ x: Math.random() * width, y: Math.random() * height });
+            }
+            for (let i = 0; i < numNodes; i++) {
+                for (let j = i + 1; j < numNodes; j++) {
+                    let dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+                    if (dist < 180) {
+                        channels.push({ p1: nodes[i], p2: nodes[j], aperture: Math.random() * 3 + 1 });
+                    }
+                }
+            }
+        }
+        generateDFN();
+        initParticles();
+
+        function injectParticles() {
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: 10,
+                    y: height * 0.2 + Math.random() * height * 0.6,
+                    vx: Math.random() * 4 + 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    life: 0,
+                    size: 3
+                });
+            }
+        }
+
+        function updatePhysicsParams() {
+            const grad = document.getElementById('gradSlider').value;
+            const stress = document.getElementById('stressSlider').value;
+            const regime = document.getElementById('simRegime').value;
+            const telemetry = document.getElementById('telemetryBox');
+
+            if (regime === 'dfn') {
+                telemetry.innerText = `Regime: Stochastic DFN Channeling | Head Grad: ${grad} m/m | Stress: ${stress} kPa | n_D: 1.62D`;
+            } else if (regime === 'forchheimer') {
+                let Re = (grad * 12).toFixed(1);
+                telemetry.innerText = `Regime: Forchheimer Non-Linear Dynamics | Reynolds Re: ${Re} | Inertial Factor β Active`;
+            } else {
+                let suction = (stress * 1.8).toFixed(0);
+                telemetry.innerText = `Regime: Richards Infiltration | Suction Head ψ: -${suction} kPa | Saturation: ${(100-stress)}%`;
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            const regime = document.getElementById('simRegime').value;
+            const grad = parseFloat(document.getElementById('gradSlider').value);
+            const stress = parseFloat(document.getElementById('stressSlider').value);
+
+            if (regime === 'dfn') {
+                // Render Fracture Channels
+                ctx.strokeStyle = "rgba(0, 242, 254, 0.25)";
+                channels.forEach(ch => {
+                    ctx.lineWidth = Math.max(0.5, ch.aperture * (1 - stress / 120));
+                    ctx.beginPath();
+                    ctx.moveTo(ch.p1.x, ch.p1.y);
+                    ctx.lineTo(ch.p2.x, ch.p2.y);
+                    ctx.stroke();
+                });
+
+                // Render Particles (Flow Tracer)
+                ctx.fillStyle = "#00f2fe";
+                particles.forEach(p => {
+                    p.x += p.vx * (grad * 0.4);
+                    p.y += p.vy;
+                    if (p.x > width) p.x = 0;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+
+            } else if (regime === 'forchheimer') {
+                // Render Streamlines with turbulence deviation
+                ctx.lineWidth = 2;
+                for (let y = 40; y < height; y += 40) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = y % 80 === 0 ? "#4facfe" : "#10b981";
+                    ctx.moveTo(0, y);
+                    for (let x = 0; x < width; x += 20) {
+                        let dy = Math.sin(x * 0.02 + Date.now() * 0.003) * (grad * 1.5);
+                        ctx.lineTo(x, y + dy);
+                    }
+                    ctx.stroke();
+                }
+
+            } else if (regime === 'richards') {
+                // Render Unsaturated Wetting Front Infiltration
+                let wetDepth = Math.min(height, (grad * 35) + (Date.now() * 0.05) % 150);
+                let gradFill = ctx.createLinearGradient(0, 0, 0, wetDepth);
+                gradFill.addColorStop(0, "rgba(0, 242, 254, 0.6)");
+                gradFill.addColorStop(1, "rgba(7, 11, 20, 0)");
+                
+                ctx.fillStyle = gradFill;
+                ctx.fillRect(0, 0, width, wetDepth);
+
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "12px Fira Code";
+                ctx.fillText(`Wetting Front Infiltration Boundary: z = ${(wetDepth*0.05).toFixed(2)} m`, 20, wetDepth - 10);
+            }
+
+            requestAnimationFrame(render);
+        }
+
+        function resetPhysicsEngine() {
+            initParticles();
+            generateDFN();
+            updatePhysicsParams();
+        }
+
+        render();
     </script>
 </body>
 </html>
