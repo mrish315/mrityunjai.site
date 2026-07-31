@@ -154,7 +154,7 @@
             font-size: 0.9rem;
             outline: none;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
         }
         .lab-controls {
             display: grid;
@@ -170,13 +170,14 @@
         .control-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); font-family: var(--font-code); }
         .control-group input[type="range"] { accent-color: var(--accent-cyan); }
         
-        .canvas-container { position: relative; width: 100%; height: 360px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
+        .canvas-container { position: relative; width: 100%; height: 380px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
         #physicsCanvas { width: 100%; height: 100%; background: #050811; display: block; }
+        
         .canvas-overlay {
             position: absolute;
             bottom: 12px;
             left: 12px;
-            background: rgba(9, 13, 22, 0.85);
+            background: rgba(9, 13, 22, 0.88);
             backdrop-filter: blur(6px);
             padding: 0.6rem 1rem;
             border-radius: 6px;
@@ -184,6 +185,24 @@
             font-family: var(--font-code);
             font-size: 0.78rem;
             color: var(--accent-cyan);
+            max-width: 80%;
+        }
+
+        .canvas-legend {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(9, 13, 22, 0.88);
+            backdrop-filter: blur(6px);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         /* Timeline */
@@ -337,7 +356,7 @@
             <div class="lab-selector">
                 <label style="font-family: var(--font-code); font-size: 0.85rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Select Physics Regime:</label>
                 <select id="simRegime" onchange="switchRegime()">
-                    <option value="cnm">1. 2D Channel Network Model (Log-Normal Conductance)</option>
+                    <option value="cnm">1. 2D Channel Network Model (pychan3d FDM Solver & Particle Tracking)</option>
                     <option value="infiltration">2. Unsaturated Matrix Infiltration Dynamics</option>
                     <option value="heat">3. Nuclear Fuel Canister Heat Transport in DGR</option>
                 </select>
@@ -348,6 +367,7 @@
 
             <div class="canvas-container">
                 <canvas id="physicsCanvas"></canvas>
+                <div class="canvas-legend" id="legendBox"></div>
                 <div class="canvas-overlay" id="telemetryBox">Initializing Simulation...</div>
             </div>
         </div>
@@ -554,55 +574,150 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Global Simulation Data Structures
-        let cnmGrid = { rows: 8, cols: 14, horizontalConductance: [], verticalConductance: [] };
+        // 2D Grid CNM Global Data Structure
+        let cnmGrid = {
+            rows: 8,
+            cols: 14,
+            horizontalC: [], // Channel conductances (horizontal)
+            verticalC: [],   // Channel conductances (vertical)
+            heads: [],       // Calculated node hydraulic heads H[r][c]
+            flowH: [],       // Horizontal channel flow Q_H[r][c]
+            flowV: []        // Vertical channel flow Q_V[r][c]
+        };
         let particles = [];
 
-        // Box-Muller Transformation for Log-Normal Random Variable Generation
+        // Box-Muller Transformation for Log-Normal Conductance
         function randomLogNormal(mean, stdDev) {
             let u1 = Math.random();
             let u2 = Math.random();
             let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
-            // Log-normal parameters
             let sigma2 = Math.log(1 + (stdDev * stdDev) / (mean * mean));
             let mu = Math.log(mean) - 0.5 * sigma2;
             return Math.exp(mu + Math.sqrt(sigma2) * z0);
         }
 
+        // Initialize and Solve 2D Channel Network Model (FDM)
         function generateCNMGrid() {
             let meanC = parseFloat(document.getElementById('cnmMean') ? document.getElementById('cnmMean').value : 5);
             let stdC = parseFloat(document.getElementById('cnmStd') ? document.getElementById('cnmStd').value : 3);
 
-            cnmGrid.horizontalConductance = [];
-            cnmGrid.verticalConductance = [];
+            cnmGrid.horizontalC = [];
+            cnmGrid.verticalC = [];
+            cnmGrid.heads = [];
+            cnmGrid.flowH = [];
+            cnmGrid.flowV = [];
 
-            // Generate Horizontal Channels
+            // 1. Assign Log-Normal Conductances
             for (let r = 0; r < cnmGrid.rows; r++) {
-                let rowCond = [];
+                let rowC = [], rowH = [], rowQ = [];
                 for (let c = 0; c < cnmGrid.cols - 1; c++) {
-                    rowCond.push(randomLogNormal(meanC, stdC));
+                    rowC.push(randomLogNormal(meanC, stdC));
+                    rowQ.push(0);
                 }
-                cnmGrid.horizontalConductance.push(rowCond);
+                cnmGrid.horizontalC.push(rowC);
+                cnmGrid.flowH.push(rowQ);
             }
 
-            // Generate Vertical Channels
             for (let r = 0; r < cnmGrid.rows - 1; r++) {
-                let rowCond = [];
+                let rowC = [], rowQ = [];
                 for (let c = 0; c < cnmGrid.cols; c++) {
-                    rowCond.push(randomLogNormal(meanC, stdC));
+                    rowC.push(randomLogNormal(meanC, stdC));
+                    rowQ.push(0);
                 }
-                cnmGrid.verticalConductance.push(rowCond);
+                cnmGrid.verticalC.push(rowC);
+                cnmGrid.flowV.push(rowQ);
+            }
+
+            // Initialize Node Heads array
+            for (let r = 0; r < cnmGrid.rows; r++) {
+                let rowHeads = new Array(cnmGrid.cols).fill(0);
+                cnmGrid.heads.push(rowHeads);
+            }
+
+            solveHydraulicHeadsAndFlow();
+            injectParticles();
+        }
+
+        // Finite Difference Method (FDM) Solver for Node Hydraulic Heads & Channel Flows
+        function solveHydraulicHeadsAndFlow() {
+            let grad = parseFloat(document.getElementById('cnmGrad') ? document.getElementById('cnmGrad').value : 5);
+            let Hin = grad * 10.0;
+            let Hout = 0.0;
+
+            // Boundary Conditions: Fixed Heads on Left (c=0) and Right (c=cols-1)
+            for (let r = 0; r < cnmGrid.rows; r++) {
+                cnmGrid.heads[r][0] = Hin;
+                cnmGrid.heads[r][cnmGrid.cols - 1] = Hout;
+                // Linear initial guess for interior nodes
+                for (let c = 1; c < cnmGrid.cols - 1; c++) {
+                    cnmGrid.heads[r][c] = Hin - (c / (cnmGrid.cols - 1)) * Hin;
+                }
+            }
+
+            // Gauss-Seidel Iterative FDM Solver (100 iterations)
+            // Top (r=0) & Bottom (r=rows-1) are NO-FLOW boundaries (no vertical connection outside)
+            for (let iter = 0; iter < 120; iter++) {
+                for (let r = 0; r < cnmGrid.rows; r++) {
+                    for (let c = 1; c < cnmGrid.cols - 1; c++) {
+                        let sumCH = 0.0;
+                        let sumC = 0.0;
+
+                        // Left Channel
+                        let cLeft = cnmGrid.horizontalC[r][c - 1];
+                        sumCH += cLeft * cnmGrid.heads[r][c - 1];
+                        sumC += cLeft;
+
+                        // Right Channel
+                        let cRight = cnmGrid.horizontalC[r][c];
+                        sumCH += cRight * cnmGrid.heads[r][c + 1];
+                        sumC += cRight;
+
+                        // Up Channel (Top No-Flow Boundary if r==0)
+                        if (r > 0) {
+                            let cUp = cnmGrid.verticalC[r - 1][c];
+                            sumCH += cUp * cnmGrid.heads[r - 1][c];
+                            sumC += cUp;
+                        }
+
+                        // Down Channel (Bottom No-Flow Boundary if r==rows-1)
+                        if (r < cnmGrid.rows - 1) {
+                            let cDown = cnmGrid.verticalC[r][c];
+                            sumCH += cDown * cnmGrid.heads[r + 1][c];
+                            sumC += cDown;
+                        }
+
+                        if (sumC > 0) {
+                            cnmGrid.heads[r][c] = sumCH / sumC;
+                        }
+                    }
+                }
+            }
+
+            // Calculate Channel Flows: Q_ij = C_ij * (H_i - H_j)
+            for (let r = 0; r < cnmGrid.rows; r++) {
+                for (let c = 0; c < cnmGrid.cols - 1; c++) {
+                    cnmGrid.flowH[r][c] = cnmGrid.horizontalC[r][c] * (cnmGrid.heads[r][c] - cnmGrid.heads[r][c + 1]);
+                }
+            }
+            for (let r = 0; r < cnmGrid.rows - 1; r++) {
+                for (let c = 0; c < cnmGrid.cols; c++) {
+                    cnmGrid.flowV[r][c] = cnmGrid.verticalC[r][c] * (cnmGrid.heads[r][c] - cnmGrid.heads[r + 1][c]);
+                }
             }
         }
 
         function injectParticles() {
             particles = [];
-            for (let i = 0; i < 50; i++) {
+            let dx = (width - 120) / (cnmGrid.cols - 1);
+            let dy = (height - 80) / (cnmGrid.rows - 1);
+
+            for (let i = 0; i < 45; i++) {
+                let startRow = Math.floor(Math.random() * cnmGrid.rows);
                 particles.push({
-                    r: Math.floor(Math.random() * cnmGrid.rows),
+                    r: startRow,
                     c: 0,
-                    x: 40,
-                    y: 40 + Math.floor(Math.random() * cnmGrid.rows) * ((height - 80) / (cnmGrid.rows - 1)),
+                    x: 60,
+                    y: 40 + startRow * dy,
                     life: 0
                 });
             }
@@ -624,15 +739,14 @@
                     </div>
                     <div class="control-group">
                         <label>Hydraulic Head Gradient ($\nabla h$)</label>
-                        <input type="range" id="cnmGrad" min="1" max="10" value="5">
+                        <input type="range" id="cnmGrad" min="1" max="10" value="5" oninput="solveHydraulicHeadsAndFlow()">
                     </div>
                     <div class="control-group">
-                        <label>Tracer Particle Control</label>
+                        <label>Tracer Particle Injection</label>
                         <button class="btn btn-outline" style="padding:0.4rem; justify-content:center;" onclick="injectParticles()">Inject Tracer Pulse</button>
                     </div>
                 `;
                 generateCNMGrid();
-                injectParticles();
             } else if (regime === 'infiltration') {
                 controls.innerHTML = `
                     <div class="control-group">
@@ -659,16 +773,16 @@
                         <input type="range" id="heatSpacing" min="15" max="60" value="30">
                     </div>
                     <div class="control-group">
-                        <label>Thermal Conductivity ($k$ - W/m·K)</label>
+                        <label>Host Rock Thermal Cond ($k$)</label>
                         <input type="range" id="heatK" min="1" max="10" value="5">
                     </div>
                     <div class="control-group">
-                        <label>Decay Heat Output ($Q$)</label>
-                        <input type="range" id="heatQ" min="1" max="10" value="6">
+                        <label>Initial Decay Heat ($Q_0$)</label>
+                        <input type="range" id="heatQ" min="1" max="10" value="7">
                     </div>
                     <div class="control-group">
                         <label>Elapsed Time ($t$ - Years)</label>
-                        <input type="range" id="heatTime" min="1" max="100" value="25">
+                        <input type="range" id="heatTime" min="10" max="1000" value="100" step="10">
                     </div>
                 `;
             }
@@ -680,79 +794,98 @@
             ctx.clearRect(0, 0, width, height);
             const regime = document.getElementById('simRegime').value;
             const telemetry = document.getElementById('telemetryBox');
+            const legend = document.getElementById('legendBox');
 
             if (regime === 'cnm') {
                 let grad = parseFloat(document.getElementById('cnmGrad') ? document.getElementById('cnmGrad').value : 5);
                 let std = parseFloat(document.getElementById('cnmStd') ? document.getElementById('cnmStd').value : 3);
                 
-                telemetry.innerText = `Regime: 2D Channel Network Model | Log-Normal Std Dev σ: ${std} | Head Gradient: ${grad} m/m`;
+                legend.innerHTML = `
+                    <div style="font-weight:600; color:var(--accent-cyan); margin-bottom:2px;">pychan3d Boundary Conditions</div>
+                    <div>• Left Boundary: Fixed Head H_in = ${(grad*10).toFixed(1)} m</div>
+                    <div>• Right Boundary: Fixed Head H_out = 0.0 m</div>
+                    <div style="color:#ef4444; font-weight:600;">• Top & Bottom: No-Flow Boundary (∂h/∂y = 0)</div>
+                `;
 
-                let dx = (width - 80) / (cnmGrid.cols - 1);
+                telemetry.innerText = `Regime: 2D pychan3d CNM | FDM Solver Active | Log-Normal σ: ${std} | Head Gradient: ${grad} m/m`;
+
+                let dx = (width - 120) / (cnmGrid.cols - 1);
                 let dy = (height - 80) / (cnmGrid.rows - 1);
 
-                // Render Horizontal Channels
+                // Draw Top and Bottom No-Flow Boundary Indicators
+                ctx.strokeStyle = "rgba(239, 68, 68, 0.5)";
+                ctx.lineWidth = 2;
+                ctx.setLineDash([6, 4]);
+                ctx.beginPath();
+                ctx.moveTo(50, 25); ctx.lineTo(width - 50, 25); // Top No-Flow
+                ctx.moveTo(50, height - 25); ctx.lineTo(width - 50, height - 25); // Bottom No-Flow
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Render Horizontal Channels (thickness proportional to flow Q)
                 for (let r = 0; r < cnmGrid.rows; r++) {
                     for (let c = 0; c < cnmGrid.cols - 1; c++) {
-                        let cond = cnmGrid.horizontalConductance[r][c];
-                        let w = Math.min(8, Math.max(0.5, cond * 0.8));
-                        ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, cond * 0.15 + 0.1)})`;
+                        let q = Math.abs(cnmGrid.flowH[r][c]);
+                        let w = Math.min(7, Math.max(0.5, q * 0.1));
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, q * 0.05 + 0.15)})`;
                         ctx.lineWidth = w;
                         ctx.beginPath();
-                        ctx.moveTo(40 + c * dx, 40 + r * dy);
-                        ctx.lineTo(40 + (c + 1) * dx, 40 + r * dy);
+                        ctx.moveTo(60 + c * dx, 40 + r * dy);
+                        ctx.lineTo(60 + (c + 1) * dx, 40 + r * dy);
                         ctx.stroke();
                     }
                 }
 
-                // Render Vertical Channels
+                // Render Vertical Channels (No-Flow boundaries enforced at r=0 and r=rows-1)
                 for (let r = 0; r < cnmGrid.rows - 1; r++) {
                     for (let c = 0; c < cnmGrid.cols; c++) {
-                        let cond = cnmGrid.verticalConductance[r][c];
-                        let w = Math.min(8, Math.max(0.5, cond * 0.8));
-                        ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, cond * 0.15 + 0.1)})`;
+                        let q = Math.abs(cnmGrid.flowV[r][c]);
+                        let w = Math.min(7, Math.max(0.5, q * 0.1));
+                        ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, q * 0.05 + 0.15)})`;
                         ctx.lineWidth = w;
                         ctx.beginPath();
-                        ctx.moveTo(40 + c * dx, 40 + r * dy);
-                        ctx.lineTo(40 + c * dx, 40 + (r + 1) * dy);
+                        ctx.moveTo(60 + c * dx, 40 + r * dy);
+                        ctx.lineTo(60 + c * dx, 40 + (r + 1) * dy);
                         ctx.stroke();
                     }
                 }
 
-                // Move and Render Particles
+                // Particle Tracking in Exact FDM Flow Field
                 ctx.fillStyle = "#38bdf8";
                 particles.forEach(p => {
-                    let targetX = 40 + p.c * dx;
+                    let targetX = 60 + p.c * dx;
                     let targetY = 40 + p.r * dy;
 
-                    p.x += (targetX - p.x) * 0.15 + grad * 0.3;
-                    p.y += (targetY - p.y) * 0.15;
+                    p.x += (targetX - p.x) * 0.2 + grad * 0.2;
+                    p.y += (targetY - p.y) * 0.2;
 
-                    if (Math.abs(p.x - targetX) < 5 && p.c < cnmGrid.cols - 1) {
-                        // Choose next node based on conductance
-                        let rightC = cnmGrid.horizontalConductance[p.r][p.c] || 0;
-                        let upC = (p.r > 0) ? (cnmGrid.verticalConductance[p.r - 1][p.c] || 0) : 0;
-                        let downC = (p.r < cnmGrid.rows - 1) ? (cnmGrid.verticalConductance[p.r][p.c] || 0) : 0;
+                    if (Math.abs(p.x - targetX) < 4 && Math.abs(p.y - targetY) < 4 && p.c < cnmGrid.cols - 1) {
+                        // Gather positive outgoing fluxes Q_ij
+                        let qRight = Math.max(0, cnmGrid.flowH[p.r][p.c] || 0);
+                        let qLeft = (p.c > 0) ? Math.max(0, -cnmGrid.flowH[p.r][p.c - 1]) : 0;
+                        let qDown = (p.r < cnmGrid.rows - 1) ? Math.max(0, cnmGrid.flowV[p.r][p.c] || 0) : 0;
+                        let qUp = (p.r > 0) ? Math.max(0, -cnmGrid.flowV[p.r - 1][p.c] || 0) : 0;
 
-                        let total = rightC + upC + downC;
-                        let rand = Math.random() * total;
-
-                        if (rand < rightC) {
+                        let totalQ = qRight + qLeft + qDown + qUp;
+                        if (totalQ > 0) {
+                            let rand = Math.random() * totalQ;
+                            if (rand < qRight) { p.c++; }
+                            else if (rand < qRight + qDown && p.r < cnmGrid.rows - 1) { p.r++; }
+                            else if (rand < qRight + qDown + qUp && p.r > 0) { p.r--; }
+                            else if (p.c > 0) { p.c--; }
+                        } else {
                             p.c++;
-                        } else if (rand < rightC + upC && p.r > 0) {
-                            p.r--;
-                        } else if (p.r < cnmGrid.rows - 1) {
-                            p.r++;
                         }
                     }
 
-                    if (p.x > width - 40) {
-                        p.x = 40;
+                    if (p.x > width - 60 || p.c >= cnmGrid.cols - 1) {
+                        p.x = 60;
                         p.c = 0;
                         p.r = Math.floor(Math.random() * cnmGrid.rows);
                     }
 
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+                    ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
                     ctx.fill();
                 });
 
@@ -761,9 +894,15 @@
                 let psi = parseFloat(document.getElementById('infPsi') ? document.getElementById('infPsi').value : 40);
                 let rain = parseFloat(document.getElementById('infRain') ? document.getElementById('infRain').value : 6);
 
+                legend.innerHTML = `
+                    <div style="font-weight:600; color:var(--accent-cyan);">Unsaturated Infiltration Legend</div>
+                    <div>• Blue Shading: Wetting Front Depth</div>
+                    <div>• Matrix Suction: $\\psi = ${psi}$ kPa</div>
+                    <div>• Hydraulic Conductivity: $K_s = ${Ks}$ mm/h</div>
+                `;
+
                 telemetry.innerText = `Regime: Unsaturated Matrix Infiltration | Hydraulic Conductivity Ks: ${Ks} | Suction Head ψ: ${psi} kPa`;
 
-                // Infiltration Wetting Front Calculation
                 let wetDepth = (frameCount * (Ks * 0.08) + (psi * 0.5)) % (height - 60);
 
                 let fillGrad = ctx.createLinearGradient(0, 0, 0, wetDepth + 30);
@@ -774,7 +913,6 @@
                 ctx.fillStyle = fillGrad;
                 ctx.fillRect(40, 20, width - 80, wetDepth);
 
-                // Wetting Front Boundary Line
                 ctx.strokeStyle = "#38bdf8";
                 ctx.lineWidth = 2;
                 ctx.beginPath();
@@ -782,7 +920,6 @@
                 ctx.lineTo(width - 40, 20 + wetDepth);
                 ctx.stroke();
 
-                // Rainfall Droplets at Surface
                 ctx.fillStyle = "#60a5fa";
                 for (let i = 0; i < rain * 4; i++) {
                     let rx = 40 + Math.random() * (width - 80);
@@ -793,23 +930,43 @@
             } else if (regime === 'heat') {
                 let spacing = parseFloat(document.getElementById('heatSpacing') ? document.getElementById('heatSpacing').value : 30);
                 let k = parseFloat(document.getElementById('heatK') ? document.getElementById('heatK').value : 5);
-                let Q = parseFloat(document.getElementById('heatQ') ? document.getElementById('heatQ').value : 6);
-                let time = parseFloat(document.getElementById('heatTime') ? document.getElementById('heatTime').value : 25);
+                let Q0 = parseFloat(document.getElementById('heatQ') ? document.getElementById('heatQ').value : 7);
+                let time = parseFloat(document.getElementById('heatTime') ? document.getElementById('heatTime').value : 100);
 
-                telemetry.innerText = `Regime: DGR Fuel Canister Heat Transport | Canister Spacing S: ${spacing} m | Conductivity k: ${k} W/m·K`;
+                // Thermal Decay Formulation: Q(t) = Q0 * exp(-lambda * t)
+                let lambda = 0.003; // decay constant
+                let currentQ = Q0 * Math.exp(-lambda * time);
+                let peakTemp = (15 + currentQ * 12).toFixed(1);
+                let thermalRadius = Math.min(130, Math.sqrt(time) * 6 + (currentQ * 5) / k);
+
+                // Thermal Interference Calculation
+                let canisterPixelSpacing = spacing * 3.5;
+                let isInterference = (thermalRadius * 2 > canisterPixelSpacing);
+
+                legend.innerHTML = `
+                    <div style="font-weight:600; color:var(--accent-amber); margin-bottom:2px;">DGR Thermal Model Legend</div>
+                    <div>• <strong>Elapsed Time ($t$):</strong> <span style="color:var(--accent-cyan); font-weight:700;">${time} Years</span></div>
+                    <div>• <strong>Peak Canister Temp ($T_{max}$):</strong> ${peakTemp} °C</div>
+                    <div>• <strong>Host Rock Ambient ($T_0$):</strong> 15.0 °C</div>
+                    <div>• <strong>Thermal Plume Radius ($R_{th}$):</strong> ${(thermalRadius*0.4).toFixed(1)} m</div>
+                    <div style="margin-top:2px; font-weight:600; color:${isInterference ? '#ef4444' : '#10b981'};">
+                        • Plume Interaction: ${isInterference ? 'WARNING (Plumes Overlap)' : 'STABLE (No Overlap)'}
+                    </div>
+                `;
+
+                telemetry.innerText = `Regime: DGR Nuclear Fuel Canister Thermal Transport | t = ${time} Years | Spacing S = ${spacing} m | T_max = ${peakTemp} °C`;
 
                 let numCanisters = 4;
-                let startX = (width - (numCanisters - 1) * spacing * 4) / 2;
+                let startX = (width - (numCanisters - 1) * canisterPixelSpacing) / 2;
                 let centerY = height / 2;
 
-                // Draw Heat Contours around Canisters
+                // Draw Heat Plumes
                 for (let c = 0; c < numCanisters; c++) {
-                    let cx = startX + c * spacing * 4;
-                    let thermalRadius = Math.min(120, (time * 1.5) + (Q * 4) / k);
+                    let cx = startX + c * canisterPixelSpacing;
 
-                    let radialGrad = ctx.createRadialGradient(cx, centerY, 5, cx, centerY, thermalRadius);
-                    radialGrad.addColorStop(0, "rgba(245, 158, 11, 0.8)");
-                    radialGrad.addColorStop(0.5, "rgba(239, 68, 68, 0.3)");
+                    let radialGrad = ctx.createRadialGradient(cx, centerY, 4, cx, centerY, thermalRadius);
+                    radialGrad.addColorStop(0, "rgba(245, 158, 11, 0.85)");
+                    radialGrad.addColorStop(0.4, "rgba(239, 68, 68, 0.4)");
                     radialGrad.addColorStop(1, "rgba(239, 68, 68, 0)");
 
                     ctx.fillStyle = radialGrad;
@@ -817,19 +974,19 @@
                     ctx.arc(cx, centerY, thermalRadius, 0, Math.PI * 2);
                     ctx.fill();
 
-                    // Render Canister
+                    // Render Canisters
                     ctx.fillStyle = "#f3f4f6";
                     ctx.strokeStyle = "#f59e0b";
                     ctx.lineWidth = 2;
-                    ctx.fillRect(cx - 8, centerY - 20, 16, 40);
-                    ctx.strokeRect(cx - 8, centerY - 20, 16, 40);
+                    ctx.fillRect(cx - 7, centerY - 18, 14, 36);
+                    ctx.strokeRect(cx - 7, centerY - 18, 14, 36);
                 }
             }
 
             requestAnimationFrame(render);
         }
 
-        // Initialize Controls & Engine
+        // Initialize Engine
         switchRegime();
         render();
     </script>
