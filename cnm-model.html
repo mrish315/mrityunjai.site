@@ -30,10 +30,10 @@
 
         .physics-lab { background: rgba(13,19,33,0.95); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 1.5rem; }
         
-        /* Interactive Toolbar */
+        /* Action Toolbar */
         .toolbar {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.65rem;
             flex-wrap: wrap;
             margin-bottom: 1.25rem;
             background: rgba(255, 255, 255, 0.02);
@@ -43,12 +43,12 @@
             align-items: center;
         }
         .tool-btn {
-            padding: 0.55rem 1rem;
+            padding: 0.55rem 0.9rem;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-subtle);
             color: var(--text-main);
             border-radius: 6px;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 500;
             cursor: pointer;
             display: inline-flex;
@@ -73,9 +73,9 @@
             border-color: var(--accent-emerald);
         }
         .tool-btn-danger { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
-        .tool-btn-danger:hover { background: #ef4444; color: #fff; }
+        .tool-btn-danger:hover, .tool-btn-danger.active { background: #ef4444; color: #fff; border-color: #ef4444; }
 
-        .canvas-container { position: relative; width: 100%; height: 530px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); cursor: crosshair; }
+        .canvas-container { position: relative; width: 100%; height: 540px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); cursor: crosshair; }
         #physicsCanvas { width: 100%; height: 100%; display: block; }
         
         .canvas-overlay { 
@@ -124,7 +124,7 @@
 
     <div class="container">
         <h1>Custom 2D Channel Network Builder</h1>
-        <p class="subtitle">Construct nodes, connect channel segments, edit conductances (C: 1e-12 to 1.0 m²/s), assign boundary heads (H), and compute steady-state head & flow distributions.</p>
+        <p class="subtitle">Construct nodes, connect channels, edit conductances (C: 1e-12 to 1.0 m²/s), set boundary heads (H), zoom/pan with dynamic scale rulers, and visualize flow rate (Q) color spectrums.</p>
 
         <div class="physics-lab">
             <!-- Action Toolbar -->
@@ -136,29 +136,38 @@
                     <i class="fa-solid fa-diagram-project"></i> Connect Channel
                 </button>
                 <button class="tool-btn" id="btnModeBoundary" onclick="setMode('boundary')">
-                    <i class="fa-solid fa-gauge-high"></i> Toggle Boundary Head (H)
+                    <i class="fa-solid fa-gauge-high"></i> Toggle Boundary (H)
                 </button>
                 <button class="tool-btn" id="btnModeConductance" onclick="setMode('conductance')">
                     <i class="fa-solid fa-pen-to-square"></i> Edit Conductance (C)
                 </button>
+                <button class="tool-btn tool-btn-danger" id="btnModeDelete" onclick="setMode('delete')">
+                    <i class="fa-solid fa-eraser"></i> Delete Element
+                </button>
+
+                <div style="width: 1px; height: 24px; background: var(--border-subtle); margin: 0 4px;"></div>
+
+                <button class="tool-btn" onclick="zoomIn()"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                <button class="tool-btn" onclick="zoomOut()"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                <button class="tool-btn" onclick="resetZoom()"><i class="fa-solid fa-compress"></i> 1:1 Scale</button>
+
+                <div style="width: 1px; height: 24px; background: var(--border-subtle); margin: 0 4px;"></div>
+
                 <button class="tool-btn tool-btn-toggle" id="btnToggleParticles" onclick="toggleParticles()">
                     <i class="fa-solid fa-eye-slash"></i> Particle Transport: OFF
                 </button>
+                
                 <div style="flex-grow: 1;"></div>
-                <button class="tool-btn" onclick="loadPresetNetwork()">
-                    <i class="fa-solid fa-rotate-left"></i> Load Preset
-                </button>
-                <button class="tool-btn tool-btn-danger" onclick="clearNetwork()">
-                    <i class="fa-solid fa-trash"></i> Clear Canvas
-                </button>
+                <button class="tool-btn" onclick="loadPresetNetwork()"><i class="fa-solid fa-rotate-left"></i> Load Preset</button>
+                <button class="tool-btn tool-btn-danger" onclick="clearNetwork()"><i class="fa-solid fa-trash"></i> Clear</button>
             </div>
 
             <!-- Mode Helper -->
             <div class="instructions-panel" id="instructionText">
-                <span><i class="fa-solid fa-info-circle"></i> <strong>Add Node Mode:</strong> Click on the canvas inside the ruler grid to place junction nodes.</span>
+                <span><i class="fa-solid fa-info-circle"></i> <strong>Add Node Mode:</strong> Click inside the canvas to place junction nodes. Scroll mouse wheel to zoom; drag with middle/right mouse button to pan.</span>
             </div>
 
-            <div class="canvas-container">
+            <div class="canvas-container" id="canvasContainer">
                 <canvas id="physicsCanvas"></canvas>
                 <div class="canvas-overlay" id="telemetryBox">Calculating Steady-State Solution...</div>
             </div>
@@ -177,7 +186,7 @@
                 H<sub>i</sub> = [ Σ (C<sub>ij</sub> · H<sub>j</sub>) ] / [ Σ C<sub>ij</sub> ]
             </p>
             <p style="color:var(--text-muted);">
-                Channel conductances (<i>C</i><sub>ij</sub>) range from <strong>1.0 × 10<sup>-12</sup> to 1.0 m²/s</strong> (default: <strong>1.0 × 10<sup>-5</sup> m²/s</strong>). Flow rate flux is evaluated as <i>Q</i><sub>ij</sub> = <i>C</i><sub>ij</sub> (<i>H</i><sub>i</sub> - <i>H</i><sub>j</sub>) in m³/s. When toggled ON, advective solute transport particles move proportionally to local channel flow velocities.
+                Channel conductances (<i>C</i><sub>ij</sub>) range from <strong>1.0 × 10<sup>-12</sup> to 1.0 m²/s</strong> (default: <strong>1.0 × 10<sup>-5</sup> m²/s</strong>). Flow rate flux is evaluated as <i>Q</i><sub>ij</sub> = <i>C</i><sub>ij</sub> (<i>H</i><sub>i</sub> - <i>H</i><sub>j</sub>) in m³/s. Channel colors dynamically transition from <strong>Red (High Flow)</strong> to <strong>Blue (Low Flow)</strong> according to local flow rate magnitudes.
             </p>
         </div>
     </div>
@@ -196,20 +205,52 @@
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        // Constants & Defaults
+        // Constants
         const DEFAULT_CONDUCTANCE = 1e-5; // 1e-5 m2/s
         const MIN_CONDUCTANCE = 1e-12;     // 1e-12 m2/s
         const MAX_CONDUCTANCE = 1.0;       // 1.0 m2/s
-        const RULER_OFFSET = 30;           // 30px ruler margin
+        const RULER_OFFSET = 32;           // 32px ruler margin
 
+        // Pan & Zoom View State
+        let zoom = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isPanning = false;
+        let panStartX = 0, panStartY = 0;
+
+        // Tool Modes: 'addNode', 'connect', 'boundary', 'conductance', 'delete'
         let currentMode = 'addNode';
         let dragStartNode = null;
-        let mouseX = 0, mouseY = 0;
-        let showParticles = false;         // Default View: OFF (Steady-State Head & Flow View)
+        let selectedNode = null;
+        let selectedChannel = null;
+        let mouseScreenX = 0, mouseScreenY = 0;
+        let showParticles = false; // Default View: OFF
 
         let nodes = [];
         let channels = [];
         let particles = [];
+        let maxNetworkFlow = 1e-5; // Track max flow rate for spectrum color scaling
+
+        // --- Coordinate Transformations ---
+        function worldToScreenX(xw) { return RULER_OFFSET + (xw - panX) * zoom; }
+        function worldToScreenY(yw) { return RULER_OFFSET + (yw - panY) * zoom; }
+        function screenToWorldX(xs) { return panX + (xs - RULER_OFFSET) / zoom; }
+        function screenToWorldY(ys) { return panY + (ys - RULER_OFFSET) / zoom; }
+
+        // --- Zoom & Pan Controls ---
+        function zoomIn() { applyZoom(1.25, width / 2, height / 2); }
+        function zoomOut() { applyZoom(0.8, width / 2, height / 2); }
+        function resetZoom() { zoom = 1.0; panX = 0; panY = 0; }
+
+        function applyZoom(factor, centerScreenX, centerScreenY) {
+            let prevWorldX = screenToWorldX(centerScreenX);
+            let prevWorldY = screenToWorldY(centerScreenY);
+            
+            zoom = Math.max(0.2, Math.min(8.0, zoom * factor));
+            
+            panX = prevWorldX - (centerScreenX - RULER_OFFSET) / zoom;
+            panY = prevWorldY - (centerScreenY - RULER_OFFSET) / zoom;
+        }
 
         function toggleParticles() {
             showParticles = !showParticles;
@@ -232,7 +273,7 @@
             const instruction = document.getElementById('instructionText');
             if (mode === 'addNode') {
                 document.getElementById('btnModeAddNode').classList.add('active');
-                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Add Node Mode:</strong> Click on the canvas to place junction nodes.</span>';
+                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Add Node Mode:</strong> Click inside the canvas to place junction nodes.</span>';
             } else if (mode === 'connect') {
                 document.getElementById('btnModeConnect').classList.add('active');
                 instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Connect Mode:</strong> Click or drag from one node to another to create a channel.</span>';
@@ -242,16 +283,32 @@
             } else if (mode === 'conductance') {
                 document.getElementById('btnModeConductance').classList.add('active');
                 instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Edit Conductance Mode:</strong> Click any channel segment to edit C (Range: 1e-12 to 1.0 m²/s).</span>';
+            } else if (mode === 'delete') {
+                document.getElementById('btnModeDelete').classList.add('active');
+                instruction.innerHTML = '<span><i class="fa-solid fa-info-circle"></i> <strong>Delete Mode:</strong> Click any node or channel to delete it. You can also press Delete/Backspace key.</span>';
             }
         }
 
-        // --- Gauss-Seidel FDM Solver for Steady-State Solution ---
+        function deleteSelectedNode(nodeId) {
+            nodes = nodes.filter(n => n.id !== nodeId);
+            channels = channels.filter(ch => ch.from !== nodeId && ch.to !== nodeId);
+            if (selectedNode && selectedNode.id === nodeId) selectedNode = null;
+            solveGraphFDM();
+        }
+
+        function deleteSelectedChannel(channelId) {
+            channels = channels.filter(ch => ch.id !== channelId);
+            if (selectedChannel && selectedChannel.id === channelId) selectedChannel = null;
+            solveGraphFDM();
+        }
+
+        // --- Gauss-Seidel FDM Solver ---
         function solveGraphFDM() {
             if (nodes.length < 2) return;
 
             for (let iter = 0; iter < 200; iter++) {
                 nodes.forEach((node) => {
-                    if (node.type !== 'internal') return; // Fixed boundary heads stay constant
+                    if (node.type !== 'internal') return;
 
                     let sumCH = 0.0;
                     let sumC = 0.0;
@@ -259,33 +316,43 @@
                     channels.forEach(ch => {
                         if (ch.from === node.id) {
                             let targetNode = nodes.find(n => n.id === ch.to);
-                            if (targetNode) {
-                                sumCH += ch.conductance * targetNode.head;
-                                sumC += ch.conductance;
-                            }
+                            if (targetNode) { sumCH += ch.conductance * targetNode.head; sumC += ch.conductance; }
                         } else if (ch.to === node.id) {
                             let sourceNode = nodes.find(n => n.id === ch.from);
-                            if (sourceNode) {
-                                sumCH += ch.conductance * sourceNode.head;
-                                sumC += ch.conductance;
-                            }
+                            if (sourceNode) { sumCH += ch.conductance * sourceNode.head; sumC += ch.conductance; }
                         }
                     });
 
-                    if (sumC > 0) {
-                        node.head = sumCH / sumC;
-                    }
+                    if (sumC > 0) node.head = sumCH / sumC;
                 });
             }
 
-            // Calculate Channel Flows Q = C * (H_from - H_to)
+            maxNetworkFlow = 1e-12;
             channels.forEach(ch => {
                 let n1 = nodes.find(n => n.id === ch.from);
                 let n2 = nodes.find(n => n.id === ch.to);
                 if (n1 && n2) {
-                    ch.flow = ch.conductance * (n1.head - n2.head); // Positive means flowing from -> to
+                    ch.flow = ch.conductance * (n1.head - n2.head);
+                    if (Math.abs(ch.flow) > maxNetworkFlow) {
+                        maxNetworkFlow = Math.abs(ch.flow);
+                    }
                 }
             });
+        }
+
+        // --- Flow Rate to HSL Color Mapping ---
+        function getFlowColor(absQ) {
+            if (absQ <= 1e-15) return "rgba(100, 116, 139, 0.35)"; // Stagnant flow: Slate
+            
+            let logQ = Math.log10(absQ);
+            let logMax = Math.log10(Math.max(maxNetworkFlow, 1e-12));
+            let logMin = logMax - 6; // 6 orders of magnitude spectrum
+            
+            let norm = Math.max(0, Math.min(1, (logQ - logMin) / (logMax - logMin)));
+            
+            // Hue transition: 220 (Blue) -> 160 (Cyan) -> 110 (Green) -> 50 (Yellow) -> 0 (Red)
+            let hue = (1 - norm) * 220;
+            return `hsl(${hue}, 90%, 52%)`;
         }
 
         // --- Particle Transport Engine ---
@@ -364,7 +431,7 @@
             });
         }
 
-        // Draw Spatial Ruler along Top and Left Edges
+        // --- Adaptive Ruler Rendering ---
         function drawRulers() {
             ctx.fillStyle = "#090d16";
             ctx.fillRect(0, 0, width, RULER_OFFSET);
@@ -372,60 +439,129 @@
 
             ctx.strokeStyle = "rgba(148, 163, 184, 0.4)";
             ctx.lineWidth = 1;
-
-            // Top Ruler (X-Axis: 2px = 1m)
             ctx.fillStyle = "#94a3b8";
             ctx.font = "9px Fira Code";
+
+            let targetPxSpacing = 60;
+            let mPerPx = 0.5 / zoom;
+            let rawMStep = targetPxSpacing * mPerPx;
+            
+            let steps = [0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
+            let mStep = steps.find(s => s >= rawMStep) || 1000;
+
+            // Top Ruler
             ctx.beginPath();
             ctx.moveTo(RULER_OFFSET, RULER_OFFSET);
             ctx.lineTo(width, RULER_OFFSET);
             ctx.stroke();
 
-            for (let px = RULER_OFFSET + 40; px < width; px += 40) {
-                let meters = Math.round((px - RULER_OFFSET) / 2);
-                ctx.beginPath();
-                ctx.moveTo(px, RULER_OFFSET - 8);
-                ctx.lineTo(px, RULER_OFFSET);
-                ctx.stroke();
-                ctx.fillText(`${meters}m`, px - 10, RULER_OFFSET - 12);
+            let minWorldX = screenToWorldX(RULER_OFFSET) * 0.5;
+            let startMeterX = Math.floor(minWorldX / mStep) * mStep;
+
+            for (let m = startMeterX; ; m += mStep) {
+                let screenX = worldToScreenX(m * 2);
+                if (screenX > width) break;
+                if (screenX >= RULER_OFFSET) {
+                    ctx.beginPath();
+                    ctx.moveTo(screenX, RULER_OFFSET - 8);
+                    ctx.lineTo(screenX, RULER_OFFSET);
+                    ctx.stroke();
+                    ctx.fillText(`${m}m`, screenX - 8, RULER_OFFSET - 12);
+                }
             }
 
-            // Left Ruler (Y-Axis: 2px = 1m)
+            // Left Ruler
             ctx.beginPath();
             ctx.moveTo(RULER_OFFSET, RULER_OFFSET);
             ctx.lineTo(RULER_OFFSET, height);
             ctx.stroke();
 
-            for (let py = RULER_OFFSET + 40; py < height; py += 40) {
-                let meters = Math.round((py - RULER_OFFSET) / 2);
-                ctx.beginPath();
-                ctx.moveTo(RULER_OFFSET - 8, py);
-                ctx.lineTo(RULER_OFFSET, py);
-                ctx.stroke();
-                ctx.fillText(`${meters}m`, 2, py + 3);
+            let minWorldY = screenToWorldY(RULER_OFFSET) * 0.5;
+            let startMeterY = Math.floor(minWorldY / mStep) * mStep;
+
+            for (let m = startMeterY; ; m += mStep) {
+                let screenY = worldToScreenY(m * 2);
+                if (screenY > height) break;
+                if (screenY >= RULER_OFFSET) {
+                    ctx.beginPath();
+                    ctx.moveTo(RULER_OFFSET - 8, screenY);
+                    ctx.lineTo(RULER_OFFSET, screenY);
+                    ctx.stroke();
+                    ctx.fillText(`${m}m`, 2, screenY + 3);
+                }
             }
 
-            // Ruler Corner Box
-            ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+            // Corner Box
+            ctx.fillStyle = "rgba(15, 23, 42, 0.95)";
             ctx.fillRect(0, 0, RULER_OFFSET, RULER_OFFSET);
             ctx.strokeStyle = "rgba(56, 189, 248, 0.3)";
             ctx.strokeRect(0, 0, RULER_OFFSET, RULER_OFFSET);
             ctx.fillStyle = "#38bdf8";
             ctx.font = "8px Fira Code";
-            ctx.fillText("m", 12, 18);
+            ctx.fillText("m", 12, 19);
         }
 
-        // Preset Network Loader
+        // --- Flow Rate Color Legend Rendering ---
+        function drawColorLegend() {
+            let legendWidth = 115;
+            let legendHeight = 150;
+            let legX = width - legendWidth - 15;
+            let legY = RULER_OFFSET + 15;
+
+            // Backdrop Panel
+            ctx.fillStyle = "rgba(9, 13, 22, 0.88)";
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+            ctx.lineWidth = 1;
+            ctx.fillRect(legX, legY, legendWidth, legendHeight);
+            ctx.strokeRect(legX, legY, legendWidth, legendHeight);
+
+            // Title
+            ctx.fillStyle = "#f3f4f6";
+            ctx.font = "9px Fira Code";
+            ctx.fillText("Flow Rate Q (m³/s)", legX + 10, legY + 16);
+
+            // Gradient Bar
+            let barX = legX + 12;
+            let barY = legY + 26;
+            let barW = 12;
+            let barH = 105;
+
+            let legGrad = ctx.createLinearGradient(0, barY, 0, barY + barH);
+            legGrad.addColorStop(0.00, "hsl(0, 90%, 52%)");   // Red (Max Q)
+            legGrad.addColorStop(0.25, "hsl(50, 90%, 52%)");  // Yellow
+            legGrad.addColorStop(0.50, "hsl(110, 90%, 52%)"); // Green
+            legGrad.addColorStop(0.75, "hsl(160, 90%, 52%)"); // Cyan
+            legGrad.addColorStop(1.00, "hsl(220, 90%, 52%)"); // Blue (Min Q)
+
+            ctx.fillStyle = legGrad;
+            ctx.fillRect(barX, barY, barW, barH);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.strokeRect(barX, barY, barW, barH);
+
+            // Scale Labels
+            ctx.fillStyle = "#94a3b8";
+            ctx.font = "8px Fira Code";
+            
+            let minQDisplay = Math.pow(10, Math.log10(Math.max(maxNetworkFlow, 1e-12)) - 6);
+            ctx.fillText(formatScientific(maxNetworkFlow), barX + 18, barY + 10);
+            ctx.fillText("High Flow", barX + 18, barY + 22);
+
+            ctx.fillText(formatScientific(minQDisplay), barX + 18, barY + barH - 8);
+            ctx.fillText("Low / Baseline", barX + 18, barY + barH + 2);
+        }
+
+        // Preset Loader
         function loadPresetNetwork() {
+            resetZoom();
             nodes = [
-                { id: 1, x: 100, y: 140, head: 10.0, type: 'inlet' },
-                { id: 2, x: 100, y: 380, head: 10.0, type: 'inlet' },
-                { id: 3, x: 320, y: 180, head: 5.0, type: 'internal' },
-                { id: 4, x: 320, y: 340, head: 5.0, type: 'internal' },
-                { id: 5, x: 560, y: 260, head: 5.0, type: 'internal' },
-                { id: 6, x: 800, y: 180, head: 5.0, type: 'internal' },
-                { id: 7, x: 800, y: 340, head: 5.0, type: 'internal' },
-                { id: 8, x: 1040, y: 260, head: 0.0, type: 'outlet' }
+                { id: 1, x: 80, y: 120, head: 10.0, type: 'inlet' },
+                { id: 2, x: 80, y: 360, head: 10.0, type: 'inlet' },
+                { id: 3, x: 300, y: 160, head: 5.0, type: 'internal' },
+                { id: 4, x: 300, y: 320, head: 5.0, type: 'internal' },
+                { id: 5, x: 540, y: 240, head: 5.0, type: 'internal' },
+                { id: 6, x: 780, y: 160, head: 5.0, type: 'internal' },
+                { id: 7, x: 780, y: 320, head: 5.0, type: 'internal' },
+                { id: 8, x: 1000, y: 240, head: 0.0, type: 'outlet' }
             ];
 
             channels = [
@@ -441,6 +577,8 @@
             ];
 
             particles = [];
+            selectedNode = null;
+            selectedChannel = null;
             solveGraphFDM();
         }
 
@@ -449,13 +587,20 @@
             channels = [];
             particles = [];
             dragStartNode = null;
+            selectedNode = null;
+            selectedChannel = null;
+            maxNetworkFlow = 1e-5;
         }
 
-        function getNodeAt(x, y) {
-            return nodes.find(n => Math.hypot(n.x - x, n.y - y) < 18);
+        function getNodeAtScreen(xs, ys) {
+            let xw = screenToWorldX(xs);
+            let yw = screenToWorldY(ys);
+            return nodes.find(n => Math.hypot(n.x - xw, n.y - yw) < (18 / zoom));
         }
 
-        function getChannelAt(x, y) {
+        function getChannelAtScreen(xs, ys) {
+            let xw = screenToWorldX(xs);
+            let yw = screenToWorldY(ys);
             return channels.find(ch => {
                 let n1 = nodes.find(n => n.id === ch.from);
                 let n2 = nodes.find(n => n.id === ch.to);
@@ -463,54 +608,78 @@
                 
                 let L2 = (n2.x - n1.x)**2 + (n2.y - n1.y)**2;
                 if (L2 === 0) return false;
-                let t = ((x - n1.x) * (n2.x - n1.x) + (y - n1.y) * (n2.y - n1.y)) / L2;
+                let t = ((xw - n1.x) * (n2.x - n1.x) + (yw - n1.y) * (n2.y - n1.y)) / L2;
                 t = Math.max(0, Math.min(1, t));
                 let projX = n1.x + t * (n2.x - n1.x);
                 let projY = n1.y + t * (n2.y - n1.y);
-                return Math.hypot(x - projX, y - projY) < 10;
+                return Math.hypot(xw - projX, yw - projY) < (10 / zoom);
             });
         }
 
+        // --- Mouse & Wheel Event Handlers ---
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            let mouseX = e.clientX - rect.left;
+            let mouseY = e.clientY - rect.top;
+            
+            let factor = e.deltaY < 0 ? 1.15 : 0.85;
+            applyZoom(factor, mouseX, mouseY);
+        }, { passive: false });
+
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
-            mouseX = e.clientX - rect.left;
-            mouseY = e.clientY - rect.top;
+            mouseScreenX = e.clientX - rect.left;
+            mouseScreenY = e.clientY - rect.top;
+
+            if (isPanning) {
+                panX -= (e.clientX - panStartX) / zoom;
+                panY -= (e.clientY - panStartY) / zoom;
+                panStartX = e.clientX;
+                panStartY = e.clientY;
+            }
         });
 
         canvas.addEventListener('mousedown', (e) => {
             const rect = canvas.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
+            let xs = e.clientX - rect.left;
+            let ys = e.clientY - rect.top;
 
-            if (x < RULER_OFFSET || y < RULER_OFFSET) return; // Prevent clicks on rulers
+            if (xs < RULER_OFFSET || ys < RULER_OFFSET) return;
 
-            let clickedNode = getNodeAt(x, y);
+            if (e.button === 1 || e.button === 2) {
+                isPanning = true;
+                panStartX = e.clientX;
+                panStartY = e.clientY;
+                return;
+            }
+
+            let xw = screenToWorldX(xs);
+            let yw = screenToWorldY(ys);
+
+            let clickedNode = getNodeAtScreen(xs, ys);
+            let clickedChannel = getChannelAtScreen(xs, ys);
 
             if (currentMode === 'addNode') {
                 if (!clickedNode) {
                     let newId = nodes.length > 0 ? Math.max(...nodes.map(n => n.id)) + 1 : 1;
-                    nodes.push({ id: newId, x: x, y: y, head: 5.0, type: 'internal' });
+                    nodes.push({ id: newId, x: xw, y: yw, head: 5.0, type: 'internal' });
                     solveGraphFDM();
                 }
             } else if (currentMode === 'connect') {
-                if (clickedNode) {
-                    dragStartNode = clickedNode;
-                }
+                if (clickedNode) dragStartNode = clickedNode;
             } else if (currentMode === 'boundary') {
                 if (clickedNode) {
                     if (clickedNode.type === 'internal') {
-                        clickedNode.type = 'inlet';
-                        clickedNode.head = 10.0;
+                        clickedNode.type = 'inlet'; clickedNode.head = 10.0;
                     } else if (clickedNode.type === 'inlet') {
-                        clickedNode.type = 'outlet';
-                        clickedNode.head = 0.0;
+                        clickedNode.type = 'outlet'; clickedNode.head = 0.0;
                     } else {
                         clickedNode.type = 'internal';
                     }
                     solveGraphFDM();
                 }
             } else if (currentMode === 'conductance') {
-                let clickedChannel = getChannelAt(x, y);
                 if (clickedChannel) {
                     let inputStr = prompt(
                         `Enter Channel Conductance C in m²/s\nRange: 1.0e-12 to 1.0 m²/s\nDefault: 1.0e-5 m²/s:`, 
@@ -524,15 +693,26 @@
                         }
                     }
                 }
+            } else if (currentMode === 'delete') {
+                if (clickedNode) {
+                    deleteSelectedNode(clickedNode.id);
+                } else if (clickedChannel) {
+                    deleteSelectedChannel(clickedChannel.id);
+                }
             }
+
+            selectedNode = clickedNode || null;
+            selectedChannel = clickedNode ? null : clickedChannel;
         });
 
         canvas.addEventListener('mouseup', (e) => {
+            if (isPanning) { isPanning = false; return; }
+
             if (currentMode === 'connect' && dragStartNode) {
                 const rect = canvas.getBoundingClientRect();
-                let x = e.clientX - rect.left;
-                let y = e.clientY - rect.top;
-                let targetNode = getNodeAt(x, y);
+                let xs = e.clientX - rect.left;
+                let ys = e.clientY - rect.top;
+                let targetNode = getNodeAtScreen(xs, ys);
 
                 if (targetNode && targetNode.id !== dragStartNode.id) {
                     let exists = channels.some(ch => 
@@ -555,7 +735,18 @@
             }
         });
 
-        // Helper to format float values in clean scientific notation
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                if (selectedNode) {
+                    deleteSelectedNode(selectedNode.id);
+                } else if (selectedChannel) {
+                    deleteSelectedChannel(selectedChannel.id);
+                }
+            }
+        });
+
         function formatScientific(val) {
             if (Math.abs(val) === 0) return "0.0";
             if (Math.abs(val) >= 0.01 && Math.abs(val) <= 100) return val.toFixed(2);
@@ -566,7 +757,7 @@
         function render() {
             ctx.clearRect(0, 0, width, height);
 
-            // Draw Spatial Rulers
+            // Rulers
             drawRulers();
 
             // Connection Drag Line
@@ -575,73 +766,88 @@
                 ctx.lineWidth = 2;
                 ctx.setLineDash([4, 4]);
                 ctx.beginPath();
-                ctx.moveTo(dragStartNode.x, dragStartNode.y);
-                ctx.lineTo(mouseX, mouseY);
+                ctx.moveTo(worldToScreenX(dragStartNode.x), worldToScreenY(dragStartNode.y));
+                ctx.lineTo(mouseScreenX, mouseScreenY);
                 ctx.stroke();
                 ctx.setLineDash([]);
             }
 
-            // Render Channels
+            // Channels Rendering (Color Coded by Flow Rate Q)
             channels.forEach(ch => {
                 let n1 = nodes.find(n => n.id === ch.from);
                 let n2 = nodes.find(n => n.id === ch.to);
                 if (!n1 || !n2) return;
 
-                let absQ = Math.abs(ch.flow);
-                
-                // Logarithmic visual line scaling across 12 orders of magnitude (1e-12 to 1.0)
-                let logC = Math.log10(ch.conductance); // Range -12 to 0
-                let lineThick = Math.max(1.5, Math.min(8.0, ((logC + 12) / 12) * 6.5 + 1.5));
+                let sx1 = worldToScreenX(n1.x), sy1 = worldToScreenY(n1.y);
+                let sx2 = worldToScreenX(n2.x), sy2 = worldToScreenY(n2.y);
 
-                ctx.strokeStyle = absQ > 1e-15 ? "rgba(56, 189, 248, 0.85)" : "rgba(148, 163, 184, 0.3)";
+                let absQ = Math.abs(ch.flow);
+                let logC = Math.log10(ch.conductance);
+                let lineThick = Math.max(1.5, Math.min(9.0, ((logC + 12) / 12) * 7.0 + 1.5)) * Math.min(1.5, Math.sqrt(zoom));
+
+                let isSelected = selectedChannel && selectedChannel.id === ch.id;
+                
+                // Color mapping based on Flow Rate Q
+                ctx.strokeStyle = isSelected ? "#ef4444" : getFlowColor(absQ);
                 ctx.lineWidth = lineThick;
 
                 ctx.beginPath();
-                ctx.moveTo(n1.x, n1.y);
-                ctx.lineTo(n2.x, n2.y);
+                ctx.moveTo(sx1, sy1);
+                ctx.lineTo(sx2, sy2);
                 ctx.stroke();
 
-                // Draw Flow Direction Arrowhead on Channel
-                let midX = (n1.x + n2.x) / 2;
-                let midY = (n1.y + n2.y) / 2;
+                // Directional Arrowhead (Color matches Flow Rate Spectrum)
+                let midSx = (sx1 + sx2) / 2;
+                let midSy = (sy1 + sy2) / 2;
 
                 if (absQ > 1e-15) {
-                    let angle = Math.atan2(n2.y - n1.y, n2.x - n1.x);
-                    if (ch.flow < 0) angle += Math.PI; // Reverse if flow is negative
+                    let angle = Math.atan2(sy2 - sy1, sx2 - sx1);
+                    if (ch.flow < 0) angle += Math.PI;
 
-                    let arrowSize = 6;
-                    ctx.fillStyle = "#38bdf8";
+                    let arrowSize = 6 * Math.min(1.5, Math.sqrt(zoom));
+                    ctx.fillStyle = isSelected ? "#ef4444" : getFlowColor(absQ);
                     ctx.beginPath();
-                    ctx.moveTo(midX + arrowSize * Math.cos(angle), midY + arrowSize * Math.sin(angle));
-                    ctx.lineTo(midX - arrowSize * Math.cos(angle - Math.PI / 6), midY - arrowSize * Math.sin(angle - Math.PI / 6));
-                    ctx.lineTo(midX - arrowSize * Math.cos(angle + Math.PI / 6), midY - arrowSize * Math.sin(angle + Math.PI / 6));
+                    ctx.moveTo(midSx + arrowSize * Math.cos(angle), midSy + arrowSize * Math.sin(angle));
+                    ctx.lineTo(midSx - arrowSize * Math.cos(angle - Math.PI / 6), midSy - arrowSize * Math.sin(angle - Math.PI / 6));
+                    ctx.lineTo(midSx - arrowSize * Math.cos(angle + Math.PI / 6), midSy - arrowSize * Math.sin(angle + Math.PI / 6));
                     ctx.closePath();
                     ctx.fill();
                 }
 
-                // Display Steady-State Conductance & Flow Rate Labels
+                // Channel Text Labels
                 ctx.fillStyle = "#94a3b8";
-                ctx.font = "9px Fira Code";
-                ctx.fillText(`C:${formatScientific(ch.conductance)}`, midX - 18, midY - 8);
-                ctx.fillStyle = "#38bdf8";
-                ctx.fillText(`Q:${formatScientific(absQ)}`, midX - 18, midY + 14);
+                ctx.font = `${Math.max(8, Math.min(11, 9 * zoom))}px Fira Code`;
+                ctx.fillText(`C:${formatScientific(ch.conductance)}`, midSx - 18, midSy - 8);
+                ctx.fillStyle = isSelected ? "#ef4444" : getFlowColor(absQ);
+                ctx.fillText(`Q:${formatScientific(absQ)}`, midSx - 18, midSy + 14);
             });
 
-            // Update & Render Particles if Toggled ON
+            // Particles Rendering
             if (showParticles) {
                 updateParticles();
                 ctx.fillStyle = "#38bdf8";
                 particles.forEach(p => {
+                    let sx = worldToScreenX(p.x);
+                    let sy = worldToScreenY(p.y);
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+                    ctx.arc(sx, sy, 3.5 * Math.min(1.5, Math.sqrt(zoom)), 0, Math.PI * 2);
                     ctx.fill();
                 });
             }
 
-            // Render Nodes
+            // Nodes Rendering
             nodes.forEach(node => {
-                ctx.lineWidth = 2;
-                if (node.type === 'inlet') {
+                let sx = worldToScreenX(node.x);
+                let sy = worldToScreenY(node.y);
+                let nodeRadius = 14 * Math.min(1.5, Math.sqrt(zoom));
+
+                let isSelected = selectedNode && selectedNode.id === node.id;
+                ctx.lineWidth = isSelected ? 3 : 2;
+
+                if (isSelected) {
+                    ctx.fillStyle = "#ef4444";
+                    ctx.strokeStyle = "#fca5a5";
+                } else if (node.type === 'inlet') {
                     ctx.fillStyle = "#10b981";
                     ctx.strokeStyle = "#a7f3d0";
                 } else if (node.type === 'outlet') {
@@ -653,17 +859,19 @@
                 }
 
                 ctx.beginPath();
-                ctx.arc(node.x, node.y, 14, 0, Math.PI * 2);
+                ctx.arc(sx, sy, nodeRadius, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.stroke();
 
-                // Draw Node Head Value H
                 ctx.fillStyle = "#ffffff";
-                ctx.font = "10px Fira Code";
+                ctx.font = `${Math.max(8, Math.min(12, 10 * zoom))}px Fira Code`;
                 ctx.textAlign = "center";
-                ctx.fillText(`H=${node.head.toFixed(1)}`, node.x, node.y + 3);
+                ctx.fillText(`H=${node.head.toFixed(1)}`, sx, sy + 3);
                 ctx.textAlign = "start";
             });
+
+            // Draw Flow Rate Color Legend Box on Screen Overlay
+            drawColorLegend();
 
             // Overlay Telemetry
             let inlets = nodes.filter(n => n.type === 'inlet').length;
@@ -671,8 +879,10 @@
             let particleStatus = showParticles ? `${particles.length} Active` : 'OFF';
             
             document.getElementById('telemetryBox').innerHTML = `
+                <span><strong>Scale Zoom:</strong> ${(zoom * 100).toFixed(0)}%</span>
                 <span><strong>Nodes:</strong> ${nodes.length} (Inlets: ${inlets}, Outlets: ${outlets})</span>
                 <span><strong>Channels:</strong> ${channels.length} Segments</span>
+                <span><strong>Max Flow (Q):</strong> ${formatScientific(maxNetworkFlow)} m³/s</span>
                 <span><strong>Particles:</strong> ${particleStatus}</span>
             `;
 
