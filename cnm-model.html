@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Channel Network Model | Dr. Kunwar Mrityunjai Sharma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-dark: #090d16; --accent-cyan: #38bdf8; --text-main: #f3f4f6; --text-muted: #9ca3af; --border-subtle: rgba(255,255,255,0.08); --font-code: 'Fira Code', monospace; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.6; }
+        nav { padding: 1rem 6%; background: rgba(9,13,22,0.9); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 6%; }
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        p.subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+        
+        .physics-lab { background: rgba(13,19,33,0.95); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 1.5rem; }
+        .lab-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 6px; }
+        .control-group label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-code); }
+        .canvas-container { position: relative; width: 100%; height: 500px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); }
+        #physicsCanvas { width: 100%; height: 100%; display: block; }
+        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; }
+        .btn { padding: 0.5rem 1rem; background: var(--accent-cyan); color: #000; border-radius: 6px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; }
+        .details-card { background: rgba(17,24,39,0.75); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-top: 2rem; }
+        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
+        <div style="color:var(--text-main); font-weight:700;">2D Channel Network Model (pychan3d)</div>
+    </nav>
+
+    <div class="container">
+        <h1>2D Channel Network Model (CNM)</h1>
+        <p class="subtitle">Process-based Finite Difference Method (FDM) hydraulic solver with log-normal channel conductances and 50-particle flux-proportional tracking.</p>
+
+        <div class="physics-lab">
+            <div class="lab-controls">
+                <div class="control-group">
+                    <label>Mean Conductance ($C_0$)</label>
+                    <input type="range" id="cnmMean" min="1" max="10" value="5" oninput="generateCNMGrid()">
+                </div>
+                <div class="control-group">
+                    <label>Conductance Std Dev ($\sigma$ Log-Normal)</label>
+                    <input type="range" id="cnmStd" min="0.1" max="10" step="0.3" value="3" oninput="generateCNMGrid()">
+                </div>
+                <div class="control-group">
+                    <label>Hydraulic Head Gradient ($\nabla h$)</label>
+                    <input type="range" id="cnmGrad" min="1" max="10" value="5" oninput="solveHydraulicHeadsAndFlow()">
+                </div>
+                <div class="control-group">
+                    <label>Tracer Particle Injection</label>
+                    <button class="btn" onclick="init50Particles()">Reset 50 Particles</button>
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="physicsCanvas"></canvas>
+                <div class="canvas-overlay" id="telemetryBox">Solving CNM Flow Field...</div>
+            </div>
+        </div>
+
+        <p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-top:1rem; font-family:var(--font-code);">
+            Note: This simulation module is intended strictly for conceptual visualization and interactive representation purposes.
+        </p>
+
+        <div class="details-card">
+            <h2>Mathematical & Physical Formulation</h2>
+            <p>The Channel Network Model (CNM) represents low-permeability fractured rock as a discrete network of interconnected 1D channel segments. Node hydraulic heads ($H_i$) are solved numerically via a Gauss-Seidel Finite Difference scheme ($\sum C_{ij} (H_i - H_j) = 0$). Channel conductances ($C_{ij}$) follow a log-normal distribution generated using Box-Muller transformations.</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+
+        function resizeCanvas() { width = canvas.parentElement.clientWidth; height = canvas.parentElement.clientHeight; canvas.width = width; canvas.height = height; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let cnmGrid = { rows: 9, cols: 15, horizontalC: [], verticalC: [], heads: [], flowH: [], flowV: [] };
+        let particles = [];
+
+        function randomLogNormal(mean, stdDev) {
+            let u1 = Math.random(), u2 = Math.random();
+            let z0 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
+            let sigma2 = Math.log(1 + (stdDev * stdDev) / (mean * mean));
+            return Math.exp((Math.log(mean) - 0.5 * sigma2) + Math.sqrt(sigma2) * z0);
+        }
+
+        function generateCNMGrid() {
+            let meanC = parseFloat(document.getElementById('cnmMean').value);
+            let stdC = parseFloat(document.getElementById('cnmStd').value);
+            cnmGrid.horizontalC = []; cnmGrid.verticalC = []; cnmGrid.heads = []; cnmGrid.flowH = []; cnmGrid.flowV = [];
+
+            for (let r = 0; r < cnmGrid.rows; r++) {
+                let rowC = [], rowQ = [];
+                for (let c = 0; c < cnmGrid.cols - 1; c++) { rowC.push(randomLogNormal(meanC, stdC)); rowQ.push(0); }
+                cnmGrid.horizontalC.push(rowC); cnmGrid.flowH.push(rowQ);
+            }
+            for (let r = 0; r < cnmGrid.rows - 1; r++) {
+                let rowC = [], rowQ = [];
+                for (let c = 0; c < cnmGrid.cols; c++) { rowC.push(randomLogNormal(meanC, stdC)); rowQ.push(0); }
+                cnmGrid.verticalC.push(rowC); cnmGrid.flowV.push(rowQ);
+            }
+            for (let r = 0; r < cnmGrid.rows; r++) cnmGrid.heads.push(new Array(cnmGrid.cols).fill(0));
+
+            solveHydraulicHeadsAndFlow();
+            init50Particles();
+        }
+
+        function solveHydraulicHeadsAndFlow() {
+            let grad = parseFloat(document.getElementById('cnmGrad').value);
+            let Hin = grad * 10.0, Hout = 0.0;
+            for (let r = 0; r < cnmGrid.rows; r++) {
+                cnmGrid.heads[r][0] = Hin; cnmGrid.heads[r][cnmGrid.cols - 1] = Hout;
+                for (let c = 1; c < cnmGrid.cols - 1; c++) cnmGrid.heads[r][c] = Hin - (c / (cnmGrid.cols - 1)) * Hin;
+            }
+            for (let iter = 0; iter < 150; iter++) {
+                for (let r = 0; r < cnmGrid.rows; r++) {
+                    for (let c = 1; c < cnmGrid.cols - 1; c++) {
+                        let sumCH = 0.0, sumC = 0.0;
+                        let cL = cnmGrid.horizontalC[r][c - 1]; sumCH += cL * cnmGrid.heads[r][c - 1]; sumC += cL;
+                        let cR = cnmGrid.horizontalC[r][c]; sumCH += cR * cnmGrid.heads[r][c + 1]; sumC += cR;
+                        if (r > 0) { let cU = cnmGrid.verticalC[r - 1][c]; sumCH += cU * cnmGrid.heads[r - 1][c]; sumC += cU; }
+                        if (r < cnmGrid.rows - 1) { let cD = cnmGrid.verticalC[r][c]; sumCH += cD * cnmGrid.heads[r + 1][c]; sumC += cD; }
+                        if (sumC > 0) cnmGrid.heads[r][c] = sumCH / sumC;
+                    }
+                }
+            }
+            for (let r = 0; r < cnmGrid.rows; r++)
+                for (let c = 0; c < cnmGrid.cols - 1; c++) cnmGrid.flowH[r][c] = cnmGrid.horizontalC[r][c] * (cnmGrid.heads[r][c] - cnmGrid.heads[r][c + 1]);
+            for (let r = 0; r < cnmGrid.rows - 1; r++)
+                for (let c = 0; c < cnmGrid.cols; c++) cnmGrid.flowV[r][c] = cnmGrid.verticalC[r][c] * (cnmGrid.heads[r][c] - cnmGrid.heads[r + 1][c]);
+        }
+
+        function init50Particles() {
+            particles = [];
+            let dy = (height - 90) / (cnmGrid.rows - 1);
+            for (let i = 0; i < 50; i++) {
+                let startRow = i % cnmGrid.rows;
+                particles.push({ r: startRow, c: 0, x: 60, y: 45 + startRow * dy, targetR: startRow, targetC: 0, channelQ: 1.0 });
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            let grad = parseFloat(document.getElementById('cnmGrad').value);
+            let std = parseFloat(document.getElementById('cnmStd').value);
+
+            document.getElementById('telemetryBox').innerHTML = `
+                <span><strong>Boundary:</strong> Left Inlet ($H_{in}=${(grad*10).toFixed(1)}$m) ➔ Right Outlet ($H_{out}=0$)</span>
+                <span><strong>Log-Normal $\sigma$:</strong> ${std} | <strong>Particles:</strong> 50 Active</span>
+            `;
+
+            let dx = (width - 120) / (cnmGrid.cols - 1), dy = (height - 90) / (cnmGrid.rows - 1);
+
+            ctx.strokeStyle = "rgba(239, 68, 68, 0.4)"; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+            ctx.beginPath(); ctx.moveTo(50, 25); ctx.lineTo(width - 50, 25); ctx.moveTo(50, height - 30); ctx.lineTo(width - 50, height - 30); ctx.stroke(); ctx.setLineDash([]);
+
+            for (let r = 0; r < cnmGrid.rows; r++) {
+                for (let c = 0; c < cnmGrid.cols - 1; c++) {
+                    let q = Math.abs(cnmGrid.flowH[r][c]);
+                    ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, q * 0.05 + 0.15)})`; ctx.lineWidth = Math.min(8, Math.max(0.5, q * 0.12));
+                    ctx.beginPath(); ctx.moveTo(60 + c * dx, 45 + r * dy); ctx.lineTo(60 + (c + 1) * dx, 45 + r * dy); ctx.stroke();
+                }
+            }
+            for (let r = 0; r < cnmGrid.rows - 1; r++) {
+                for (let c = 0; c < cnmGrid.cols; c++) {
+                    let q = Math.abs(cnmGrid.flowV[r][c]);
+                    ctx.strokeStyle = `rgba(56, 189, 248, ${Math.min(1, q * 0.05 + 0.15)})`; ctx.lineWidth = Math.min(8, Math.max(0.5, q * 0.12));
+                    ctx.beginPath(); ctx.moveTo(60 + c * dx, 45 + r * dy); ctx.lineTo(60 + c * dx, 45 + (r + 1) * dy); ctx.stroke();
+                }
+            }
+
+            ctx.fillStyle = "#38bdf8";
+            particles.forEach((p, idx) => {
+                let targetX = 60 + p.targetC * dx, targetY = 45 + p.targetR * dy;
+                let moveSpeed = Math.max(1.2, Math.min(11, Math.abs(p.channelQ) * 0.25));
+                let dist = Math.hypot(targetX - p.x, targetY - p.y);
+                if (dist > moveSpeed) { p.x += ((targetX - p.x) / dist) * moveSpeed; p.y += ((targetY - p.y) / dist) * moveSpeed; }
+                else {
+                    p.x = targetX; p.y = targetY; p.r = p.targetR; p.c = p.targetC;
+                    if (p.c < cnmGrid.cols - 1) {
+                        let qR = Math.max(0, cnmGrid.flowH[p.r][p.c] || 0), qL = (p.c > 0) ? Math.max(0, -cnmGrid.flowH[p.r][p.c - 1]) : 0;
+                        let qD = (p.r < cnmGrid.rows - 1) ? Math.max(0, cnmGrid.flowV[p.r][p.c] || 0) : 0, qU = (p.r > 0) ? Math.max(0, -cnmGrid.flowV[p.r - 1][p.c] || 0) : 0;
+                        let totalQ = qR + qL + qD + qU;
+                        if (totalQ > 0) {
+                            let rand = Math.random() * totalQ;
+                            if (rand < qR) { p.targetC = p.c + 1; p.channelQ = qR; }
+                            else if (rand < qR + qD && p.r < cnmGrid.rows - 1) { p.targetR = p.r + 1; p.channelQ = qD; }
+                            else if (rand < qR + qD + qU && p.r > 0) { p.targetR = p.r - 1; p.channelQ = qU; }
+                            else if (p.c > 0) { p.targetC = p.c - 1; p.channelQ = qL; }
+                        } else { p.targetC = p.c + 1; p.channelQ = 1.0; }
+                    } else {
+                        let startRow = idx % cnmGrid.rows; p.r = startRow; p.c = 0; p.targetR = startRow; p.targetC = 0; p.x = 60; p.y = 45 + startRow * dy;
+                    }
+                }
+                ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill();
+            });
+
+            requestAnimationFrame(render);
+        }
+
+        generateCNMGrid();
+        render();
+    </script>
+</body>
+</html>
