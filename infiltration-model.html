@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unsaturated Matrix Infiltration Model | Dr. Kunwar Mrityunjai Sharma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-dark: #090d16; --accent-cyan: #38bdf8; --text-main: #f3f4f6; --text-muted: #9ca3af; --border-subtle: rgba(255,255,255,0.08); --font-code: 'Fira Code', monospace; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.6; }
+        nav { padding: 1rem 6%; background: rgba(9,13,22,0.9); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+        .container { max-width: 1200px; margin: 2rem auto; padding: 0 6%; }
+        h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+        p.subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+        .physics-lab { background: rgba(13,19,33,0.95); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 1.5rem; }
+        .lab-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.2rem; margin-bottom: 1.2rem; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 10px; }
+        .control-group { display: flex; flex-direction: column; gap: 6px; }
+        .control-group label { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-code); }
+        .canvas-container { position: relative; width: 100%; height: 500px; border-radius: 10px; overflow: hidden; background: #050811; border: 1px solid var(--border-subtle); }
+        #physicsCanvas { width: 100%; height: 100%; display: block; }
+        .canvas-overlay { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(9,13,22,0.88); padding: 0.65rem 1rem; border-radius: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); display: flex; justify-content: space-between; }
+        .details-card { background: rgba(17,24,39,0.75); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 2rem; margin-top: 2rem; }
+        .details-card h2 { color: var(--accent-cyan); margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
+        <div style="color:var(--text-main); font-weight:700;">Unsaturated Matrix Infiltration Model</div>
+    </nav>
+
+    <div class="container">
+        <h1>Unsaturated Matrix Infiltration Dynamics</h1>
+        <p class="subtitle">Transient rainfall seepage through compacted bentonite clay barriers and mountain soil profiles governed by Richards' equation and matrix suction head ($\psi$).</p>
+
+        <div class="physics-lab">
+            <div class="lab-controls">
+                <div class="control-group">
+                    <label>Hydraulic Conductivity ($K_s$ - mm/h)</label>
+                    <input type="range" id="infKs" min="1" max="10" value="5">
+                </div>
+                <div class="control-group">
+                    <label>Matrix Suction Head ($\psi$ - kPa)</label>
+                    <input type="range" id="infPsi" min="10" max="100" value="40">
+                </div>
+                <div class="control-group">
+                    <label>Rainfall Intensity ($I$)</label>
+                    <input type="range" id="infRain" min="1" max="10" value="6">
+                </div>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="physicsCanvas"></canvas>
+                <div class="canvas-overlay" id="telemetryBox">Simulating Matrix Infiltration...</div>
+            </div>
+        </div>
+
+        <p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin-top:1rem; font-family:var(--font-code);">
+            Note: This simulation module is intended strictly for conceptual visualization and interactive representation purposes.
+        </p>
+
+        <div class="details-card">
+            <h2>Richards' Equation Framework</h2>
+            <p>Variably saturated flow through engineered soil caps and clay barriers is modeled using Richards' equation: $\frac{\partial \theta}{\partial t} = \nabla \cdot \left( K(\psi) \nabla (\psi + z) \right)$. Matrix suction loss and wetting front propagation are controlled by non-linear soil-water retention curves (SWRC).</p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, frameCount = 0;
+
+        function resizeCanvas() { width = canvas.parentElement.clientWidth; height = canvas.parentElement.clientHeight; canvas.width = width; canvas.height = height; }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function render() {
+            frameCount++;
+            ctx.clearRect(0, 0, width, height);
+            let Ks = parseFloat(document.getElementById('infKs').value);
+            let psi = parseFloat(document.getElementById('infPsi').value);
+            let rain = parseFloat(document.getElementById('infRain').value);
+
+            document.getElementById('telemetryBox').innerHTML = `
+                <span><strong>Regime:</strong> Unsaturated Matrix Infiltration</span>
+                <span><strong>Hydraulic Conductivity ($K_s$):</strong> ${Ks} mm/h</span>
+                <span><strong>Suction Head ($\psi$):</strong> ${psi} kPa</span>
+            `;
+
+            let wetDepth = (frameCount * (Ks * 0.08) + (psi * 0.5)) % (height - 60);
+
+            let fillGrad = ctx.createLinearGradient(0, 0, 0, wetDepth + 30);
+            fillGrad.addColorStop(0, "rgba(56, 189, 248, 0.7)");
+            fillGrad.addColorStop(0.8, "rgba(56, 189, 248, 0.3)");
+            fillGrad.addColorStop(1, "rgba(56, 189, 248, 0)");
+
+            ctx.fillStyle = fillGrad; ctx.fillRect(40, 20, width - 80, wetDepth);
+
+            ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(40, 20 + wetDepth); ctx.lineTo(width - 40, 20 + wetDepth); ctx.stroke();
+
+            ctx.fillStyle = "#60a5fa";
+            for (let i = 0; i < rain * 5; i++) {
+                let rx = 40 + Math.random() * (width - 80);
+                let ry = (frameCount * 5 + i * 20) % 20;
+                ctx.fillRect(rx, ry, 2, 6);
+            }
+
+            requestAnimationFrame(render);
+        }
+        render();
+    </script>
+</body>
+</html>
