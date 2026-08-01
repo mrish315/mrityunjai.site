@@ -15,6 +15,7 @@
             --accent-blue: #60a5fa;
             --accent-emerald: #10b981;
             --accent-amber: #f59e0b;
+            --accent-pink: #ec4899;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -74,9 +75,11 @@
         .badge-model { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); }
         .badge-blog { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
         .badge-code { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-transport { background: rgba(236, 72, 153, 0.15); color: var(--accent-pink); border: 1px solid rgba(236, 72, 153, 0.3); }
 
         /* Card Layouts */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
         .card { 
             background: var(--bg-card); 
             border: 1px solid var(--border-subtle); 
@@ -167,13 +170,13 @@
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-model"><i class="fa-solid fa-cube"></i> Interactive Model</span>
-                        <span class="card-date">July 2026</span>
+                        <span class="badge badge-transport"><i class="fa-solid fa-droplet"></i> New Simulator</span>
+                        <span class="card-date">August 2026</span>
                     </div>
-                    <h3>KBS-3 DGR Thermal Sandbox</h3>
-                    <p>Interactive engineering tool to evaluate canister spacing, thermal decay transport, and bentonite buffer safety limits (&le; 95&deg;C) in granitic host rock.</p>
+                    <h3>2D Aquifer Contaminant Plume Model</h3>
+                    <p>Interactive 2D hydrogeological simulator for point-source contaminant transport, advection-dispersion plume evolution, and boundary hydraulic head customization.</p>
                 </div>
-                <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
+                <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
             </div>
 
             <!-- Dynamic Blog Card (Automatically populated from Notion) -->
@@ -208,7 +211,15 @@
         <div class="section-tag">Interactive Simulations</div>
         <h2 class="section-title"><i class="fa-solid fa-flask"></i> Dedicated Computational Process Models</h2>
 
-        <div class="grid-3">
+        <div class="grid-4">
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-droplet" style="color: var(--accent-pink);"></i> 2D Aquifer Contaminant Transport</h3>
+                    <p>Features interactive point-source placement, directional groundwater velocity gradients, dispersion dynamics ($\alpha_L, \alpha_T$), radioactive decay, and glowing concentration heatmaps.</p>
+                </div>
+                <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Transport Model</a>
+            </div>
+
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-network-wired"></i> 2D Channel Network Model</h3>
@@ -398,26 +409,21 @@
                 const data = await response.json();
 
                 if (data.results && data.results.length > 0) {
-                    // Pick the first article (the latest published post)
                     const latest = data.results[0];
                     const props = latest.properties;
                     const pageId = latest.id;
 
-                    // Detect title column dynamically
                     const titleProperty = Object.values(props).find(prop => prop.type === 'title');
                     const title = titleProperty?.title[0]?.plain_text || "Latest Research Article";
 
-                    // Date parsing
                     const dateRaw = props.Date?.date?.start || "";
                     let formattedDate = "Recent";
                     if (dateRaw) {
                         formattedDate = new Date(dateRaw).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
                     }
 
-                    // Summary extraction
                     const summary = props.Summary?.rich_text[0]?.plain_text || "Click below to read the latest research insights.";
 
-                    // Update Card HTML elements
                     document.getElementById('latestBlogDate').innerText = formattedDate;
                     document.getElementById('latestBlogTitle').innerText = title;
                     document.getElementById('latestBlogSummary').innerText = summary;
