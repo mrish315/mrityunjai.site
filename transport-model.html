@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Aquifer Contaminant Plume Model | Dr. Kunwar Mrityunjai Sharma</title>
+    <title>2D Hydrogeological Contaminant Transport Model | Dr. Kunwar Mrityunjai Sharma</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --bg-dark: #090d16;
-            --bg-card: rgba(17, 24, 39, 0.85);
+            --bg-card: rgba(17, 24, 39, 0.88);
             --accent-cyan: #38bdf8;
+            --accent-blue: #60a5fa;
             --accent-emerald: #10b981;
             --accent-amber: #f59e0b;
             --accent-pink: #ec4899;
+            --accent-purple: #a855f7;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -22,73 +24,97 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; }
 
-        nav { padding: 1rem 4%; background: rgba(9, 13, 22, 0.95); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
-        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+        nav { padding: 0.8rem 2%; background: rgba(9, 13, 22, 0.95); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
 
-        .app-layout { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 61px); }
+        .app-layout { display: grid; grid-template-columns: 340px 1fr; height: calc(100vh - 49px); }
 
         /* Sidebar Controls */
         .controls-panel {
             background: rgba(15, 23, 42, 0.95);
             border-right: 1px solid var(--border-subtle);
-            padding: 1.5rem;
+            padding: 1.2rem;
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 1.2rem;
+            gap: 1.1rem;
         }
 
-        .controls-panel h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .controls-panel h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
         .controls-panel h2 i { color: var(--accent-pink); }
 
-        .control-group { display: flex; flex-direction: column; gap: 0.4rem; }
-        .control-group label { font-size: 0.8rem; font-family: var(--font-code); color: var(--text-muted); display: flex; justify-content: space-between; }
+        .section-label { font-family: var(--font-code); font-size: 0.75rem; text-transform: uppercase; color: var(--accent-cyan); letter-spacing: 1px; margin-top: 0.2rem; }
+
+        /* Tool Selector Grid */
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .btn-tool {
+            padding: 0.55rem 0.6rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+            border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03);
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px; justify-content: flex-start;
+        }
+        .btn-tool:hover { border-color: var(--accent-cyan); color: var(--text-main); }
+        .btn-tool.active { background: rgba(56, 189, 248, 0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .btn-tool.active-pink { background: rgba(236, 72, 153, 0.15); border-color: var(--accent-pink); color: var(--accent-pink); }
+        .btn-tool.active-amber { background: rgba(245, 158, 11, 0.15); border-color: var(--accent-amber); color: var(--accent-amber); }
+        .btn-tool.active-emerald { background: rgba(16, 185, 129, 0.15); border-color: var(--accent-emerald); color: var(--accent-emerald); }
+
+        /* Sliders */
+        .control-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .control-group label { font-size: 0.78rem; font-family: var(--font-code); color: var(--text-muted); display: flex; justify-content: space-between; }
         .control-group label span.val { color: var(--accent-cyan); font-weight: 600; }
 
         input[type="range"] {
-            width: 100%;
-            accent-color: var(--accent-cyan);
-            background: rgba(255,255,255,0.05);
-            border-radius: 4px;
-            height: 6px;
+            width: 100%; accent-color: var(--accent-cyan); background: rgba(255,255,255,0.05); border-radius: 4px; height: 5px;
         }
 
-        .btn-panel { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 0.5rem; }
-        .btn-sm { padding: 0.5rem 0.9rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
-        .btn-sm:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-        .btn-sm.active { background: var(--accent-pink); color: #090d16; border-color: var(--accent-pink); }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.8rem; font-family: var(--font-code); color: var(--text-muted); }
+        .toggle-row input { accent-color: var(--accent-cyan); width: 16px; height: 16px; cursor: pointer; }
 
-        /* Main Simulation Viewport */
+        /* Action Buttons */
+        .btn-row { display: flex; gap: 8px; margin-top: 0.4rem; }
+        .btn-action {
+            flex: 1; padding: 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;
+            border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.05);
+            color: var(--text-main); cursor: pointer; text-align: center; transition: all 0.2s;
+        }
+        .btn-action:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .btn-danger { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
+        .btn-danger:hover { background: rgba(239, 68, 68, 0.3); color: #ffffff; }
+
+        /* Simulation Canvas & HUD */
         .simulation-viewport { position: relative; background: #050811; display: flex; flex-direction: column; }
         .canvas-container { flex: 1; position: relative; width: 100%; height: 100%; }
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
 
-        /* Overlay Stats & Legend */
         .hud-overlay {
             position: absolute; top: 1rem; right: 1rem;
             background: var(--bg-card); border: 1px solid var(--border-subtle);
-            border-radius: 10px; padding: 1rem; font-family: var(--font-code); font-size: 0.8rem;
-            display: flex; flex-direction: column; gap: 0.5rem; backdrop-filter: blur(8px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border-radius: 10px; padding: 0.9rem 1.1rem; font-family: var(--font-code); font-size: 0.78rem;
+            display: flex; flex-direction: column; gap: 0.4rem; backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none;
         }
         .hud-stat { display: flex; justify-content: space-between; gap: 1.5rem; }
         .hud-stat .label { color: var(--text-muted); }
         .hud-stat .value { color: var(--accent-cyan); font-weight: 600; }
 
         .color-legend {
-            position: absolute; bottom: 1.5rem; right: 1rem;
+            position: absolute; bottom: 1rem; right: 1rem;
             background: var(--bg-card); border: 1px solid var(--border-subtle);
-            border-radius: 8px; padding: 0.8rem 1rem; backdrop-filter: blur(8px);
-            display: flex; flex-direction: column; gap: 6px; font-family: var(--font-code); font-size: 0.75rem;
+            border-radius: 8px; padding: 0.7rem 1rem; backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; gap: 5px; font-family: var(--font-code); font-size: 0.72rem;
+            pointer-events: none;
         }
-        .legend-bar { width: 200px; height: 12px; border-radius: 4px; background: linear-gradient(to right, rgba(9,13,22,0.8), #10b981, #f59e0b, #ef4444, #ec4899); }
+        .legend-bar { width: 220px; height: 10px; border-radius: 4px; background: linear-gradient(to right, rgba(9,13,22,0.8), #10b981, #f59e0b, #ef4444, #ec4899); }
         .legend-labels { display: flex; justify-content: space-between; color: var(--text-muted); }
 
-        @media (max-width: 900px) {
-            .app-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-            .controls-panel { max-height: 280px; }
+        .tool-indicator {
+            position: absolute; bottom: 1rem; left: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-glow);
+            border-radius: 8px; padding: 0.5rem 0.9rem; font-family: var(--font-code); font-size: 0.78rem;
+            color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(8px);
         }
     </style>
 </head>
@@ -96,83 +122,108 @@
 
     <nav>
         <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
-        <div style="font-weight:700; color:var(--text-main);">2D Hydrogeological Contaminant Transport Model</div>
+        <div style="font-weight:700; color:var(--text-main);">Process-Based 2D Aquifer & Transport Simulator</div>
     </nav>
 
     <div class="app-layout">
-        <!-- Controls Panel -->
+        <!-- Controls Sidebar -->
         <div class="controls-panel">
-            <h2><i class="fa-solid fa-droplet"></i> Aquifer Transport Controls</h2>
+            <h2><i class="fa-solid fa-droplet"></i> Aquifer Modeler</h2>
 
-            <div class="btn-panel">
-                <button id="btnSourceMode" class="btn-sm active" onclick="setMode('source')"><i class="fa-solid fa-plus-circle"></i> Add Point Source</button>
-                <button id="btnClear" class="btn-sm" onclick="clearSources()"><i class="fa-solid fa-trash"></i> Clear Sources</button>
-                <button id="btnPlay" class="btn-sm" onclick="togglePlay()"><i class="fa-solid fa-pause"></i> Pause</button>
+            <div class="section-label">Interactive Placement Tool</div>
+            <div class="tool-grid">
+                <button id="toolSource" class="btn-tool active-pink" onclick="setTool('source')"><i class="fa-solid fa-bullseye"></i> Plume Source</button>
+                <button id="toolPump" class="btn-tool" onclick="setTool('pump')"><i class="fa-solid fa-filter"></i> Pumping Well</button>
+                <button id="toolInject" class="btn-tool" onclick="setTool('inject')"><i class="fa-solid fa-syringe"></i> Inject Well</button>
+                <button id="toolBarrier" class="btn-tool" onclick="setTool('barrier')"><i class="fa-solid fa-cubes"></i> No-Flow Wall</button>
+                <button id="toolRiver" class="btn-tool" onclick="setTool('river')"><i class="fa-solid fa-water"></i> River Boundary</button>
+                <button id="toolErase" class="btn-tool" onclick="setTool('erase')"><i class="fa-solid fa-eraser"></i> Eraser</button>
             </div>
 
-            <hr style="border:0; border-top: 1px solid var(--border-subtle);">
-
-            <!-- Hydrogeological Parameters -->
+            <div class="section-label">Hydrogeological Hydraulics</div>
             <div class="control-group">
-                <label>Hydraulic Conductivity $K$ (m/day): <span id="valK" class="val">15</span></label>
-                <input type="range" id="sliderK" min="1" max="50" value="15" oninput="updateParams()">
+                <label>Hydraulic Conductivity $K$ (m/d): <span id="valK" class="val">20</span></label>
+                <input type="range" id="sliderK" min="2" max="60" value="20" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Hydraulic Gradient $\frac{dh}{dx}$: <span id="valGrad" class="val">0.005</span></label>
-                <input type="range" id="sliderGrad" min="0.001" max="0.02" step="0.001" value="0.005" oninput="updateParams()">
+                <label>West Head $H_{West}$ (m): <span id="valHWest" class="val">100</span></label>
+                <input type="range" id="sliderHWest" min="90" max="120" value="100" oninput="updateParams()">
             </div>
 
+            <div class="control-group">
+                <label>East Head $H_{East}$ (m): <span id="valHEast" class="val">92</span></label>
+                <input type="range" id="sliderHEast" min="80" max="110" value="92" oninput="updateParams()">
+            </div>
+
+            <div class="control-group">
+                <label>Pumping Rate $Q_{pump}$ (m$^3$/d): <span id="valQPump" class="val">40</span></label>
+                <input type="range" id="sliderQPump" min="10" max="150" value="40" oninput="updateParams()">
+            </div>
+
+            <div class="section-label">Transport & Dispersion</div>
             <div class="control-group">
                 <label>Effective Porosity $n_e$: <span id="valPorosity" class="val">0.25</span></label>
-                <input type="range" id="sliderPorosity" min="0.1" max="0.4" step="0.01" value="0.25" oninput="updateParams()">
+                <input type="range" id="sliderPorosity" min="0.10" max="0.40" step="0.01" value="0.25" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Longitudinal Dispersivity $\alpha_L$ (m): <span id="valAlphaL" class="val">12</span></label>
-                <input type="range" id="sliderAlphaL" min="1" max="30" value="12" oninput="updateParams()">
+                <label>Longitudinal Disp. $\alpha_L$ (m): <span id="valAlphaL" class="val">15</span></label>
+                <input type="range" id="sliderAlphaL" min="2" max="40" value="15" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Transverse Dispersivity $\alpha_T$ (m): <span id="valAlphaT" class="val">3.0</span></label>
-                <input type="range" id="sliderAlphaT" min="0.5" max="10" step="0.5" value="3.0" oninput="updateParams()">
+                <label>Transverse Disp. $\alpha_T$ (m): <span id="valAlphaT" class="val">3.0</span></label>
+                <input type="range" id="sliderAlphaT" min="0.5" max="12" step="0.5" value="3.0" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Radioactive Decay ($t_{1/2}$ days): <span id="valHalfLife" class="val">120</span></label>
-                <input type="range" id="sliderHalfLife" min="10" max="500" value="120" oninput="updateParams()">
+                <label>Half-Life $t_{1/2}$ (days): <span id="valHalfLife" class="val">180</span></label>
+                <input type="range" id="sliderHalfLife" min="20" max="800" value="180" oninput="updateParams()">
             </div>
 
-            <div class="control-group">
-                <label>Flow Direction Angle (&deg;): <span id="valAngle" class="val">0</span></label>
-                <input type="range" id="sliderAngle" min="-45" max="45" value="0" oninput="updateParams()">
+            <div class="section-label">Display & Diagnostics</div>
+            <div class="toggle-row">
+                <span>Equipotential Contours</span>
+                <input type="checkbox" id="chkContours" checked>
+            </div>
+            <div class="toggle-row">
+                <span>Velocity Vectors</span>
+                <input type="checkbox" id="chkVectors" checked>
             </div>
 
-            <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin-top:0.5rem;">
-                <i class="fa-solid fa-info-circle"></i> <b>Interactive Mode:</b> Click anywhere on the geographic grid canvas to drop new point-source contaminant plumes. Flow vectors and dispersivity plumes adjust in real time.
-            </p>
+            <div class="btn-row">
+                <button id="btnPause" class="btn-action" onclick="togglePause()"><i class="fa-solid fa-pause"></i> Pause</button>
+                <button class="btn-action btn-danger" onclick="clearAll()"><i class="fa-solid fa-trash"></i> Reset All</button>
+            </div>
         </div>
 
-        <!-- Simulation Viewport -->
+        <!-- Simulation Canvas -->
         <div class="simulation-viewport">
             <div class="canvas-container">
                 <canvas id="simCanvas"></canvas>
             </div>
 
-            <!-- Realtime Metrics HUD -->
+            <!-- HUD Overlay -->
             <div class="hud-overlay">
-                <div class="hud-stat"><span class="label">Groundwater Velocity ($v_x$):</span> <span id="hudVelocity" class="value">0.30 m/d</span></div>
-                <div class="hud-stat"><span class="label">Active Particles:</span> <span id="hudParticles" class="value">0</span></div>
-                <div class="hud-stat"><span class="label">Point Sources:</span> <span id="hudSources" class="value">1</span></div>
-                <div class="hud-stat"><span class="label">Simulation Time:</span> <span id="hudTime" class="value">0.0 days</span></div>
+                <div class="hud-stat"><span class="label">Groundwater Head Range:</span> <span id="hudHeadRange" class="value">92.0 - 100.0 m</span></div>
+                <div class="hud-stat"><span class="label">Max Seepage Velocity ($v$):</span> <span id="hudMaxVel" class="value">0.64 m/d</span></div>
+                <div class="hud-stat"><span class="label">Active Transport Particles:</span> <span id="hudParticles" class="value">0</span></div>
+                <div class="hud-stat"><span class="label">Plumes Captured (Wells):</span> <span id="hudCaptured" class="value">0</span></div>
+                <div class="hud-stat"><span class="label">Elapsed Time:</span> <span id="hudTime" class="value">0.0 days</span></div>
+            </div>
+
+            <!-- Active Tool Helper -->
+            <div id="toolIndicator" class="tool-indicator">
+                <i class="fa-solid fa-bullseye"></i> Mode: Place Contaminant Point Source
             </div>
 
             <!-- Color Scale Legend -->
             <div class="color-legend">
-                <span>Contaminant Concentration ($C / C_0$)</span>
+                <span>Concentration ($C / C_0$)</span>
                 <div class="legend-bar"></div>
                 <div class="legend-labels">
-                    <span>0.0 (Clean)</span>
+                    <span>0.0 (Background)</span>
                     <span>0.5</span>
                     <span>1.0 (Source)</span>
                 </div>
@@ -187,27 +238,63 @@
         let width, height;
         let isRunning = true;
         let simTime = 0;
+        let capturedCount = 0;
 
-        // Physics Parameters
-        let K = 15;            // m/day
-        let grad = 0.005;       // Hydraulic gradient
-        let ne = 0.25;          // Effective Porosity
-        let alphaL = 12;        // Longitudinal dispersivity (m)
-        let alphaT = 3.0;       // Transverse dispersivity (m)
-        let halfLife = 120;     // Days
-        let flowAngleRad = 0;   // Radians
+        // FDM Numerical Flow Grid Setup
+        const NX = 80;
+        const NY = 50;
+        let gridHead = Array.from({ length: NX }, () => new Float32Array(NY));
+        let gridType = Array.from({ length: NX }, () => new Int8Array(NY)); // 0: Normal, 1: Const Head, 2: Barrier
+        let gridQ = Array.from({ length: NX }, () => new Float32Array(NY));   // Pumping/Injection
+        let gridVx = Array.from({ length: NX }, () => new Float32Array(NY));
+        let gridVy = Array.from({ length: NX }, () => new Float32Array(NY));
 
+        // Interactive Objects
+        let currentTool = 'source'; // source, pump, inject, barrier, river, erase
         let sources = [];
         let particles = [];
-        const MAX_PARTICLES = 3500;
+        const MAX_PARTICLES = 4000;
+
+        // Parameters
+        let K = 20;
+        let hWest = 100;
+        let hEast = 92;
+        let qPump = 40;
+        let ne = 0.25;
+        let alphaL = 15;
+        let alphaT = 3.0;
+        let halfLife = 180;
+
+        let isMouseDown = false;
+
+        function initGrid() {
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    gridType[i][j] = 0;
+                    gridQ[i][j] = 0;
+                    // Linear initial guess between West and East
+                    gridHead[i][j] = hWest - (i / (NX - 1)) * (hWest - hEast);
+                }
+            }
+            // Default West and East Dirichlet Boundary Conditions
+            for (let j = 0; j < NY; j++) {
+                gridType[0][j] = 1;
+                gridHead[0][j] = hWest;
+                gridType[NX - 1][j] = 1;
+                gridHead[NX - 1][j] = hEast;
+            }
+        }
 
         function resizeCanvas() {
             const container = canvas.parentElement;
             width = canvas.width = container.clientWidth;
             height = canvas.height = container.clientHeight;
+
             if (sources.length === 0) {
-                // Add default point source in western region
-                sources.push({ x: width * 0.2, y: height * 0.5, strength: 1.0 });
+                // Default initial setup
+                sources.push({ gx: 15, gy: 25 });
+                // Default pumping well
+                gridQ[55][25] = -qPump;
             }
         }
 
@@ -215,47 +302,158 @@
 
         function updateParams() {
             K = parseFloat(document.getElementById('sliderK').value);
-            grad = parseFloat(document.getElementById('sliderGrad').value);
+            hWest = parseFloat(document.getElementById('sliderHWest').value);
+            hEast = parseFloat(document.getElementById('sliderHEast').value);
+            qPump = parseFloat(document.getElementById('sliderQPump').value);
             ne = parseFloat(document.getElementById('sliderPorosity').value);
             alphaL = parseFloat(document.getElementById('sliderAlphaL').value);
             alphaT = parseFloat(document.getElementById('sliderAlphaT').value);
             halfLife = parseFloat(document.getElementById('sliderHalfLife').value);
-            const deg = parseFloat(document.getElementById('sliderAngle').value);
-            flowAngleRad = (deg * Math.PI) / 180;
 
             document.getElementById('valK').innerText = K;
-            document.getElementById('valGrad').innerText = grad;
+            document.getElementById('valHWest').innerText = hWest;
+            document.getElementById('valHEast').innerText = hEast;
+            document.getElementById('valQPump').innerText = qPump;
             document.getElementById('valPorosity').innerText = ne;
             document.getElementById('valAlphaL').innerText = alphaL;
             document.getElementById('valAlphaT').innerText = alphaT;
             document.getElementById('valHalfLife').innerText = halfLife;
-            document.getElementById('valAngle').innerText = deg;
 
-            const v = (K * grad) / ne;
-            document.getElementById('hudVelocity').innerText = v.toFixed(2) + " m/d";
+            // Update Dirichlet West & East boundaries
+            for (let j = 0; j < NY; j++) {
+                if (gridType[0][j] === 1) gridHead[0][j] = hWest;
+                if (gridType[NX - 1][j] === 1) gridHead[NX - 1][j] = hEast;
+            }
+
+            // Update pumping rates on active wells
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    if (gridQ[i][j] < 0) gridQ[i][j] = -qPump;
+                    if (gridQ[i][j] > 0) gridQ[i][j] = qPump;
+                }
+            }
         }
 
-        function clearSources() {
-            sources = [];
-            particles = [];
-            document.getElementById('hudSources').innerText = "0";
+        function setTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.btn-tool').forEach(btn => btn.className = 'btn-tool');
+            const ind = document.getElementById('toolIndicator');
+
+            if (tool === 'source') {
+                document.getElementById('toolSource').className = 'btn-tool active-pink';
+                ind.innerHTML = '<i class="fa-solid fa-bullseye"></i> Mode: Place Contaminant Point Source';
+            } else if (tool === 'pump') {
+                document.getElementById('toolPump').className = 'btn-tool active';
+                ind.innerHTML = '<i class="fa-solid fa-filter"></i> Mode: Place Pumping Extraction Well';
+            } else if (tool === 'inject') {
+                document.getElementById('toolInject').className = 'btn-tool active-emerald';
+                ind.innerHTML = '<i class="fa-solid fa-syringe"></i> Mode: Place Injection / Recharge Well';
+            } else if (tool === 'barrier') {
+                document.getElementById('toolBarrier').className = 'btn-tool active-amber';
+                ind.innerHTML = '<i class="fa-solid fa-cubes"></i> Mode: Paint No-Flow Wall / Barrier';
+            } else if (tool === 'river') {
+                document.getElementById('toolRiver').className = 'btn-tool active';
+                ind.innerHTML = '<i class="fa-solid fa-water"></i> Mode: Paint Constant Head River Boundary';
+            } else if (tool === 'erase') {
+                document.getElementById('toolErase').className = 'btn-tool active';
+                ind.innerHTML = '<i class="fa-solid fa-eraser"></i> Mode: Eraser (Click/Drag to Clear)';
+            }
         }
 
-        function togglePlay() {
-            isRunning = !isRunning;
-            document.getElementById('btnPlay').innerHTML = isRunning ? 
-                '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Resume';
+        // FDM Groundwater Flow Solver (Gauss-Seidel Iterations)
+        function solveFlowField() {
+            const iterations = 12;
+            for (let it = 0; it < iterations; it++) {
+                for (let i = 0; i < NX; i++) {
+                    for (let j = 0; j < NY; j++) {
+                        if (gridType[i][j] === 1 || gridType[i][j] === 2) continue; // Skip Const Head or Barriers
+
+                        let sumHead = 0;
+                        let count = 0;
+
+                        // Left neighbor
+                        if (i > 0 && gridType[i - 1][j] !== 2) { sumHead += gridHead[i - 1][j]; count++; }
+                        // Right neighbor
+                        if (i < NX - 1 && gridType[i + 1][j] !== 2) { sumHead += gridHead[i + 1][j]; count++; }
+                        // Top neighbor (No-flow boundary at North if j=0)
+                        if (j > 0 && gridType[i][j - 1] !== 2) { sumHead += gridHead[i][j - 1]; count++; }
+                        // Bottom neighbor (No-flow boundary at South if j=NY-1)
+                        if (j < NY - 1 && gridType[i][j + 1] !== 2) { sumHead += gridHead[i][j + 1]; count++; }
+
+                        if (count > 0) {
+                            gridHead[i][j] = (sumHead + (gridQ[i][j] / K) * 10) / count;
+                        }
+                    }
+                }
+            }
+
+            // Compute Seepage Velocity Field v = -K/n_e * grad(h)
+            let maxV = 0;
+            let minH = 999, maxH = -999;
+
+            const dx = width / NX;
+            const dy = height / NY;
+
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    const h = gridHead[i][j];
+                    if (h < minH) minH = h;
+                    if (h > maxH) maxH = h;
+
+                    if (gridType[i][j] === 2) {
+                        gridVx[i][j] = 0;
+                        gridVy[i][j] = 0;
+                        continue;
+                    }
+
+                    let dhdx = 0;
+                    if (i > 0 && i < NX - 1) dhdx = (gridHead[i + 1][j] - gridHead[i - 1][j]) / (2 * dx);
+                    else if (i === 0) dhdx = (gridHead[1][j] - gridHead[0][j]) / dx;
+                    else if (i === NX - 1) dhdx = (gridHead[NX - 1][j] - gridHead[NX - 2][j]) / dx;
+
+                    let dhdy = 0;
+                    if (j > 0 && j < NY - 1) dhdy = (gridHead[i][j + 1] - gridHead[i][j - 1]) / (2 * dy);
+                    else if (j === 0) dhdy = (gridHead[i][1] - gridHead[i][0]) / dy;
+                    else if (j === NY - 1) dhdy = (gridHead[i][NY - 1] - gridHead[i][NY - 2]) / dy;
+
+                    // Seepage velocity components
+                    gridVx[i][j] = -(K / ne) * dhdx * 18; // Scaled for canvas
+                    gridVy[i][j] = -(K / ne) * dhdy * 18;
+
+                    const mag = Math.sqrt(gridVx[i][j] ** 2 + gridVy[i][j] ** 2);
+                    if (mag > maxV) maxV = mag;
+                }
+            }
+
+            document.getElementById('hudHeadRange').innerText = `${minH.toFixed(1)} - ${maxH.toFixed(1)} m`;
+            document.getElementById('hudMaxVel').innerText = `${(maxV / 18).toFixed(2)} m/d`;
         }
 
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            sources.push({ x: x, y: y, strength: 1.0 });
-            document.getElementById('hudSources').innerText = sources.length;
-        });
+        // Bilinear Interpolation for Particle Velocity at arbitrary (x, y)
+        function getVelocity(x, y) {
+            const gx = (x / width) * (NX - 1);
+            const gy = (y / height) * (NY - 1);
 
-        // Particle Class
+            const i = Math.max(0, Math.min(NX - 2, Math.floor(gx)));
+            const j = Math.max(0, Math.min(NY - 2, Math.floor(gy)));
+
+            const fx = gx - i;
+            const fy = gy - j;
+
+            const vx = (1 - fx) * (1 - fy) * gridVx[i][j] +
+                       fx * (1 - fy) * gridVx[i + 1][j] +
+                       (1 - fx) * fy * gridVx[i][j + 1] +
+                       fx * fy * gridVx[i + 1][j + 1];
+
+            const vy = (1 - fx) * (1 - fy) * gridVy[i][j] +
+                       fx * (1 - fy) * gridVy[i + 1][j] +
+                       (1 - fx) * fy * gridVy[i][j + 1] +
+                       fx * fy * gridVy[i + 1][j + 1];
+
+            return { vx, vy, gx: Math.round(gx), gy: Math.round(gy) };
+        }
+
+        // Particle Advection & Dispersion
         class Particle {
             constructor(x, y) {
                 this.x = x;
@@ -267,27 +465,37 @@
             update(dt) {
                 this.age += dt;
 
-                // Darcy Linear Seepage Velocity
-                const vSeepage = (K * grad) / ne * 12; // Scaled for canvas display
+                const vel = getVelocity(this.x, this.y);
+                const vMag = Math.sqrt(vel.vx ** 2 + vel.vy ** 2) + 1e-5;
 
-                const vx = vSeepage * Math.cos(flowAngleRad);
-                const vy = vSeepage * Math.sin(flowAngleRad);
+                // Longitudinal and Transverse Dispersive Random Walk
+                const randNormL = (Math.random() + Math.random() + Math.random() - 1.5) * 1.5;
+                const randNormT = (Math.random() + Math.random() + Math.random() - 1.5) * 1.5;
 
-                // Gaussian Random Walk Dispersion
-                const D_L = alphaL * vSeepage;
-                const D_T = alphaT * vSeepage;
+                const dispL = randNormL * Math.sqrt(2 * alphaL * vMag * dt);
+                const dispT = randNormT * Math.sqrt(2 * alphaT * vMag * dt);
 
-                const randNormX = (Math.random() + Math.random() + Math.random() - 1.5) * 1.5;
-                const randNormY = (Math.random() + Math.random() + Math.random() - 1.5) * 1.5;
+                // Unit vector along flow
+                const ux = vel.vx / vMag;
+                const uy = vel.vy / vMag;
 
-                const dispX = randNormX * Math.sqrt(2 * D_L * dt);
-                const dispY = randNormY * Math.sqrt(2 * D_T * dt);
+                // Advective + Dispersive motion
+                const dx = (vel.vx * dt) + (dispL * ux - dispT * uy);
+                const dy = (vel.vy * dt) + (dispL * uy + dispT * ux);
 
-                // Advective + Dispersive step
-                this.x += vx * dt + dispX;
-                this.y += vy * dt + dispY;
+                const nextX = this.x + dx;
+                const nextY = this.y + dy;
 
-                // Radioactive/Chemical First-Order Decay C = C0 * exp(-lambda * t)
+                // Check collision with No-Flow Wall
+                const nextCell = getVelocity(nextX, nextY);
+                if (gridType[nextCell.gx][nextCell.gy] === 2) {
+                    return; // Stop at barrier wall
+                }
+
+                this.x = nextX;
+                this.y = nextY;
+
+                // First-order radioactive/chemical decay
                 const lambda = Math.LN2 / halfLife;
                 this.concentration = Math.exp(-lambda * this.age);
             }
@@ -297,122 +505,260 @@
                 let color;
 
                 if (this.concentration > 0.7) {
-                    color = `rgba(236, 72, 153, ${alpha})`; // Pink (High)
+                    color = `rgba(236, 72, 153, ${alpha})`;
                 } else if (this.concentration > 0.4) {
-                    color = `rgba(245, 158, 11, ${alpha * 0.8})`; // Amber
+                    color = `rgba(245, 158, 11, ${alpha * 0.85})`;
                 } else if (this.concentration > 0.15) {
-                    color = `rgba(16, 185, 129, ${alpha * 0.6})`; // Emerald
+                    color = `rgba(16, 185, 129, ${alpha * 0.65})`;
                 } else {
-                    color = `rgba(56, 189, 248, ${alpha * 0.3})`; // Cyan (Low/Plume Edge)
+                    color = `rgba(56, 189, 248, ${alpha * 0.35})`;
                 }
 
                 ctx.fillStyle = color;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, 3.5, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
                 ctx.fill();
             }
         }
 
-        // Render Aquifer Grid & Velocity Vector Overlay
-        function drawAquiferGrid() {
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+        // Canvas Rendering Routines
+        function renderEquipotentials() {
+            if (!document.getElementById('chkContours').checked) return;
+
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.18)";
+            ctx.lineWidth = 1.2;
+
+            const dx = width / NX;
+            const dy = height / NY;
+
+            for (let hLevel = 80; hLevel <= 120; hLevel += 1.5) {
+                ctx.beginPath();
+                for (let i = 0; i < NX - 1; i++) {
+                    for (let j = 0; j < NY - 1; j++) {
+                        const h0 = gridHead[i][j];
+                        const h1 = gridHead[i + 1][j];
+                        if ((h0 <= hLevel && h1 >= hLevel) || (h0 >= hLevel && h1 <= hLevel)) {
+                            const frac = (hLevel - h0) / (h1 - h0 + 1e-5);
+                            ctx.rect(i * dx + frac * dx, j * dy, 1.5, 1.5);
+                        }
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        function renderVectors() {
+            if (!document.getElementById('chkVectors').checked) return;
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.12)";
             ctx.lineWidth = 1;
-            const gridSize = 40;
 
-            for (let x = 0; x < width; x += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, height);
-                ctx.stroke();
-            }
-            for (let y = 0; y < height; y += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(width, y);
-                ctx.stroke();
-            }
+            const dx = width / NX;
+            const dy = height / NY;
 
-            // Draw Velocity Arrows Overlay
-            ctx.strokeStyle = "rgba(56, 189, 248, 0.12)";
-            ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
-            ctx.lineWidth = 1.5;
+            for (let i = 2; i < NX; i += 4) {
+                for (let j = 2; j < NY; j += 4) {
+                    if (gridType[i][j] === 2) continue;
 
-            const arrowLen = 18;
-            for (let x = 60; x < width; x += 120) {
-                for (let y = 60; y < height; y += 100) {
-                    const endX = x + arrowLen * Math.cos(flowAngleRad);
-                    const endY = y + arrowLen * Math.sin(flowAngleRad);
+                    const x = i * dx;
+                    const y = j * dy;
+                    const vx = gridVx[i][j];
+                    const vy = gridVy[i][j];
+                    const mag = Math.sqrt(vx * vx + vy * vy) + 1e-5;
 
                     ctx.beginPath();
                     ctx.moveTo(x, y);
-                    ctx.lineTo(endX, endY);
+                    ctx.lineTo(x + (vx / mag) * 12, y + (vy / mag) * 12);
                     ctx.stroke();
                 }
             }
         }
 
-        function drawSources() {
-            sources.forEach((s, idx) => {
-                // Pulsing glow around point source
-                const pulse = Math.sin(Date.now() * 0.005 + idx) * 3 + 8;
-                ctx.fillStyle = "rgba(236, 72, 153, 0.25)";
+        function renderGridObjects() {
+            const dx = width / NX;
+            const dy = height / NY;
+
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    // No-Flow Barriers (Amber Walls)
+                    if (gridType[i][j] === 2) {
+                        ctx.fillStyle = "rgba(245, 158, 11, 0.6)";
+                        ctx.fillRect(i * dx, j * dy, dx + 0.5, dy + 0.5);
+                        ctx.strokeStyle = "#f59e0b";
+                        ctx.strokeRect(i * dx, j * dy, dx, dy);
+                    }
+                    // Constant Head River (Cyan)
+                    else if (gridType[i][j] === 1 && i !== 0 && i !== NX - 1) {
+                        ctx.fillStyle = "rgba(56, 189, 248, 0.5)";
+                        ctx.fillRect(i * dx, j * dy, dx + 0.5, dy + 0.5);
+                    }
+
+                    // Pumping Wells (Extraction)
+                    if (gridQ[i][j] < 0) {
+                        const cx = i * dx + dx / 2;
+                        const cy = j * dy + dy / 2;
+
+                        ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = "#38bdf8";
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = "#ffffff";
+                        ctx.stroke();
+                    }
+                    // Injection Wells
+                    else if (gridQ[i][j] > 0) {
+                        const cx = i * dx + dx / 2;
+                        const cy = j * dy + dy / 2;
+
+                        ctx.fillStyle = "rgba(16, 185, 129, 0.25)";
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        ctx.fillStyle = "#10b981";
+                        ctx.beginPath();
+                        ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = "#ffffff";
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Draw Contaminant Point Sources
+            sources.forEach(s => {
+                const cx = s.gx * dx + dx / 2;
+                const cy = s.gy * dy + dy / 2;
+
+                ctx.fillStyle = "rgba(236, 72, 153, 0.3)";
                 ctx.beginPath();
-                ctx.arc(s.x, s.y, pulse + 6, 0, Math.PI * 2);
+                ctx.arc(cx, cy, 12, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.fillStyle = "#ec4899";
                 ctx.beginPath();
-                ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+                ctx.arc(cx, cy, 6, 0, Math.PI * 2);
                 ctx.fill();
-
                 ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 1.5;
                 ctx.stroke();
             });
         }
 
+        // Interaction Handler
+        function handleUserClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const gx = Math.max(1, Math.min(NX - 2, Math.floor((x / width) * NX)));
+            const gy = Math.max(0, Math.min(NY - 1, Math.floor((y / height) * NY)));
+
+            if (currentTool === 'source') {
+                sources.push({ gx, gy });
+            } else if (currentTool === 'pump') {
+                gridType[gx][gy] = 0;
+                gridQ[gx][gy] = -qPump;
+            } else if (currentTool === 'inject') {
+                gridType[gx][gy] = 0;
+                gridQ[gx][gy] = qPump;
+            } else if (currentTool === 'barrier') {
+                gridType[gx][gy] = 2;
+                gridQ[gx][gy] = 0;
+            } else if (currentTool === 'river') {
+                gridType[gx][gy] = 1;
+                gridHead[gx][gy] = 96.0; // Middle River Head
+                gridQ[gx][gy] = 0;
+            } else if (currentTool === 'erase') {
+                gridType[gx][gy] = 0;
+                gridQ[gx][gy] = 0;
+                sources = sources.filter(s => s.gx !== gx || s.gy !== gy);
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => { isMouseDown = true; handleUserClick(e); });
+        canvas.addEventListener('mousemove', (e) => { if (isMouseDown && (currentTool === 'barrier' || currentTool === 'erase')) handleUserClick(e); });
+        window.addEventListener('mouseup', () => isMouseDown = false);
+
+        function togglePause() {
+            isRunning = !isRunning;
+            document.getElementById('btnPause').innerHTML = isRunning ? '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Resume';
+        }
+
+        function clearAll() {
+            sources = [];
+            particles = [];
+            capturedCount = 0;
+            simTime = 0;
+            initGrid();
+            document.getElementById('hudCaptured').innerText = "0";
+        }
+
+        // Main Animation Loop
         function animate() {
             // Dark trail background sweep
-            ctx.fillStyle = "rgba(9, 13, 22, 0.25)";
+            ctx.fillStyle = "rgba(9, 13, 22, 0.28)";
             ctx.fillRect(0, 0, width, height);
 
-            drawAquiferGrid();
+            solveFlowField();
+            renderEquipotentials();
+            renderVectors();
 
             if (isRunning) {
                 simTime += 0.2;
                 document.getElementById('hudTime').innerText = simTime.toFixed(1) + " days";
 
-                // Emit particles from all point sources
+                const dx = width / NX;
+                const dy = height / NY;
+
+                // Emit particles from point sources
                 sources.forEach(s => {
+                    const cx = s.gx * dx + dx / 2;
+                    const cy = s.gy * dy + dy / 2;
                     for (let i = 0; i < 3; i++) {
                         if (particles.length < MAX_PARTICLES) {
-                            particles.push(new Particle(s.x, s.y));
+                            particles.push(new Particle(cx, cy));
                         }
                     }
                 });
 
-                // Update particle positions
+                // Update particle positions & well capture logic
                 for (let i = particles.length - 1; i >= 0; i--) {
                     let p = particles[i];
                     p.update(0.15);
 
-                    // Remove if out of bounds or decayed below threshold
-                    if (p.x > width + 20 || p.x < -20 || p.y > height + 20 || p.y < -20 || p.concentration < 0.02) {
+                    const cell = getVelocity(p.x, p.y);
+
+                    // Check if particle is captured by a Pumping Extraction Well
+                    if (gridQ[cell.gx][cell.gy] < 0) {
+                        capturedCount++;
+                        document.getElementById('hudCaptured').innerText = capturedCount;
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    // Remove out-of-bounds or fully decayed particles
+                    if (p.x > width + 10 || p.x < -10 || p.y > height + 10 || p.y < -10 || p.concentration < 0.02) {
                         particles.splice(i, 1);
                     }
                 }
             }
 
-            // Draw particles and point sources
+            // Render particles & grid elements
             particles.forEach(p => p.draw());
-            drawSources();
+            renderGridObjects();
 
             document.getElementById('hudParticles').innerText = particles.length;
 
             requestAnimationFrame(animate);
         }
 
-        // Initialize
+        // Initialize Application
+        initGrid();
         resizeCanvas();
         updateParams();
         animate();
