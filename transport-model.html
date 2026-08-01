@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Aquifer Contaminant Plume Model | Dr. Kunwar Mrityunjai Sharma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: rgba(17, 24, 39, 0.85);
+            --accent-cyan: #38bdf8;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-pink: #ec4899;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-glow: rgba(56, 189, 248, 0.25);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+        nav { padding: 1rem 4%; background: rgba(9, 13, 22, 0.95); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
+        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.9rem; }
+
+        .app-layout { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 61px); }
+
+        /* Sidebar Controls */
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid var(--border-subtle);
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .controls-panel h2 { font-size: 1.1rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .controls-panel h2 i { color: var(--accent-pink); }
+
+        .control-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .control-group label { font-size: 0.8rem; font-family: var(--font-code); color: var(--text-muted); display: flex; justify-content: space-between; }
+        .control-group label span.val { color: var(--accent-cyan); font-weight: 600; }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-cyan);
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            height: 6px;
+        }
+
+        .btn-panel { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 0.5rem; }
+        .btn-sm { padding: 0.5rem 0.9rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.05); color: var(--text-main); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-sm:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+        .btn-sm.active { background: var(--accent-pink); color: #090d16; border-color: var(--accent-pink); }
+
+        /* Main Simulation Viewport */
+        .simulation-viewport { position: relative; background: #050811; display: flex; flex-direction: column; }
+        .canvas-container { flex: 1; position: relative; width: 100%; height: 100%; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
+
+        /* Overlay Stats & Legend */
+        .hud-overlay {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 10px; padding: 1rem; font-family: var(--font-code); font-size: 0.8rem;
+            display: flex; flex-direction: column; gap: 0.5rem; backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .hud-stat { display: flex; justify-content: space-between; gap: 1.5rem; }
+        .hud-stat .label { color: var(--text-muted); }
+        .hud-stat .value { color: var(--accent-cyan); font-weight: 600; }
+
+        .color-legend {
+            position: absolute; bottom: 1.5rem; right: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 0.8rem 1rem; backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; gap: 6px; font-family: var(--font-code); font-size: 0.75rem;
+        }
+        .legend-bar { width: 200px; height: 12px; border-radius: 4px; background: linear-gradient(to right, rgba(9,13,22,0.8), #10b981, #f59e0b, #ef4444, #ec4899); }
+        .legend-labels { display: flex; justify-content: space-between; color: var(--text-muted); }
+
+        @media (max-width: 900px) {
+            .app-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+            .controls-panel { max-height: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
+        <div style="font-weight:700; color:var(--text-main);">2D Hydrogeological Contaminant Transport Model</div>
+    </nav>
+
+    <div class="app-layout">
+        <!-- Controls Panel -->
+        <div class="controls-panel">
+            <h2><i class="fa-solid fa-droplet"></i> Aquifer Transport Controls</h2>
+
+            <div class="btn-panel">
+                <button id="btnSourceMode" class="btn-sm active" onclick="setMode('source')"><i class="fa-solid fa-plus-circle"></i> Add Point Source</button>
+                <button id="btnClear" class="btn-sm" onclick="clearSources()"><i class="fa-solid fa-trash"></i> Clear Sources</button>
+                <button id="btnPlay" class="btn-sm" onclick="togglePlay()"><i class="fa-solid fa-pause"></i> Pause</button>
+            </div>
+
+            <hr style="border:0; border-top: 1px solid var(--border-subtle);">
+
+            <!-- Hydrogeological Parameters -->
+            <div class="control-group">
+                <label>Hydraulic Conductivity $K$ (m/day): <span id="valK" class="val">15</span></label>
+                <input type="range" id="sliderK" min="1" max="50" value="15" oninput="updateParams()">
+            </div>
+
+            <div class="control-group">
+                <label>Hydraulic Gradient $\frac{dh}{dx}$: <span id="valGrad" class="val">0.005</span></label>
+                <input type="range" id="sliderGrad" min="0.001" max="0.02" step="0.001" value="0.005" oninput="updateParams()">
+            </div>
+
+            <div class="control-group">
+                <label>Effective Porosity $n_e$: <span id="valPorosity" class="val">0.25</span></label>
+                <input type="range" id="sliderPorosity" min="0.1" max="0.4" step="0.01" value="0.25" oninput="updateParams()">
+            </div>
+
+            <div class="control-group">
+                <label>Longitudinal Dispersivity $\alpha_L$ (m): <span id="valAlphaL" class="val">12</span></label>
+                <input type="range" id="sliderAlphaL" min="1" max="30" value="12" oninput="updateParams()">
+            </div>
+
+            <div class="control-group">
+                <label>Transverse Dispersivity $\alpha_T$ (m): <span id="valAlphaT" class="val">3.0</span></label>
+                <input type="range" id="sliderAlphaT" min="0.5" max="10" step="0.5" value="3.0" oninput="updateParams()">
+            </div>
+
+            <div class="control-group">
+                <label>Radioactive Decay ($t_{1/2}$ days): <span id="valHalfLife" class="val">120</span></label>
+                <input type="range" id="sliderHalfLife" min="10" max="500" value="120" oninput="updateParams()">
+            </div>
+
+            <div class="control-group">
+                <label>Flow Direction Angle (&deg;): <span id="valAngle" class="val">0</span></label>
+                <input type="range" id="sliderAngle" min="-45" max="45" value="0" oninput="updateParams()">
+            </div>
+
+            <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.4; margin-top:0.5rem;">
+                <i class="fa-solid fa-info-circle"></i> <b>Interactive Mode:</b> Click anywhere on the geographic grid canvas to drop new point-source contaminant plumes. Flow vectors and dispersivity plumes adjust in real time.
+            </p>
+        </div>
+
+        <!-- Simulation Viewport -->
+        <div class="simulation-viewport">
+            <div class="canvas-container">
+                <canvas id="simCanvas"></canvas>
+            </div>
+
+            <!-- Realtime Metrics HUD -->
+            <div class="hud-overlay">
+                <div class="hud-stat"><span class="label">Groundwater Velocity ($v_x$):</span> <span id="hudVelocity" class="value">0.30 m/d</span></div>
+                <div class="hud-stat"><span class="label">Active Particles:</span> <span id="hudParticles" class="value">0</span></div>
+                <div class="hud-stat"><span class="label">Point Sources:</span> <span id="hudSources" class="value">1</span></div>
+                <div class="hud-stat"><span class="label">Simulation Time:</span> <span id="hudTime" class="value">0.0 days</span></div>
+            </div>
+
+            <!-- Color Scale Legend -->
+            <div class="color-legend">
+                <span>Contaminant Concentration ($C / C_0$)</span>
+                <div class="legend-bar"></div>
+                <div class="legend-labels">
+                    <span>0.0 (Clean)</span>
+                    <span>0.5</span>
+                    <span>1.0 (Source)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let isRunning = true;
+        let simTime = 0;
+
+        // Physics Parameters
+        let K = 15;            // m/day
+        let grad = 0.005;       // Hydraulic gradient
+        let ne = 0.25;          // Effective Porosity
+        let alphaL = 12;        // Longitudinal dispersivity (m)
+        let alphaT = 3.0;       // Transverse dispersivity (m)
+        let halfLife = 120;     // Days
+        let flowAngleRad = 0;   // Radians
+
+        let sources = [];
+        let particles = [];
+        const MAX_PARTICLES = 3500;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            width = canvas.width = container.clientWidth;
+            height = canvas.height = container.clientHeight;
+            if (sources.length === 0) {
+                // Add default point source in western region
+                sources.push({ x: width * 0.2, y: height * 0.5, strength: 1.0 });
+            }
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function updateParams() {
+            K = parseFloat(document.getElementById('sliderK').value);
+            grad = parseFloat(document.getElementById('sliderGrad').value);
+            ne = parseFloat(document.getElementById('sliderPorosity').value);
+            alphaL = parseFloat(document.getElementById('sliderAlphaL').value);
+            alphaT = parseFloat(document.getElementById('sliderAlphaT').value);
+            halfLife = parseFloat(document.getElementById('sliderHalfLife').value);
+            const deg = parseFloat(document.getElementById('sliderAngle').value);
+            flowAngleRad = (deg * Math.PI) / 180;
+
+            document.getElementById('valK').innerText = K;
+            document.getElementById('valGrad').innerText = grad;
+            document.getElementById('valPorosity').innerText = ne;
+            document.getElementById('valAlphaL').innerText = alphaL;
+            document.getElementById('valAlphaT').innerText = alphaT;
+            document.getElementById('valHalfLife').innerText = halfLife;
+            document.getElementById('valAngle').innerText = deg;
+
+            const v = (K * grad) / ne;
+            document.getElementById('hudVelocity').innerText = v.toFixed(2) + " m/d";
+        }
+
+        function clearSources() {
+            sources = [];
+            particles = [];
+            document.getElementById('hudSources').innerText = "0";
+        }
+
+        function togglePlay() {
+            isRunning = !isRunning;
+            document.getElementById('btnPlay').innerHTML = isRunning ? 
+                '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Resume';
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            sources.push({ x: x, y: y, strength: 1.0 });
+            document.getElementById('hudSources').innerText = sources.length;
+        });
+
+        // Particle Class
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.age = 0;
+                this.concentration = 1.0;
+            }
+
+            update(dt) {
+                this.age += dt;
+
+                // Darcy Linear Seepage Velocity
+                const vSeepage = (K * grad) / ne * 12; // Scaled for canvas display
+
+                const vx = vSeepage * Math.cos(flowAngleRad);
+                const vy = vSeepage * Math.sin(flowAngleRad);
+
+                // Gaussian Random Walk Dispersion
+                const D_L = alphaL * vSeepage;
+                const D_T = alphaT * vSeepage;
+
+                const randNormX = (Math.random() + Math.random() + Math.random() - 1.5) * 1.5;
+                const randNormY = (Math.random() + Math.random() + Math.random() - 1.5) * 1.5;
+
+                const dispX = randNormX * Math.sqrt(2 * D_L * dt);
+                const dispY = randNormY * Math.sqrt(2 * D_T * dt);
+
+                // Advective + Dispersive step
+                this.x += vx * dt + dispX;
+                this.y += vy * dt + dispY;
+
+                // Radioactive/Chemical First-Order Decay C = C0 * exp(-lambda * t)
+                const lambda = Math.LN2 / halfLife;
+                this.concentration = Math.exp(-lambda * this.age);
+            }
+
+            draw() {
+                const alpha = Math.max(0, this.concentration);
+                let color;
+
+                if (this.concentration > 0.7) {
+                    color = `rgba(236, 72, 153, ${alpha})`; // Pink (High)
+                } else if (this.concentration > 0.4) {
+                    color = `rgba(245, 158, 11, ${alpha * 0.8})`; // Amber
+                } else if (this.concentration > 0.15) {
+                    color = `rgba(16, 185, 129, ${alpha * 0.6})`; // Emerald
+                } else {
+                    color = `rgba(56, 189, 248, ${alpha * 0.3})`; // Cyan (Low/Plume Edge)
+                }
+
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Render Aquifer Grid & Velocity Vector Overlay
+        function drawAquiferGrid() {
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+
+            for (let x = 0; x < width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Draw Velocity Arrows Overlay
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.12)";
+            ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
+            ctx.lineWidth = 1.5;
+
+            const arrowLen = 18;
+            for (let x = 60; x < width; x += 120) {
+                for (let y = 60; y < height; y += 100) {
+                    const endX = x + arrowLen * Math.cos(flowAngleRad);
+                    const endY = y + arrowLen * Math.sin(flowAngleRad);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        function drawSources() {
+            sources.forEach((s, idx) => {
+                // Pulsing glow around point source
+                const pulse = Math.sin(Date.now() * 0.005 + idx) * 3 + 8;
+                ctx.fillStyle = "rgba(236, 72, 153, 0.25)";
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, pulse + 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = "#ec4899";
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            });
+        }
+
+        function animate() {
+            // Dark trail background sweep
+            ctx.fillStyle = "rgba(9, 13, 22, 0.25)";
+            ctx.fillRect(0, 0, width, height);
+
+            drawAquiferGrid();
+
+            if (isRunning) {
+                simTime += 0.2;
+                document.getElementById('hudTime').innerText = simTime.toFixed(1) + " days";
+
+                // Emit particles from all point sources
+                sources.forEach(s => {
+                    for (let i = 0; i < 3; i++) {
+                        if (particles.length < MAX_PARTICLES) {
+                            particles.push(new Particle(s.x, s.y));
+                        }
+                    }
+                });
+
+                // Update particle positions
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    let p = particles[i];
+                    p.update(0.15);
+
+                    // Remove if out of bounds or decayed below threshold
+                    if (p.x > width + 20 || p.x < -20 || p.y > height + 20 || p.y < -20 || p.concentration < 0.02) {
+                        particles.splice(i, 1);
+                    }
+                }
+            }
+
+            // Draw particles and point sources
+            particles.forEach(p => p.draw());
+            drawSources();
+
+            document.getElementById('hudParticles').innerText = particles.length;
+
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize
+        resizeCanvas();
+        updateParams();
+        animate();
+    </script>
+</body>
+</html>
