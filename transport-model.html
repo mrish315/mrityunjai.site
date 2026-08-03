@@ -63,7 +63,7 @@
 
         /* Sliders */
         .control-group { display: flex; flex-direction: column; gap: 0.3rem; }
-        .control-group label { font-size: 0.78rem; font-family: var(--font-code); color: var(--text-muted); display: flex; justify-content: space-between; }
+        .control-group label { font-size: 0.78rem; font-family: var(--font-code); color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         .control-group label span.val { color: var(--accent-cyan); font-weight: 600; }
 
         input[type="range"] {
@@ -142,43 +142,43 @@
 
             <div class="section-label">Hydrogeological Hydraulics</div>
             <div class="control-group">
-                <label>Hydraulic Conductivity $K$ (m/d): <span id="valK" class="val">20</span></label>
+                <label>Hydraulic Conductivity <i>K</i> (m/d): <span id="valK" class="val">20</span></label>
                 <input type="range" id="sliderK" min="2" max="60" value="20" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>West Head $H_{West}$ (m): <span id="valHWest" class="val">100</span></label>
+                <label>West Head <i>H</i><sub>West</sub> (m): <span id="valHWest" class="val">100</span></label>
                 <input type="range" id="sliderHWest" min="90" max="120" value="100" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>East Head $H_{East}$ (m): <span id="valHEast" class="val">92</span></label>
+                <label>East Head <i>H</i><sub>East</sub> (m): <span id="valHEast" class="val">92</span></label>
                 <input type="range" id="sliderHEast" min="80" max="110" value="92" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Pumping Rate $Q_{pump}$ (m$^3$/d): <span id="valQPump" class="val">40</span></label>
+                <label>Pumping Rate <i>Q</i><sub>pump</sub> (m<sup>3</sup>/d): <span id="valQPump" class="val">40</span></label>
                 <input type="range" id="sliderQPump" min="10" max="150" value="40" oninput="updateParams()">
             </div>
 
             <div class="section-label">Transport & Dispersion</div>
             <div class="control-group">
-                <label>Effective Porosity $n_e$: <span id="valPorosity" class="val">0.25</span></label>
+                <label>Effective Porosity <i>n</i><sub>e</sub>: <span id="valPorosity" class="val">0.25</span></label>
                 <input type="range" id="sliderPorosity" min="0.10" max="0.40" step="0.01" value="0.25" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Longitudinal Disp. $\alpha_L$ (m): <span id="valAlphaL" class="val">15</span></label>
+                <label>Longitudinal Disp. α<sub>L</sub> (m): <span id="valAlphaL" class="val">15</span></label>
                 <input type="range" id="sliderAlphaL" min="2" max="40" value="15" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Transverse Disp. $\alpha_T$ (m): <span id="valAlphaT" class="val">3.0</span></label>
+                <label>Transverse Disp. α<sub>T</sub> (m): <span id="valAlphaT" class="val">3.0</span></label>
                 <input type="range" id="sliderAlphaT" min="0.5" max="12" step="0.5" value="3.0" oninput="updateParams()">
             </div>
 
             <div class="control-group">
-                <label>Half-Life $t_{1/2}$ (days): <span id="valHalfLife" class="val">180</span></label>
+                <label>Half-Life <i>t</i><sub>1/2</sub> (days): <span id="valHalfLife" class="val">180</span></label>
                 <input type="range" id="sliderHalfLife" min="20" max="800" value="180" oninput="updateParams()">
             </div>
 
@@ -207,7 +207,7 @@
             <!-- HUD Overlay -->
             <div class="hud-overlay">
                 <div class="hud-stat"><span class="label">Groundwater Head Range:</span> <span id="hudHeadRange" class="value">92.0 - 100.0 m</span></div>
-                <div class="hud-stat"><span class="label">Max Seepage Velocity ($v$):</span> <span id="hudMaxVel" class="value">0.64 m/d</span></div>
+                <div class="hud-stat"><span class="label">Max Seepage Velocity (<i>v</i>):</span> <span id="hudMaxVel" class="value">0.64 m/d</span></div>
                 <div class="hud-stat"><span class="label">Active Transport Particles:</span> <span id="hudParticles" class="value">0</span></div>
                 <div class="hud-stat"><span class="label">Plumes Captured (Wells):</span> <span id="hudCaptured" class="value">0</span></div>
                 <div class="hud-stat"><span class="label">Elapsed Time:</span> <span id="hudTime" class="value">0.0 days</span></div>
@@ -220,7 +220,7 @@
 
             <!-- Color Scale Legend -->
             <div class="color-legend">
-                <span>Concentration ($C / C_0$)</span>
+                <span>Concentration (<i>C</i> / <i>C</i><sub>0</sub>)</span>
                 <div class="legend-bar"></div>
                 <div class="legend-labels">
                     <span>0.0 (Background)</span>
