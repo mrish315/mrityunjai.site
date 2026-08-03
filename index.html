@@ -16,6 +16,7 @@
             --accent-emerald: #10b981;
             --accent-amber: #f59e0b;
             --accent-pink: #ec4899;
+            --accent-purple: #a855f7;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -76,6 +77,7 @@
         .badge-blog { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
         .badge-code { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-transport { background: rgba(236, 72, 153, 0.15); color: var(--accent-pink); border: 1px solid rgba(236, 72, 153, 0.3); }
+        .badge-ghg { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
 
         /* Card Layouts */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
@@ -143,8 +145,8 @@
         </div>
         <div class="hero-text">
             <h1>Dr. Kunwar Mrityunjai Sharma</h1>
-            <h2>Computational Hydrogeologist & Subsurface Scientist</h2>
-            <p>Ph.D. researcher specializing in process-based subsurface numerical modeling, Channel Network Models (CNM), coupled hydro-mechanical dynamics, variably saturated flow, and scientific Python tool development (<code>pychan3d</code>) for deep geological repositories and hydrogeological risk assessments.</p>
+            <h2>Computational Hydrogeologist & Environmental Systems Modeler</h2>
+            <p>Ph.D. researcher specializing in numerical process modeling, land-atmosphere interactions, biogenic greenhouse gas exchange, Channel Network Models (CNM), and custom scientific Python pipelines (<code>pychan3d</code>) for carbon cycle and hydrogeological assessments.</p>
             
             <div class="btn-group">
                 <a href="#models" class="btn btn-primary"><i class="fa-solid fa-flask"></i> Explore Models</a>
@@ -170,13 +172,25 @@
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-transport"><i class="fa-solid fa-droplet"></i> New Simulator</span>
+                        <span class="badge badge-ghg"><i class="fa-solid fa-wind"></i> New Atmospheric Model</span>
+                        <span class="card-date">August 2026</span>
+                    </div>
+                    <h3>Soil-Atmosphere GHG & Carbon Cycle Model</h3>
+                    <p>Interactive process-based simulator coupling unsaturated soil physics with biogenic greenhouse gas fluxes (CO₂, CH₄, N₂O) and atmospheric boundary transport.</p>
+                </div>
+                <a href="ghg-atmosphere-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
+            </div>
+
+            <div class="card">
+                <div>
+                    <div class="card-top">
+                        <span class="badge badge-transport"><i class="fa-solid fa-droplet"></i> Hydro Model</span>
                         <span class="card-date">August 2026</span>
                     </div>
                     <h3>2D Aquifer Contaminant Plume Model</h3>
                     <p>Interactive 2D hydrogeological simulator for point-source contaminant transport, advection-dispersion plume evolution, and boundary hydraulic head customization.</p>
                 </div>
-                <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
+                <a href="transport-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
             </div>
 
             <!-- Dynamic Blog Card (Automatically populated from Notion) -->
@@ -191,18 +205,6 @@
                 </div>
                 <a href="blog.html" id="latestBlogLink" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-arrow-right"></i> Read Article</a>
             </div>
-
-            <div class="card">
-                <div>
-                    <div class="card-top">
-                        <span class="badge badge-code"><i class="fa-solid fa-code"></i> Python Pipeline</span>
-                        <span class="card-date">June 2026</span>
-                    </div>
-                    <h3>pychan3d Framework Update</h3>
-                    <p>Refactored 3D channel network module for particle tracking, advective transport, and Discrete Fracture Network (DFN) upscaling workflows.</p>
-                </div>
-                <a href="cnm-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-network-wired"></i> View CNM Framework</a>
-            </div>
         </div>
     </section>
 
@@ -214,8 +216,16 @@
         <div class="grid-4">
             <div class="card">
                 <div>
+                    <h3><i class="fa-solid fa-wind" style="color: var(--accent-purple);"></i> Soil-Atmosphere Carbon & GHG Model</h3>
+                    <p>Simulates agricultural trace gas exchanges (CO₂, CH₄, N₂O), soil temperature/moisture coupling, and land-atmosphere carbon fluxes under dynamic weather drivers.</p>
+                </div>
+                <a href="ghg-atmosphere-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
+            </div>
+
+            <div class="card">
+                <div>
                     <h3><i class="fa-solid fa-droplet" style="color: var(--accent-pink);"></i> 2D Aquifer Contaminant Transport</h3>
-                    <p>Features interactive point-source placement, directional groundwater velocity gradients, dispersion dynamics ($\alpha_L, \alpha_T$), radioactive decay, and glowing concentration heatmaps.</p>
+                    <p>Features interactive point-source placement, directional groundwater velocity gradients, dispersion dynamics (&alpha;<sub>L</sub>, &alpha;<sub>T</sub>), and radioactive decay.</p>
                 </div>
                 <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Transport Model</a>
             </div>
@@ -235,14 +245,6 @@
                 </div>
                 <a href="infiltration-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Infiltration Model</a>
             </div>
-
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-cubes"></i> KBS-3 DGR Thermal Layout</h3>
-                    <p>Examines thermal decay and plume interference across 8 KBS-3 canisters at -450 m depth as a function of canister/drift spacing (<i>S</i>) and host rock thermal conductivity (<i>k</i>).</p>
-                </div>
-                <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch DGR Thermal Model</a>
-            </div>
         </div>
     </section>
 
@@ -256,8 +258,8 @@
                 <div class="timeline-title">Senior Scientist</div>
                 <div class="timeline-meta">VTT Technical Research Centre of Finland | May 2023 – Dec 2025</div>
                 <ul class="timeline-bullets">
-                    <li>Led numerical flow and solute transport modeling in low-permeability rock and engineered barrier caps for national safety frameworks (SAFER, SAGE, HAGEN).</li>
-                    <li>Developed customized Python packages to convert 3D fracture networks into calculation matrices and coupled finite-element output with GoldSim.</li>
+                    <li>Led numerical flow, spatial infiltration, and solute transport modeling in low-permeability environments and near-surface waste containment structures.</li>
+                    <li>Developed customized Python packages to convert complex fracture networks into calculation matrices and integrated finite-element modeling with spatial GIS data.</li>
                 </ul>
             </div>
             <div class="timeline-item">
