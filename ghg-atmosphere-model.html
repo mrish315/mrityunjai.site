@@ -64,7 +64,7 @@
         .controls-card h3 { font-size: 1.1rem; color: var(--accent-cyan); font-weight: 600; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.6rem; }
         
         .param-group { display: flex; flex-direction: column; gap: 0.4rem; }
-        .param-group label { font-size: 0.85rem; color: var(--text-main); font-weight: 500; display: flex; justify-content: space-between; }
+        .param-group label { font-size: 0.85rem; color: var(--text-main); font-weight: 500; display: flex; justify-content: space-between; align-items: center; }
         .param-group label span { font-family: var(--font-code); color: var(--accent-cyan); }
         .param-group input[type="range"] { accent-color: var(--accent-purple); cursor: pointer; }
         .param-group select {
@@ -121,7 +121,7 @@
         <!-- Header -->
         <div class="header-section">
             <h1><i class="fa-solid fa-wind"></i> Soil-Atmosphere GHG & Carbon Flux Simulator</h1>
-            <p>Interactive multi-physics process model simulating biogenic trace gas diffusion ($\text{CO}_2, \text{CH}_4, \text{N}_2\text{O}$), soil moisture saturation dynamics, microbial decomposition rates, and land-atmosphere boundary flux dispersion.</p>
+            <p>Interactive multi-physics process model simulating biogenic trace gas diffusion (CO<sub>2</sub>, CH<sub>4</sub>, N<sub>2</sub>O), soil moisture saturation dynamics, microbial decomposition rates, and land-atmosphere boundary flux dispersion.</p>
         </div>
 
         <!-- Main Simulation Grid -->
@@ -140,22 +140,22 @@
                 </div>
 
                 <div class="param-group">
-                    <label>Soil Moisture ($\theta$) <span id="valMoisture">45%</span></label>
+                    <label>Soil Moisture (θ) <span id="valMoisture">45%</span></label>
                     <input type="range" id="inputMoisture" min="10" max="90" value="45">
                 </div>
 
                 <div class="param-group">
-                    <label>Soil Temp ($T_s$) <span id="valTemp">18°C</span></label>
+                    <label>Soil Temp (T<sub>s</sub>) <span id="valTemp">18°C</span></label>
                     <input type="range" id="inputTemp" min="5" max="35" value="18">
                 </div>
 
                 <div class="param-group">
-                    <label>Wind Velocity ($u$) <span id="valWind">3.5 m/s</span></label>
+                    <label>Wind Velocity (u) <span id="valWind">3.5 m/s</span></label>
                     <input type="range" id="inputWind" min="0.5" max="10" step="0.5" value="3.5">
                 </div>
 
                 <div class="param-group">
-                    <label>Microbial Activity ($V_{max}$) <span id="valMicrobe">1.2x</span></label>
+                    <label>Microbial Activity (V<sub>max</sub>) <span id="valMicrobe">1.2x</span></label>
                     <input type="range" id="inputMicrobe" min="0.2" max="3.0" step="0.1" value="1.2">
                 </div>
 
@@ -175,11 +175,11 @@
                 <!-- Metrics Display -->
                 <div class="metrics-grid">
                     <div class="metric-box">
-                        <h4>Surface Flux ($F_{gas}$)</h4>
+                        <h4>Surface Flux (F<sub>GAS</sub>)</h4>
                         <p id="metricFlux" style="color: var(--accent-purple);">12.4 <span style="font-size: 0.8rem;">µmol/m²/s</span></p>
                     </div>
                     <div class="metric-box">
-                        <h4>Soil Diffusivity ($D_p$)</h4>
+                        <h4>Soil Diffusivity (D<sub>P</sub>)</h4>
                         <p id="metricDiffusivity" style="color: var(--accent-cyan);">4.12e-6 <span style="font-size: 0.8rem;">m²/s</span></p>
                     </div>
                     <div class="metric-box">
@@ -360,8 +360,8 @@
             valWind.innerText = inputWind.value + ' m/s';
             valMicrobe.innerText = inputMicrobe.value + 'x';
 
-            metricFlux.innerText = phys.flux.toFixed(2) + ' µmol/m²/s';
-            metricDiffusivity.innerText = phys.diffusivity.toExponential(2) + ' m²/s';
+            metricFlux.innerHTML = phys.flux.toFixed(2) + ' <span style="font-size: 0.8rem;">µmol/m²/s</span>';
+            metricDiffusivity.innerHTML = phys.diffusivity.toExponential(2) + ' <span style="font-size: 0.8rem;">m²/s</span>';
 
             // Chart Update
             timeStep++;
