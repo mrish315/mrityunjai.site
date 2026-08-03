@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil-Atmosphere GHG & Carbon Flux Model | Dr. Kunwar Mrityunjai Sharma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: rgba(17, 24, 39, 0.75);
+            --bg-card-hover: rgba(31, 41, 55, 0.85);
+            --accent-cyan: #38bdf8;
+            --accent-blue: #60a5fa;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-purple: #a855f7;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-glow: rgba(56, 189, 248, 0.25);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.6; }
+
+        /* Navigation */
+        nav {
+            position: fixed; top: 0; width: 100%; background: rgba(9, 13, 22, 0.92);
+            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle);
+            z-index: 1000; padding: 1rem 6%; display: flex; justify-content: space-between; align-items: center;
+        }
+        nav .brand { font-weight: 700; font-size: 1.15rem; color: var(--text-main); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+        nav .brand i { color: var(--accent-purple); }
+        nav ul { display: flex; list-style: none; gap: 1.8rem; }
+        nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        nav a:hover { color: var(--accent-cyan); }
+
+        /* Container */
+        .container { max-width: 1300px; margin: 6rem auto 3rem; padding: 0 4%; }
+        
+        .header-section { margin-bottom: 2rem; }
+        .header-section h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 12px; }
+        .header-section h1 i { color: var(--accent-purple); }
+        .header-section p { color: var(--text-muted); font-size: 1rem; max-width: 900px; }
+
+        /* Simulation Layout */
+        .sim-grid { display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; }
+
+        /* Controls Panel */
+        .controls-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .controls-card h3 { font-size: 1.1rem; color: var(--accent-cyan); font-weight: 600; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.6rem; }
+        
+        .param-group { display: flex; flex-direction: column; gap: 0.4rem; }
+        .param-group label { font-size: 0.85rem; color: var(--text-main); font-weight: 500; display: flex; justify-content: space-between; }
+        .param-group label span { font-family: var(--font-code); color: var(--accent-cyan); }
+        .param-group input[type="range"] { accent-color: var(--accent-purple); cursor: pointer; }
+        .param-group select {
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border-subtle);
+            color: var(--text-main); padding: 0.5rem; border-radius: 6px; font-family: 'Inter', sans-serif;
+        }
+
+        /* Visualization Panel */
+        .viz-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .canvas-wrapper { position: relative; width: 100%; height: 320px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-subtle); background: #050811; }
+        canvas#simCanvas { width: 100%; height: 100%; display: block; }
+
+        .metrics-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+        .metric-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: 8px; text-align: center; }
+        .metric-box h4 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.3rem; }
+        .metric-box p { font-size: 1.4rem; font-family: var(--font-code); font-weight: 700; }
+
+        .charts-container { height: 220px; border-top: 1px solid var(--border-subtle); padding-top: 1rem; }
+
+        .btn-group { display: flex; gap: 0.8rem; margin-top: auto; }
+        .btn { padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; border: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: var(--accent-purple); color: #fff; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-outline { background: rgba(255,255,255,0.05); color: var(--text-main); border: 1px solid var(--border-subtle); }
+        .btn-outline:hover { background: rgba(255,255,255,0.1); }
+
+        footer { background: #050811; border-top: 1px solid var(--border-subtle); padding: 2rem 6%; color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-top: 4rem; }
+
+        @media (max-width: 900px) { .sim-grid { grid-template-columns: 1fr; } .metrics-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="brand"><i class="fa-solid fa-wind"></i> Dr. Kunwar Mrityunjai Sharma</a>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="index.html#models">Models</a></li>
+            <li><a href="blog.html">Blog</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header-section">
+            <h1><i class="fa-solid fa-wind"></i> Soil-Atmosphere GHG & Carbon Flux Simulator</h1>
+            <p>Interactive multi-physics process model simulating biogenic trace gas diffusion ($\text{CO}_2, \text{CH}_4, \text{N}_2\text{O}$), soil moisture saturation dynamics, microbial decomposition rates, and land-atmosphere boundary flux dispersion.</p>
+        </div>
+
+        <!-- Main Simulation Grid -->
+        <div class="sim-grid">
+            <!-- Controls Sidebar -->
+            <div class="controls-card">
+                <h3><i class="fa-solid fa-sliders"></i> Environmental Drivers</h3>
+
+                <div class="param-group">
+                    <label>Target Gas <span>[Species]</span></label>
+                    <select id="gasSelect">
+                        <option value="co2">Carbon Dioxide (CO₂)</option>
+                        <option value="ch4">Methane (CH₄)</option>
+                        <option value="n2o">Nitrous Oxide (N₂O)</option>
+                    </select>
+                </div>
+
+                <div class="param-group">
+                    <label>Soil Moisture ($\theta$) <span id="valMoisture">45%</span></label>
+                    <input type="range" id="inputMoisture" min="10" max="90" value="45">
+                </div>
+
+                <div class="param-group">
+                    <label>Soil Temp ($T_s$) <span id="valTemp">18°C</span></label>
+                    <input type="range" id="inputTemp" min="5" max="35" value="18">
+                </div>
+
+                <div class="param-group">
+                    <label>Wind Velocity ($u$) <span id="valWind">3.5 m/s</span></label>
+                    <input type="range" id="inputWind" min="0.5" max="10" step="0.5" value="3.5">
+                </div>
+
+                <div class="param-group">
+                    <label>Microbial Activity ($V_{max}$) <span id="valMicrobe">1.2x</span></label>
+                    <input type="range" id="inputMicrobe" min="0.2" max="3.0" step="0.1" value="1.2">
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="btnToggleSim"><i class="fa-solid fa-pause"></i> Pause</button>
+                    <button class="btn btn-outline" id="btnResetSim"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+                </div>
+            </div>
+
+            <!-- Visualizers -->
+            <div class="viz-card">
+                <!-- 2D Particle Atmosphere Canvas -->
+                <div class="canvas-wrapper">
+                    <canvas id="simCanvas"></canvas>
+                </div>
+
+                <!-- Metrics Display -->
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <h4>Surface Flux ($F_{gas}$)</h4>
+                        <p id="metricFlux" style="color: var(--accent-purple);">12.4 <span style="font-size: 0.8rem;">µmol/m²/s</span></p>
+                    </div>
+                    <div class="metric-box">
+                        <h4>Soil Diffusivity ($D_p$)</h4>
+                        <p id="metricDiffusivity" style="color: var(--accent-cyan);">4.12e-6 <span style="font-size: 0.8rem;">m²/s</span></p>
+                    </div>
+                    <div class="metric-box">
+                        <h4>Boundary Layer Height</h4>
+                        <p id="metricBoundary" style="color: var(--accent-emerald);">1.85 <span style="font-size: 0.8rem;">m</span></p>
+                    </div>
+                </div>
+
+                <!-- Live Flux Time Series -->
+                <div class="charts-container">
+                    <canvas id="chartFlux"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Dr. Kunwar Mrityunjai Sharma | <a href="http://mrityunjai.site" style="color:var(--accent-cyan)">mrityunjai.site</a></p>
+    </footer>
+
+    <!-- Simulation Script -->
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Control Inputs
+        const inputMoisture = document.getElementById('inputMoisture');
+        const inputTemp = document.getElementById('inputTemp');
+        const inputWind = document.getElementById('inputWind');
+        const inputMicrobe = document.getElementById('inputMicrobe');
+        const gasSelect = document.getElementById('gasSelect');
+
+        const valMoisture = document.getElementById('valMoisture');
+        const valTemp = document.getElementById('valTemp');
+        const valWind = document.getElementById('valWind');
+        const valMicrobe = document.getElementById('valMicrobe');
+
+        const metricFlux = document.getElementById('metricFlux');
+        const metricDiffusivity = document.getElementById('metricDiffusivity');
+
+        let isRunning = true;
+        let particles = [];
+        let timeStep = 0;
+
+        // Particle Class representing gas flux
+        class Particle {
+            constructor(x, y, gasType) {
+                this.x = x;
+                this.y = y;
+                this.gasType = gasType;
+                this.alpha = 1.0;
+                this.radius = Math.random() * 2.5 + 1.5;
+                this.vx = (Math.random() - 0.2) * parseFloat(inputWind.value);
+                this.vy = - (Math.random() * 1.5 + 0.8);
+            }
+
+            update(windSpeed) {
+                this.x += this.vx + windSpeed * 0.4;
+                this.y += this.vy;
+                this.alpha -= 0.005;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                if (this.gasType === 'co2') ctx.fillStyle = '#a855f7';
+                else if (this.gasType === 'ch4') ctx.fillStyle = '#38bdf8';
+                else ctx.fillStyle = '#10b981';
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Initialize Live Chart
+        const chartCtx = document.getElementById('chartFlux').getContext('2d');
+        const fluxChart = new Chart(chartCtx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 30}, (_, i) => i),
+                datasets: [{
+                    label: 'Surface GHG Flux (µmol/m²/s)',
+                    data: Array(30).fill(0),
+                    borderColor: '#a855f7',
+                    borderWidth: 2,
+                    tension: 0.3,
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: 'rgba(168, 85, 247, 0.1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { display: false },
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#9ca3af' } }
+                },
+                plugins: { legend: { labels: { color: '#f3f4f6' } } }
+            }
+        });
+
+        function calculatePhysics() {
+            const theta = parseFloat(inputMoisture.value) / 100;
+            const temp = parseFloat(inputTemp.value);
+            const microbe = parseFloat(inputMicrobe.value);
+            const gas = gasSelect.value;
+
+            // Arrhenius-like temperature effect
+            const Q10 = 2.0;
+            const tempFactor = Math.pow(Q10, (temp - 20) / 10);
+
+            // Moisture-dependent soil respiration curve
+            const moistureFactor = 4 * theta * (1 - theta);
+
+            // Calculate diffusivity (Penman model approximation)
+            const Dp = (1.5e-5) * Math.pow(1 - theta, 2);
+
+            let baseFlux = 10 * tempFactor * moistureFactor * microbe;
+            if (gas === 'ch4') baseFlux *= 0.15;
+            if (gas === 'n2o') baseFlux *= 0.05;
+
+            return { flux: baseFlux, diffusivity: Dp };
+        }
+
+        function animate() {
+            if (!isRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Soil Layer
+            const soilHeight = 80;
+            ctx.fillStyle = '#111827';
+            ctx.fillRect(0, canvas.height - soilHeight, canvas.width, soilHeight);
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - soilHeight);
+            ctx.lineTo(canvas.width, canvas.height - soilHeight);
+            ctx.stroke();
+
+            // Label Soil
+            ctx.fillStyle = '#9ca3af';
+            ctx.font = '12px Fira Code';
+            ctx.fillText('Agricultural Soil Matrix (Unsaturated Zone)', 15, canvas.height - 30);
+            ctx.fillText('Atmospheric Boundary Layer', 15, 30);
+
+            const phys = calculatePhysics();
+            const windSpeed = parseFloat(inputWind.value);
+
+            // Emit Particles based on calculated flux
+            if (Math.random() < phys.flux * 0.1) {
+                const emitX = Math.random() * canvas.width;
+                particles.push(new Particle(emitX, canvas.height - soilHeight, gasSelect.value));
+            }
+
+            // Update & Draw Particles
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update(windSpeed);
+                particles[i].draw(ctx);
+                if (particles[i].alpha <= 0 || particles[i].x > canvas.width) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            // Update Metrics Display
+            valMoisture.innerText = inputMoisture.value + '%';
+            valTemp.innerText = inputTemp.value + '°C';
+            valWind.innerText = inputWind.value + ' m/s';
+            valMicrobe.innerText = inputMicrobe.value + 'x';
+
+            metricFlux.innerText = phys.flux.toFixed(2) + ' µmol/m²/s';
+            metricDiffusivity.innerText = phys.diffusivity.toExponential(2) + ' m²/s';
+
+            // Chart Update
+            timeStep++;
+            if (timeStep % 10 === 0) {
+                fluxChart.data.datasets[0].data.shift();
+                fluxChart.data.datasets[0].data.push(phys.flux);
+                fluxChart.update('none');
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        // Controls
+        document.getElementById('btnToggleSim').addEventListener('click', function() {
+            isRunning = !isRunning;
+            this.innerHTML = isRunning ? '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Resume';
+            if (isRunning) animate();
+        });
+
+        document.getElementById('btnResetSim').addEventListener('click', function() {
+            particles = [];
+            fluxChart.data.datasets[0].data = Array(30).fill(0);
+            fluxChart.update();
+        });
+
+        animate();
+    </script>
+</body>
+</html>
