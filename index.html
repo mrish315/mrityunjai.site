@@ -17,6 +17,7 @@
             --accent-amber: #f59e0b;
             --accent-pink: #ec4899;
             --accent-purple: #a855f7;
+            --accent-red: #ef4444;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -78,10 +79,12 @@
         .badge-code { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-transport { background: rgba(236, 72, 153, 0.15); color: var(--accent-pink); border: 1px solid rgba(236, 72, 153, 0.3); }
         .badge-ghg { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
+        .badge-thermal { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.3); }
 
         /* Card Layouts */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+        .grid-models { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
+        
         .card { 
             background: var(--bg-card); 
             border: 1px solid var(--border-subtle); 
@@ -172,25 +175,25 @@
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-ghg"><i class="fa-solid fa-wind"></i> New Atmospheric Model</span>
+                        <span class="badge badge-thermal"><i class="fa-solid fa-fire"></i> Thermal Sandbox</span>
                         <span class="card-date">August 2026</span>
                     </div>
-                    <h3>Soil-Atmosphere GHG & Carbon Cycle Model</h3>
-                    <p>Interactive process-based simulator coupling unsaturated soil physics with biogenic greenhouse gas fluxes (CO₂, CH₄, N₂O) and atmospheric boundary transport.</p>
+                    <h3>KBS-3 Canister Spacing & Thermal Model</h3>
+                    <p>Interactive repository engineering tool to optimize canister-to-canister spacing ($S$), decay heat plumes, and bentonite buffer thermal limits (&le; 95&deg;C) in crystalline host rock.</p>
                 </div>
-                <a href="ghg-atmosphere-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
+                <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Heat Sandbox</a>
             </div>
 
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-transport"><i class="fa-solid fa-droplet"></i> Hydro Model</span>
+                        <span class="badge badge-ghg"><i class="fa-solid fa-wind"></i> Atmospheric Model</span>
                         <span class="card-date">August 2026</span>
                     </div>
-                    <h3>2D Aquifer Contaminant Plume Model</h3>
-                    <p>Interactive 2D hydrogeological simulator for point-source contaminant transport, advection-dispersion plume evolution, and boundary hydraulic head customization.</p>
+                    <h3>Soil-Atmosphere GHG & Carbon Model</h3>
+                    <p>Process-based simulator coupling unsaturated soil physics with biogenic trace gas fluxes (CO₂, CH₄, N₂O) and atmospheric boundary transport.</p>
                 </div>
-                <a href="transport-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
+                <a href="ghg-atmosphere-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
             </div>
 
             <!-- Dynamic Blog Card (Automatically populated from Notion) -->
@@ -213,34 +216,47 @@
         <div class="section-tag">Interactive Simulations</div>
         <h2 class="section-title"><i class="fa-solid fa-flask"></i> Dedicated Computational Process Models</h2>
 
-        <div class="grid-4">
+        <div class="grid-models">
+            <!-- 1. KBS-3 Canister Spacing Model -->
             <div class="card">
                 <div>
-                    <h3><i class="fa-solid fa-wind" style="color: var(--accent-purple);"></i> Soil-Atmosphere Carbon & GHG Model</h3>
+                    <h3><i class="fa-solid fa-cubes" style="color: var(--accent-red);"></i> KBS-3 DGR Canister Spacing & Thermal Sandbox</h3>
+                    <p>Examines thermal decay and plume interference across KBS-3 nuclear waste canisters at -450 m depth as a function of canister/tunnel spacing ($S$), decay age, and rock thermal conductivity ($k$). Evaluates bentonite buffer safety limits (&le; 95&deg;C).</p>
+                </div>
+                <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Canister Spacing Model</a>
+            </div>
+
+            <!-- 2. Soil-Atmosphere Carbon Model -->
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-wind" style="color: var(--accent-purple);"></i> Soil-Atmosphere Carbon & GHG Flux Model</h3>
                     <p>Simulates agricultural trace gas exchanges (CO₂, CH₄, N₂O), soil temperature/moisture coupling, and land-atmosphere carbon fluxes under dynamic weather drivers.</p>
                 </div>
                 <a href="ghg-atmosphere-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
             </div>
 
+            <!-- 3. 2D Aquifer Contaminant Transport -->
             <div class="card">
                 <div>
-                    <h3><i class="fa-solid fa-droplet" style="color: var(--accent-pink);"></i> 2D Aquifer Contaminant Transport</h3>
-                    <p>Features interactive point-source placement, directional groundwater velocity gradients, dispersion dynamics (&alpha;<sub>L</sub>, &alpha;<sub>T</sub>), and radioactive decay.</p>
+                    <h3><i class="fa-solid fa-droplet" style="color: var(--accent-pink);"></i> 2D Aquifer Contaminant Plume Model</h3>
+                    <p>Features FDM groundwater flow solver, interactive point-source placement, extraction pumping capture zones, no-flow barrier walls, dispersion dynamics (&alpha;<sub>L</sub>, &alpha;<sub>T</sub>), and radioactive decay.</p>
                 </div>
                 <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Transport Model</a>
             </div>
 
+            <!-- 4. 2D Channel Network Model -->
             <div class="card">
                 <div>
-                    <h3><i class="fa-solid fa-network-wired"></i> 2D Channel Network Model</h3>
-                    <p>Features FDM Gauss-Seidel hydraulic solver, log-normal conductance distributions (&sigma;), and flow-proportional 50-particle advective transport built with <code>pychan3d</code> principles.</p>
+                    <h3><i class="fa-solid fa-network-wired" style="color: var(--accent-cyan);"></i> 2D Channel Network Model (CNM)</h3>
+                    <p>Features FDM Gauss-Seidel hydraulic solver, log-normal conductance distributions (&sigma;), and flow-proportional particle advective transport built with <code>pychan3d</code> principles.</p>
                 </div>
                 <a href="cnm-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch CNM Model</a>
             </div>
 
+            <!-- 5. Matrix Infiltration Dynamics -->
             <div class="card">
                 <div>
-                    <h3><i class="fa-solid fa-cloud-rain"></i> Matrix Infiltration Dynamics</h3>
+                    <h3><i class="fa-solid fa-cloud-rain" style="color: var(--accent-blue);"></i> Matrix Infiltration Dynamics</h3>
                     <p>Simulates variably saturated infiltration across clay barriers and soil profiles using Richards' equation dynamics, suction head (&psi;), and transient wetting fronts.</p>
                 </div>
                 <a href="infiltration-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Infiltration Model</a>
@@ -258,8 +274,8 @@
                 <div class="timeline-title">Senior Scientist</div>
                 <div class="timeline-meta">VTT Technical Research Centre of Finland | May 2023 – Dec 2025</div>
                 <ul class="timeline-bullets">
-                    <li>Led numerical flow, spatial infiltration, and solute transport modeling in low-permeability environments and near-surface waste containment structures.</li>
-                    <li>Developed customized Python packages to convert complex fracture networks into calculation matrices and integrated finite-element modeling with spatial GIS data.</li>
+                    <li>Led numerical flow, canister thermal spacing, and solute transport modeling in low-permeability rock and engineered barrier caps for national safety frameworks (SAFER, SAGE, HAGEN).</li>
+                    <li>Developed customized Python packages to convert 3D fracture networks into calculation matrices and integrated finite-element modeling with GoldSim.</li>
                 </ul>
             </div>
             <div class="timeline-item">
