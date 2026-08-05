@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Kunwar Mrityunjai Sharma | Computational Hydrogeologist</title>
+    <title>Dr. Kunwar Mrityunjai Sharma | Computational Hydrogeologist & Geotechnical Modeler</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -79,7 +79,7 @@
         .badge-code { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
         .badge-transport { background: rgba(236, 72, 153, 0.15); color: var(--accent-pink); border: 1px solid rgba(236, 72, 153, 0.3); }
         .badge-ghg { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
-        .badge-thermal { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-slope { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.4); }
 
         /* Card Layouts */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
@@ -148,8 +148,8 @@
         </div>
         <div class="hero-text">
             <h1>Dr. Kunwar Mrityunjai Sharma</h1>
-            <h2>Computational Hydrogeologist & Environmental Systems Modeler</h2>
-            <p>Ph.D. researcher specializing in numerical process modeling, land-atmosphere interactions, biogenic greenhouse gas exchange, Channel Network Models (CNM), and custom scientific Python pipelines (<code>pychan3d</code>) for carbon cycle and hydrogeological assessments.</p>
+            <h2>Engineering Geologist, Hydrogeologist & Subsurface Scientist</h2>
+            <p>Ph.D. researcher specializing in engineering geology, slope stability assessments, hydrogeology, process-based subsurface numerical modeling, Channel Network Models (CNM), and custom scientific Python tool development (<code>pychan3d</code>) for geotechnical safety and deep geological repositories.</p>
             
             <div class="btn-group">
                 <a href="#models" class="btn btn-primary"><i class="fa-solid fa-flask"></i> Explore Models</a>
@@ -175,25 +175,25 @@
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-thermal"><i class="fa-solid fa-fire"></i> Thermal Sandbox</span>
+                        <span class="badge badge-slope"><i class="fa-solid fa-hill-rockslide"></i> Geotechnical Simulator</span>
                         <span class="card-date">August 2026</span>
                     </div>
-                    <h3>KBS-3 Canister Spacing & Thermal Model</h3>
-                    <p>Interactive repository engineering tool to optimize canister-to-canister spacing ($S$), decay heat plumes, and bentonite buffer thermal limits (&le; 95&deg;C) in crystalline host rock.</p>
+                    <h3>Slope Stability & Critical Failure Assessor</h3>
+                    <p>Interactive Limit Equilibrium Method (Fellenius / Method of Slices) calculator to evaluate Factor of Safety ($FS$), critical slip arcs, pore water ratios, and crest surcharges on custom geometries.</p>
                 </div>
-                <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Heat Sandbox</a>
+                <a href="slope-stability-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Slope Assessor</a>
             </div>
 
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-ghg"><i class="fa-solid fa-wind"></i> Atmospheric Model</span>
+                        <span class="badge badge-transport"><i class="fa-solid fa-droplet"></i> Hydro Model</span>
                         <span class="card-date">August 2026</span>
                     </div>
-                    <h3>Soil-Atmosphere GHG & Carbon Model</h3>
-                    <p>Process-based simulator coupling unsaturated soil physics with biogenic trace gas fluxes (CO₂, CH₄, N₂O) and atmospheric boundary transport.</p>
+                    <h3>2D Aquifer Contaminant Plume Model</h3>
+                    <p>Interactive 2D hydrogeological simulator for point-source contaminant transport, advection-dispersion plume evolution, extraction wells, and boundary head customization.</p>
                 </div>
-                <a href="ghg-atmosphere-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
+                <a href="transport-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
             </div>
 
             <!-- Dynamic Blog Card (Automatically populated from Notion) -->
@@ -217,25 +217,34 @@
         <h2 class="section-title"><i class="fa-solid fa-flask"></i> Dedicated Computational Process Models</h2>
 
         <div class="grid-models">
-            <!-- 1. KBS-3 Canister Spacing Model -->
+            <!-- 1. Slope Stability Assessment Model -->
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-hill-rockslide" style="color: var(--accent-amber);"></i> Geotechnical Slope Stability & Failure Assessor</h3>
+                    <p>Computes Factor of Safety ($FS$) across user-defined slope geometries, cohesive-frictional soil layers ($c', \phi'$), pore water pressure ($r_u$), and crest surcharges using Ordinary Method of Slices grid search.</p>
+                </div>
+                <a href="slope-stability-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Slope Model</a>
+            </div>
+
+            <!-- 2. KBS-3 Canister Spacing Model -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-cubes" style="color: var(--accent-red);"></i> KBS-3 DGR Canister Spacing & Thermal Sandbox</h3>
-                    <p>Examines thermal decay and plume interference across KBS-3 nuclear waste canisters at -450 m depth as a function of canister/tunnel spacing ($S$), decay age, and rock thermal conductivity ($k$). Evaluates bentonite buffer safety limits (&le; 95&deg;C).</p>
+                    <p>Examines thermal decay and plume interference across KBS-3 nuclear waste canisters at -450 m depth as a function of canister/tunnel spacing ($S$), decay age, and rock thermal conductivity ($k$).</p>
                 </div>
                 <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Canister Spacing Model</a>
             </div>
 
-            <!-- 2. Soil-Atmosphere Carbon Model -->
+            <!-- 3. Soil-Atmosphere Carbon Model -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-wind" style="color: var(--accent-purple);"></i> Soil-Atmosphere Carbon & GHG Flux Model</h3>
-                    <p>Simulates agricultural trace gas exchanges (CO₂, CH₄, N₂O), soil temperature/moisture coupling, and land-atmosphere carbon fluxes under dynamic weather drivers.</p>
+                    <p>Simulates trace gas exchanges (CO₂, CH₄, N₂O), soil temperature/moisture coupling, and land-atmosphere carbon fluxes under dynamic weather drivers.</p>
                 </div>
                 <a href="ghg-atmosphere-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
             </div>
 
-            <!-- 3. 2D Aquifer Contaminant Transport -->
+            <!-- 4. 2D Aquifer Contaminant Transport -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-droplet" style="color: var(--accent-pink);"></i> 2D Aquifer Contaminant Plume Model</h3>
@@ -244,7 +253,7 @@
                 <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Transport Model</a>
             </div>
 
-            <!-- 4. 2D Channel Network Model -->
+            <!-- 5. 2D Channel Network Model -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-network-wired" style="color: var(--accent-cyan);"></i> 2D Channel Network Model (CNM)</h3>
@@ -253,7 +262,7 @@
                 <a href="cnm-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch CNM Model</a>
             </div>
 
-            <!-- 5. Matrix Infiltration Dynamics -->
+            <!-- 6. Matrix Infiltration Dynamics -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-cloud-rain" style="color: var(--accent-blue);"></i> Matrix Infiltration Dynamics</h3>
@@ -274,7 +283,7 @@
                 <div class="timeline-title">Senior Scientist</div>
                 <div class="timeline-meta">VTT Technical Research Centre of Finland | May 2023 – Dec 2025</div>
                 <ul class="timeline-bullets">
-                    <li>Led numerical flow, canister thermal spacing, and solute transport modeling in low-permeability rock and engineered barrier caps for national safety frameworks (SAFER, SAGE, HAGEN).</li>
+                    <li>Led numerical flow, slope stability, and solute transport modeling in rock masses and engineered barrier caps for national safety frameworks.</li>
                     <li>Developed customized Python packages to convert 3D fracture networks into calculation matrices and integrated finite-element modeling with GoldSim.</li>
                 </ul>
             </div>
@@ -357,49 +366,10 @@
         </div>
 
         <div class="pub-card">
-            <div class="pub-title">10. Three-dimensional simulation of fluid flow through a discrete fracture and matrix</div>
-            <div class="pub-authors">Sharma, K.M., Sharma, L.K., Ansari, M.T.A., Singh, T.N. (2021)</div>
-            <div class="pub-journal">Geolinks Conference Proceedings.</div>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">11. Empirical Slope Stability Assessment Along the Road Corridor NH-7, in the Lesser Himalayan</div>
+            <div class="pub-title">10. Empirical Slope Stability Assessment Along the Road Corridor NH-7, in the Lesser Himalayan</div>
             <div class="pub-authors">Ansari, T.A., Sharma, K.M., Singh, T.N. (2019)</div>
             <div class="pub-journal">Geotechnical and Geological Engineering, 37, 5391-5407.</div>
             <a href="https://doi.org/10.1007/s10706-019-00988-w" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s10706-019-00988-w</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">12. Micro-pores and fluid flow - a numerical study</div>
-            <div class="pub-authors">Sharma, K.M., Sirdesai, N.N., Tripathy, A., Singh, T.N. (2018)</div>
-            <div class="pub-journal">ARMA US Rock Mechanics/Geomechanics Symposium, ARMA-2018-933.</div>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">13. Experimental study to examine the independent roles of lime and cement on the stabilization of a mountain soil: A comparative study</div>
-            <div class="pub-authors">Sharma, L.K., Sirdesai, N.N., Sharma, K.M., Singh, T.N. (2018)</div>
-            <div class="pub-journal">Applied Clay Science, 152, 183-195.</div>
-            <a href="https://doi.org/10.1016/j.clay.2017.11.012" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1016/j.clay.2017.11.012</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">14. Physical and Numerical Model to Investigate Shallow Tunnel Instabilities in Loose Soil</div>
-            <div class="pub-authors">Das, R., Sharma, K.M. (2018)</div>
-            <div class="pub-journal">International Conference on Geomechanics, Geo-energy and Geo-resources (IC3G-2018), Chengdu, China.</div>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">15. Parametric study of factors affecting fluid flow through a fracture</div>
-            <div class="pub-authors">Sharma, K.M., Roy, D.G., Singh, P.K., Singh, T.N. (2017)</div>
-            <div class="pub-journal">Arabian Journal of Geosciences, 10, 362.</div>
-            <a href="https://doi.org/10.1007/s12517-017-3142-6" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s12517-017-3142-6</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">16. Evaluating the modulus of elasticity of soil using soft computing system</div>
-            <div class="pub-authors">Sharma, L.K., Singh, R., Umrao, R.K., Sharma, K.M., Singh, T.N. (2017)</div>
-            <div class="pub-journal">Engineering with Computers, 33(3), 497-507.</div>
-            <a href="https://doi.org/10.1007/s00366-016-0486-6" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s00366-016-0486-6</a>
         </div>
     </section>
 
