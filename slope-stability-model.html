@@ -64,17 +64,41 @@
         }
         .btn-action:hover { background: var(--accent-amber); color: #090d16; font-weight: 700; }
 
-        /* Simulation Canvas & HUD */
+        /* Simulation Canvas & Viewport */
         .simulation-viewport { position: relative; background: #050811; display: flex; flex-direction: column; }
         .canvas-container { flex: 1; position: relative; width: 100%; height: 100%; }
-        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: grab; }
+        canvas:active { cursor: grabbing; }
 
+        /* Floating Viewport Toolbar */
+        .viewport-toolbar {
+            position: absolute; top: 1rem; left: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 0.4rem; display: flex; gap: 6px; backdrop-filter: blur(8px);
+            z-index: 5; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .btn-icon {
+            width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--border-subtle);
+            background: rgba(255,255,255,0.04); color: var(--text-main); font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-icon:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1); }
+
+        .helper-text {
+            position: absolute; bottom: 1rem; left: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 0.5rem 0.9rem; font-family: var(--font-code); font-size: 0.75rem;
+            color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(8px);
+            pointer-events: none;
+        }
+
+        /* HUD Overlay */
         .hud-overlay {
             position: absolute; top: 1rem; right: 1rem;
             background: var(--bg-card); border: 1px solid var(--border-subtle);
             border-radius: 10px; padding: 1rem 1.2rem; font-family: var(--font-code); font-size: 0.8rem;
             display: flex; flex-direction: column; gap: 0.5rem; backdrop-filter: blur(8px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 290px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 290px; z-index: 5;
         }
         .hud-stat { display: flex; justify-content: space-between; gap: 1.5rem; }
         .hud-stat .label { color: var(--text-muted); }
@@ -93,7 +117,7 @@
             background: var(--bg-card); border: 1px solid var(--border-subtle);
             border-radius: 8px; padding: 0.7rem 1rem; backdrop-filter: blur(8px);
             display: flex; flex-direction: column; gap: 5px; font-family: var(--font-code); font-size: 0.72rem;
-            pointer-events: none;
+            pointer-events: none; z-index: 5;
         }
         .legend-bar { width: 220px; height: 10px; border-radius: 4px; background: linear-gradient(to right, #ef4444, #f59e0b, #10b981); }
         .legend-labels { display: flex; justify-content: space-between; color: var(--text-muted); }
@@ -114,17 +138,17 @@
             <div class="section-label">Slope Profile Geometry</div>
             <div class="control-group">
                 <label>Slope Height <i>H</i> (m): <span id="valH" class="val">12.0</span></label>
-                <input type="range" id="sliderH" min="5" max="30" step="0.5" value="12" oninput="recalculate()">
+                <input type="range" id="sliderH" min="5" max="30" step="0.5" value="12" oninput="updateFromSliders()">
             </div>
 
             <div class="control-group">
                 <label>Slope Angle <i>&beta;</i> (&deg;): <span id="valBeta" class="val">40</span></label>
-                <input type="range" id="sliderBeta" min="20" max="70" value="40" oninput="recalculate()">
+                <input type="range" id="sliderBeta" min="20" max="70" value="40" oninput="updateFromSliders()">
             </div>
 
             <div class="control-group">
                 <label>Crest Width (m): <span id="valCrest" class="val">15</span></label>
-                <input type="range" id="sliderCrest" min="5" max="30" value="15" oninput="recalculate()">
+                <input type="range" id="sliderCrest" min="5" max="30" value="15" oninput="updateFromSliders()">
             </div>
 
             <div class="section-label">Geotechnical Soil Properties</div>
@@ -146,7 +170,7 @@
             <div class="section-label">Hydrology &amp; Loading</div>
             <div class="control-group">
                 <label>Water Table Depth <i>h</i><sub>w</sub> (m): <span id="valWater" class="val">4.0</span></label>
-                <input type="range" id="sliderWater" min="0" max="15" step="0.5" value="4" oninput="recalculate()">
+                <input type="range" id="sliderWater" min="0" max="15" step="0.5" value="4" oninput="updateWaterFromSlider()">
             </div>
 
             <div class="control-group">
@@ -160,14 +184,25 @@
             </div>
 
             <div class="btn-row">
-                <button class="btn-action" onclick="recalculate()"><i class="fa-solid fa-rotate-right"></i> Search Critical Arc</button>
+                <button class="btn-action" onclick="resetProfileGeometry()"><i class="fa-solid fa-rotate-right"></i> Reset Geometry</button>
             </div>
         </div>
 
         <!-- Simulation Viewport -->
         <div class="simulation-viewport">
+            <!-- Viewport Canvas Controls -->
+            <div class="viewport-toolbar">
+                <button class="btn-icon" onclick="zoomCanvas(1.2)" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
+                <button class="btn-icon" onclick="zoomCanvas(0.8)" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
+                <button class="btn-icon" onclick="fitView()" title="Fit View"><i class="fa-solid fa-expand"></i></button>
+            </div>
+
             <div class="canvas-container">
                 <canvas id="slopeCanvas"></canvas>
+            </div>
+
+            <div class="helper-text">
+                <i class="fa-solid fa-hand-pointer"></i> Drag amber/cyan handles to edit shape | Scroll/Drag canvas to Zoom/Pan
             </div>
 
             <!-- HUD Overlay -->
@@ -201,79 +236,211 @@
 
         let width, height;
 
-        // Parameters
-        let H = 12.0;
-        let betaDeg = 40;
-        let crestW = 15.0;
+        // Geotechnical Parameters
         let cPrime = 15;
         let phiDeg = 25;
         let gamma = 19.0;
-        let waterDepth = 4.0;
         let ru = 0.20;
         let surcharge = 10;
+
+        // Draggable Control Nodes (World Coordinates in Meters)
+        let groundNodes = [];
+        let waterNodes = [];
+
+        // Camera Transformation (Pan & Zoom)
+        let zoomScale = 22; // Pixels per meter
+        let panX = 60;
+        let panY = 60;
+
+        // Interaction State
+        let isPanning = false;
+        let dragStartMouse = { x: 0, y: 0 };
+        let draggedHandle = null;
+        let hoveredHandle = null;
 
         let evaluatedArcs = [];
         let criticalArc = null;
 
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            width = canvas.width = container.clientWidth;
-            height = canvas.height = container.clientHeight;
-            recalculate();
-        }
-
-        window.addEventListener('resize', resizeCanvas);
-
-        function recalculate() {
-            H = parseFloat(document.getElementById('sliderH').value);
-            betaDeg = parseFloat(document.getElementById('sliderBeta').value);
-            crestW = parseFloat(document.getElementById('sliderCrest').value);
-            cPrime = parseFloat(document.getElementById('sliderC').value);
-            phiDeg = parseFloat(document.getElementById('sliderPhi').value);
-            gamma = parseFloat(document.getElementById('sliderGamma').value);
-            waterDepth = parseFloat(document.getElementById('sliderWater').value);
-            ru = parseFloat(document.getElementById('sliderRu').value);
-            surcharge = parseFloat(document.getElementById('sliderSurcharge').value);
-
-            document.getElementById('valH').innerText = H.toFixed(1);
-            document.getElementById('valBeta').innerText = betaDeg;
-            document.getElementById('valCrest').innerText = crestW;
-            document.getElementById('valC').innerText = cPrime;
-            document.getElementById('valPhi').innerText = phiDeg;
-            document.getElementById('valGamma').innerText = gamma.toFixed(1);
-            document.getElementById('valWater').innerText = waterDepth.toFixed(1);
-            document.getElementById('valRu').innerText = ru.toFixed(2);
-            document.getElementById('valSurcharge').innerText = surcharge;
-
-            performLimitEquilibriumSearch();
-            render();
-        }
-
-        // Ordinary Method of Slices (Fellenius Method) Search Engine
-        function performLimitEquilibriumSearch() {
-            evaluatedArcs = [];
-            criticalArc = null;
-            let minFS = 999;
-
+        function initNodes(H = 12.0, betaDeg = 40, crestW = 15.0, waterDepth = 4.0) {
             const betaRad = (betaDeg * Math.PI) / 180;
-            const phiRad = (phiDeg * Math.PI) / 180;
-
             const toeX = 10.0;
             const toeY = 5.0;
             const topX = toeX + H / Math.tan(betaRad);
             const topY = toeY + H;
             const crestEndX = topX + crestW;
 
-            function getGroundElevation(x) {
-                if (x <= toeX) return toeY;
-                if (x >= topX) return topY;
-                return toeY + (x - toeX) * Math.tan(betaRad);
+            groundNodes = [
+                { x: 0, y: toeY },
+                { x: toeX, y: toeY },
+                { x: topX, y: topY },
+                { x: crestEndX, y: topY },
+                { x: crestEndX + 15, y: topY }
+            ];
+
+            const wY = Math.max(0, topY - waterDepth);
+            waterNodes = [
+                { x: 0, y: toeY - 0.5 },
+                { x: toeX, y: toeY - 0.5 },
+                { x: topX, y: wY },
+                { x: crestEndX + 15, y: wY }
+            ];
+        }
+
+        // Coordinate Transformation
+        function worldToScreen(wx, wy) {
+            return {
+                x: panX + wx * zoomScale,
+                y: height - panY - wy * zoomScale
+            };
+        }
+
+        function screenToWorld(sx, sy) {
+            return {
+                x: (sx - panX) / zoomScale,
+                y: (height - sy - panY) / zoomScale
+            };
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            width = canvas.width = container.clientWidth;
+            height = canvas.height = container.clientHeight;
+            if (groundNodes.length === 0) {
+                initNodes();
+                fitView();
+            } else {
+                recalculate();
             }
+        }
+
+        function fitView() {
+            if (groundNodes.length === 0) return;
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            groundNodes.forEach(pt => {
+                if (pt.x < minX) minX = pt.x;
+                if (pt.x > maxX) maxX = pt.x;
+                if (pt.y < minY) minY = pt.y;
+                if (pt.y > maxY) maxY = pt.y;
+            });
+
+            const bboxW = maxX - minX + 10;
+            const bboxH = maxY - minY + 10;
+
+            zoomScale = Math.min((width - 120) / bboxW, (height - 120) / bboxH);
+            panX = 60 - minX * zoomScale;
+            panY = 60 - minY * zoomScale;
+            recalculate();
+        }
+
+        function zoomCanvas(factor) {
+            const cx = width / 2;
+            const cy = height / 2;
+            const wBefore = screenToWorld(cx, cy);
+
+            zoomScale *= factor;
+            zoomScale = Math.max(5, Math.min(100, zoomScale));
+
+            panX = cx - wBefore.x * zoomScale;
+            panY = height - cy - wBefore.y * zoomScale;
+            render();
+        }
+
+        function updateFromSliders() {
+            const H = parseFloat(document.getElementById('sliderH').value);
+            const betaDeg = parseFloat(document.getElementById('sliderBeta').value);
+            const crestW = parseFloat(document.getElementById('sliderCrest').value);
+            const waterDepth = parseFloat(document.getElementById('sliderWater').value);
+
+            initNodes(H, betaDeg, crestW, waterDepth);
+            recalculate();
+        }
+
+        function updateWaterFromSlider() {
+            const waterDepth = parseFloat(document.getElementById('sliderWater').value);
+            const topY = groundNodes[2].y;
+            const wY = Math.max(0, topY - waterDepth);
+
+            waterNodes[2].y = wY;
+            waterNodes[3].y = wY;
+            recalculate();
+        }
+
+        function resetProfileGeometry() {
+            document.getElementById('sliderH').value = 12;
+            document.getElementById('sliderBeta').value = 40;
+            document.getElementById('sliderCrest').value = 15;
+            document.getElementById('sliderWater').value = 4;
+            updateFromSliders();
+            fitView();
+        }
+
+        // Interpolate Profile Elevation y = f(x)
+        function getGroundElevation(x) {
+            const pts = groundNodes;
+            if (x <= pts[0].x) return pts[0].y;
+            if (x >= pts[pts.length - 1].x) return pts[pts.length - 1].y;
+
+            for (let i = 0; i < pts.length - 1; i++) {
+                if (x >= pts[i].x && x <= pts[i + 1].x) {
+                    const t = (x - pts[i].x) / (pts[i + 1].x - pts[i].x + 1e-6);
+                    return pts[i].y + t * (pts[i + 1].y - pts[i].y);
+                }
+            }
+            return pts[0].y;
+        }
+
+        function recalculate() {
+            cPrime = parseFloat(document.getElementById('sliderC').value);
+            phiDeg = parseFloat(document.getElementById('sliderPhi').value);
+            gamma = parseFloat(document.getElementById('sliderGamma').value);
+            ru = parseFloat(document.getElementById('sliderRu').value);
+            surcharge = parseFloat(document.getElementById('sliderSurcharge').value);
+
+            document.getElementById('valC').innerText = cPrime;
+            document.getElementById('valPhi').innerText = phiDeg;
+            document.getElementById('valGamma').innerText = gamma.toFixed(1);
+            document.getElementById('valRu').innerText = ru.toFixed(2);
+            document.getElementById('valSurcharge').innerText = surcharge;
+
+            // Sync Sliders Display
+            const toeX = groundNodes[1].x;
+            const topX = groundNodes[2].x;
+            const topY = groundNodes[2].y;
+            const toeY = groundNodes[1].y;
+            const crestEndX = groundNodes[3].x;
+
+            const calcH = topY - toeY;
+            const calcBeta = Math.atan2(calcH, topX - toeX) * (180 / Math.PI);
+            const calcCrest = crestEndX - topX;
+
+            if (calcH > 0 && calcBeta > 0) {
+                document.getElementById('valH').innerText = calcH.toFixed(1);
+                document.getElementById('valBeta').innerText = Math.round(calcBeta);
+                document.getElementById('valCrest').innerText = Math.round(calcCrest);
+            }
+
+            performLimitEquilibriumSearch();
+            render();
+        }
+
+        // Limit Equilibrium Method of Slices Solver
+        function performLimitEquilibriumSearch() {
+            evaluatedArcs = [];
+            criticalArc = null;
+            let minFS = 999;
+
+            const phiRad = (phiDeg * Math.PI) / 180;
+
+            const toeX = groundNodes[1].x;
+            const toeY = groundNodes[1].y;
+            const topX = groundNodes[2].x;
+            const topY = groundNodes[2].y;
+            const crestEndX = groundNodes[3].x;
 
             const gridMinX = toeX - 5;
             const gridMaxX = topX + 10;
             const gridMinY = topY + 2;
-            const gridMaxY = topY + H * 1.5;
+            const gridMaxY = topY + (topY - toeY) * 1.5;
 
             const stepX = (gridMaxX - gridMinX) / 18;
             const stepY = (gridMaxY - gridMinY) / 14;
@@ -304,7 +471,7 @@
 
                         if (xEntry < 0 || xExit <= xEntry + 2.0) continue;
 
-                        const N = 20; // 20 Slices
+                        const N = 20; // 20 Vertical Slices
                         const sliceW = (xExit - xEntry) / N;
 
                         let totalDriving = 0;
@@ -393,88 +560,74 @@
             }
         }
 
-        // Render Slope Canvas
+        // Clean Render Routine
         function render() {
             ctx.fillStyle = "#050811";
             ctx.fillRect(0, 0, width, height);
 
-            const betaRad = (betaDeg * Math.PI) / 180;
-            const toeX = 10.0;
-            const toeY = 5.0;
-            const topX = toeX + H / Math.tan(betaRad);
-            const topY = toeY + H;
-            const crestEndX = topX + crestW;
-
-            const scale = Math.min((width - 80) / (crestEndX + 10), (height - 100) / (topY + 15));
-            const originX = 40;
-            const originY = height - 50;
-
-            function toScreenX(x) { return originX + x * scale; }
-            function toScreenY(y) { return originY - y * scale; }
-
-            // Grid Lines
+            // World Axis Grid
             ctx.strokeStyle = "rgba(255,255,255,0.04)";
             ctx.lineWidth = 1;
-            for (let x = 0; x < 80; x += 5) {
+            const startX = Math.floor(screenToWorld(0, 0).x / 5) * 5;
+            const endX = Math.ceil(screenToWorld(width, 0).x / 5) * 5;
+
+            for (let gx = startX; gx <= endX; gx += 5) {
+                const sc = worldToScreen(gx, 0);
                 ctx.beginPath();
-                ctx.moveTo(toScreenX(x), 0);
-                ctx.lineTo(toScreenX(x), height);
+                ctx.moveTo(sc.x, 0);
+                ctx.lineTo(sc.x, height);
                 ctx.stroke();
             }
 
-            // Draw Evaluated Trial Failure Arcs Heatmap
-            evaluatedArcs.forEach(arc => {
-                let strokeColor;
-                if (arc.FS < 1.0) strokeColor = "rgba(239, 68, 68, 0.08)";
-                else if (arc.FS < 1.3) strokeColor = "rgba(245, 158, 11, 0.06)";
-                else strokeColor = "rgba(16, 185, 129, 0.03)";
+            // 1. Unsaturated Soil Body
+            const topY = groundNodes[2].y;
+            const scTopY = worldToScreen(0, topY).y;
+            const scBotY = worldToScreen(0, 0).y;
 
-                ctx.strokeStyle = strokeColor;
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.arc(toScreenX(arc.cx), toScreenY(arc.cy), arc.R * scale, 0, Math.PI * 2);
-                ctx.stroke();
-            });
-
-            // 1. Unsaturated Soil Body (Top Layer)
-            const waterY = Math.max(0, topY - waterDepth);
-
-            const soilGrad = ctx.createLinearGradient(0, toScreenY(topY), 0, toScreenY(0));
-            soilGrad.addColorStop(0, "rgba(180, 110, 50, 0.85)"); // Terracotta Unsaturated
+            const soilGrad = ctx.createLinearGradient(0, scTopY, 0, scBotY);
+            soilGrad.addColorStop(0, "rgba(180, 110, 50, 0.85)");
             soilGrad.addColorStop(1, "rgba(120, 65, 25, 0.95)");
 
             ctx.fillStyle = soilGrad;
             ctx.beginPath();
-            ctx.moveTo(toScreenX(0), toScreenY(0));
-            ctx.lineTo(toScreenX(0), toScreenY(toeY));
-            ctx.lineTo(toScreenX(toeX), toScreenY(toeY));
-            ctx.lineTo(toScreenX(topX), toScreenY(topY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(topY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(0));
+            const pt0 = worldToScreen(groundNodes[0].x, 0);
+            ctx.moveTo(pt0.x, pt0.y);
+
+            groundNodes.forEach(pt => {
+                const sc = worldToScreen(pt.x, pt.y);
+                ctx.lineTo(sc.x, sc.y);
+            });
+
+            const ptLast = worldToScreen(groundNodes[groundNodes.length - 1].x, 0);
+            ctx.lineTo(ptLast.x, ptLast.y);
             ctx.closePath();
             ctx.fill();
 
-            // 2. Saturated Soil Layer (Below Phreatic Water Table)
-            ctx.fillStyle = "rgba(20, 60, 85, 0.80)"; // Moist/Saturated Soil Zone
+            // 2. Saturated Soil Layer (Below Phreatic Line)
+            ctx.fillStyle = "rgba(20, 60, 85, 0.80)";
             ctx.beginPath();
-            ctx.moveTo(toScreenX(0), toScreenY(0));
-            ctx.lineTo(toScreenX(0), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(0));
+            const w0 = worldToScreen(waterNodes[0].x, 0);
+            ctx.moveTo(w0.x, w0.y);
+
+            waterNodes.forEach(pt => {
+                const sc = worldToScreen(pt.x, pt.y);
+                ctx.lineTo(sc.x, sc.y);
+            });
+
+            const wLast = worldToScreen(waterNodes[waterNodes.length - 1].x, 0);
+            ctx.lineTo(wLast.x, wLast.y);
             ctx.closePath();
             ctx.fill();
 
-            // 3. Phreatic Water Table Dashed Line & Translucent Water Overlay
+            // 3. Phreatic Line & Translucent Water Body Overlay
             ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
             ctx.beginPath();
-            ctx.moveTo(toScreenX(0), toScreenY(0));
-            ctx.lineTo(toScreenX(0), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(0));
+            ctx.moveTo(w0.x, w0.y);
+            waterNodes.forEach(pt => {
+                const sc = worldToScreen(pt.x, pt.y);
+                ctx.lineTo(sc.x, sc.y);
+            });
+            ctx.lineTo(wLast.x, wLast.y);
             ctx.closePath();
             ctx.fill();
 
@@ -482,53 +635,57 @@
             ctx.setLineDash([8, 5]);
             ctx.lineWidth = 2.0;
             ctx.beginPath();
-            ctx.moveTo(toScreenX(0), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
+            waterNodes.forEach((pt, idx) => {
+                const sc = worldToScreen(pt.x, pt.y);
+                if (idx === 0) ctx.moveTo(sc.x, sc.y);
+                else ctx.lineTo(sc.x, sc.y);
+            });
             ctx.stroke();
-            ctx.setLineDash([]); // Reset line dash
+            ctx.setLineDash([]);
 
-            // Slope Surface Profile Outline
+            // Slope Outline
             ctx.strokeStyle = "#f8fafc";
             ctx.lineWidth = 2.5;
             ctx.beginPath();
-            ctx.moveTo(toScreenX(0), toScreenY(toeY));
-            ctx.lineTo(toScreenX(toeX), toScreenY(toeY));
-            ctx.lineTo(toScreenX(topX), toScreenY(topY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(topY));
+            groundNodes.forEach((pt, idx) => {
+                const sc = worldToScreen(pt.x, pt.y);
+                if (idx === 0) ctx.moveTo(sc.x, sc.y);
+                else ctx.lineTo(sc.x, sc.y);
+            });
             ctx.stroke();
 
-            // Surcharge Load Visualization
+            // Surcharge Load Block & Vectors
+            const topX = groundNodes[2].x;
+            const crestEndX = groundNodes[3].x;
+
             if (surcharge > 0) {
                 const surchargeColor = "#ec4899";
                 ctx.strokeStyle = surchargeColor;
                 ctx.fillStyle = "rgba(236, 72, 153, 0.18)";
                 ctx.lineWidth = 1.5;
 
-                // Surcharge Block on Crest
-                ctx.fillRect(toScreenX(topX), toScreenY(topY + 2.0), crestW * scale, 2.0 * scale);
-                ctx.strokeRect(toScreenX(topX), toScreenY(topY + 2.0), crestW * scale, 2.0 * scale);
+                const scTopL = worldToScreen(topX, topY + 2.0);
 
-                // Load Arrows
+                ctx.fillRect(scTopL.x, scTopL.y, (crestEndX - topX) * zoomScale, 2.0 * zoomScale);
+                ctx.strokeRect(scTopL.x, scTopL.y, (crestEndX - topX) * zoomScale, 2.0 * zoomScale);
+
                 for (let sx = topX + 1.5; sx <= crestEndX - 0.5; sx += 3.0) {
-                    const scX = toScreenX(sx);
-                    const scY = toScreenY(topY);
+                    const sc = worldToScreen(sx, topY);
                     ctx.beginPath();
-                    ctx.moveTo(scX, scY - 22);
-                    ctx.lineTo(scX, scY);
+                    ctx.moveTo(sc.x, sc.y - 22);
+                    ctx.lineTo(sc.x, sc.y);
                     ctx.stroke();
 
                     ctx.beginPath();
-                    ctx.arc(scX, scY, 2.5, 0, Math.PI * 2);
+                    ctx.arc(sc.x, sc.y, 2.5, 0, Math.PI * 2);
                     ctx.fillStyle = surchargeColor;
                     ctx.fill();
                 }
 
-                // Surcharge Label
                 ctx.font = "600 11px 'Fira Code', monospace";
                 ctx.fillStyle = surchargeColor;
-                ctx.fillText(`q = ${surcharge} kPa`, toScreenX(topX + crestW / 2 - 3), toScreenY(topY + 3.2));
+                const scLbl = worldToScreen((topX + crestEndX) / 2, topY + 3.2);
+                ctx.fillText(`q = ${surcharge} kPa`, scLbl.x - 30, scLbl.y);
             }
 
             // Render Method of Slices and Critical Failure Mass
@@ -537,14 +694,18 @@
                 let arcColor = fs < 1.0 ? "#ef4444" : (fs <= 1.3 ? "#f59e0b" : "#10b981");
                 let fillMassColor = fs < 1.0 ? "rgba(239, 68, 68, 0.35)" : (fs <= 1.3 ? "rgba(245, 158, 11, 0.30)" : "rgba(16, 185, 129, 0.25)");
 
-                // Draw Slice Boundaries
                 criticalArc.slices.forEach(sl => {
+                    const p1 = worldToScreen(sl.xL, sl.yGL);
+                    const p2 = worldToScreen(sl.xR, sl.yGR);
+                    const p3 = worldToScreen(sl.xR, sl.yArcR);
+                    const p4 = worldToScreen(sl.xL, sl.yArcL);
+
                     ctx.fillStyle = fillMassColor;
                     ctx.beginPath();
-                    ctx.moveTo(toScreenX(sl.xL), toScreenY(sl.yGL));
-                    ctx.lineTo(toScreenX(sl.xR), toScreenY(sl.yGR));
-                    ctx.lineTo(toScreenX(sl.xR), toScreenY(sl.yArcR));
-                    ctx.lineTo(toScreenX(sl.xL), toScreenY(sl.yArcL));
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.lineTo(p3.x, p3.y);
+                    ctx.lineTo(p4.x, p4.y);
                     ctx.closePath();
                     ctx.fill();
 
@@ -553,41 +714,161 @@
                     ctx.stroke();
                 });
 
-                // Glowing Critical Slip Circle Arc
+                // Critical Failure Arc
+                const scC = worldToScreen(criticalArc.cx, criticalArc.cy);
                 ctx.strokeStyle = arcColor;
                 ctx.lineWidth = 4;
                 ctx.shadowColor = arcColor;
                 ctx.shadowBlur = 14;
 
                 ctx.beginPath();
-                ctx.arc(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy), criticalArc.R * scale, 0, Math.PI * 2);
+                ctx.arc(scC.x, scC.y, criticalArc.R * zoomScale, 0, Math.PI * 2);
                 ctx.stroke();
 
-                ctx.shadowBlur = 0; // Reset glow
+                ctx.shadowBlur = 0;
 
                 // Center Rotation Radius Lines
                 ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
                 ctx.lineWidth = 1.2;
                 ctx.setLineDash([4, 4]);
 
+                const scEntry = worldToScreen(criticalArc.xEntry, getGroundElevation(criticalArc.xEntry));
+                const scExit = worldToScreen(criticalArc.xExit, getGroundElevation(criticalArc.xExit));
+
                 ctx.beginPath();
-                ctx.moveTo(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy));
-                ctx.lineTo(toScreenX(criticalArc.xEntry), toScreenY(toeY));
-                ctx.moveTo(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy));
-                ctx.lineTo(toScreenX(criticalArc.xExit), toScreenY(topY));
+                ctx.moveTo(scC.x, scC.y);
+                ctx.lineTo(scEntry.x, scEntry.y);
+                ctx.moveTo(scC.x, scC.y);
+                ctx.lineTo(scExit.x, scExit.y);
                 ctx.stroke();
                 ctx.setLineDash([]);
 
-                // Rotation Center Point Marker
+                // Rotation Center Marker
                 ctx.fillStyle = arcColor;
                 ctx.beginPath();
-                ctx.arc(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy), 6, 0, Math.PI * 2);
+                ctx.arc(scC.x, scC.y, 6, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
                 ctx.stroke();
             }
+
+            // Draw Interactive Draggable Handles
+            groundNodes.forEach((pt, idx) => {
+                const sc = worldToScreen(pt.x, pt.y);
+                const isHovered = hoveredHandle && hoveredHandle.type === 'ground' && hoveredHandle.index === idx;
+
+                ctx.fillStyle = isHovered ? "#ffffff" : "#f59e0b";
+                ctx.beginPath();
+                ctx.arc(sc.x, sc.y, isHovered ? 8 : 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#090d16";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+
+            waterNodes.forEach((pt, idx) => {
+                const sc = worldToScreen(pt.x, pt.y);
+                const isHovered = hoveredHandle && hoveredHandle.type === 'water' && hoveredHandle.index === idx;
+
+                ctx.fillStyle = isHovered ? "#ffffff" : "#38bdf8";
+                ctx.beginPath();
+                ctx.arc(sc.x, sc.y, isHovered ? 8 : 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#090d16";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
         }
+
+        // Mouse & Touch Interactivity
+        function getCanvasMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        function findHandleNear(sx, sy) {
+            const radius = 12;
+            for (let i = 0; i < groundNodes.length; i++) {
+                const sc = worldToScreen(groundNodes[i].x, groundNodes[i].y);
+                if (Math.hypot(sc.x - sx, sc.y - sy) <= radius) {
+                    return { type: 'ground', index: i };
+                }
+            }
+            for (let i = 0; i < waterNodes.length; i++) {
+                const sc = worldToScreen(waterNodes[i].x, waterNodes[i].y);
+                if (Math.hypot(sc.x - sx, sc.y - sy) <= radius) {
+                    return { type: 'water', index: i };
+                }
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getCanvasMousePos(e);
+            const handle = findHandleNear(pos.x, pos.y);
+
+            if (handle) {
+                draggedHandle = handle;
+            } else {
+                isPanning = true;
+                dragStartMouse = { x: e.clientX, y: e.clientY };
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getCanvasMousePos(e);
+
+            if (draggedHandle) {
+                const wPos = screenToWorld(pos.x, pos.y);
+                if (draggedHandle.type === 'ground') {
+                    groundNodes[draggedHandle.index].x = Math.max(0, wPos.x);
+                    groundNodes[draggedHandle.index].y = Math.max(0, wPos.y);
+                } else if (draggedHandle.type === 'water') {
+                    waterNodes[draggedHandle.index].x = Math.max(0, wPos.x);
+                    waterNodes[draggedHandle.index].y = Math.max(0, wPos.y);
+                }
+                recalculate();
+            } else if (isPanning) {
+                const dx = e.clientX - dragStartMouse.x;
+                const dy = e.clientY - dragStartMouse.y;
+                panX += dx;
+                panY -= dy;
+                dragStartMouse = { x: e.clientX, y: e.clientY };
+                render();
+            } else {
+                const handle = findHandleNear(pos.x, pos.y);
+                if (handle !== hoveredHandle) {
+                    hoveredHandle = handle;
+                    canvas.style.cursor = handle ? 'pointer' : 'grab';
+                    render();
+                }
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isPanning = false;
+            draggedHandle = null;
+        });
+
+        // Mouse Wheel Zooming
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const pos = getCanvasMousePos(e);
+            const wBefore = screenToWorld(pos.x, pos.y);
+
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+            zoomScale *= zoomFactor;
+            zoomScale = Math.max(5, Math.min(120, zoomScale));
+
+            panX = pos.x - wBefore.x * zoomScale;
+            panY = height - pos.y - wBefore.y * zoomScale;
+
+            render();
+        }, { passive: false });
 
         // Initialize App
         resizeCanvas();
