@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Geotechnical Slope Stability Assessor | Dr. Kunwar Mrityunjai Sharma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: rgba(17, 24, 39, 0.90);
+            --accent-cyan: #38bdf8;
+            --accent-blue: #60a5fa;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-glow: rgba(56, 189, 248, 0.25);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        nav { padding: 0.8rem 2%; background: rgba(9, 13, 22, 0.95); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+
+        .app-layout { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 49px); }
+
+        /* Sidebar Controls */
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid var(--border-subtle);
+            padding: 1.2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .controls-panel h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .controls-panel h2 i { color: var(--accent-amber); }
+
+        .section-label { font-family: var(--font-code); font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); letter-spacing: 1px; margin-top: 0.2rem; }
+
+        .control-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .control-group label { font-size: 0.78rem; font-family: var(--font-code); color: var(--text-muted); display: flex; justify-content: space-between; }
+        .control-group label span.val { color: var(--accent-cyan); font-weight: 600; }
+
+        input[type="range"] {
+            width: 100%; accent-color: var(--accent-amber); background: rgba(255,255,255,0.05); border-radius: 4px; height: 5px;
+        }
+
+        .btn-row { display: flex; gap: 8px; margin-top: 0.4rem; }
+        .btn-action {
+            flex: 1; padding: 0.65rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem;
+            border: 1px solid var(--border-subtle); background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber); cursor: pointer; text-align: center; transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-action:hover { background: var(--accent-amber); color: #090d16; font-weight: 700; }
+
+        /* Simulation Canvas & HUD */
+        .simulation-viewport { position: relative; background: #050811; display: flex; flex-direction: column; }
+        .canvas-container { flex: 1; position: relative; width: 100%; height: 100%; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        .hud-overlay {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 10px; padding: 1rem 1.2rem; font-family: var(--font-code); font-size: 0.8rem;
+            display: flex; flex-direction: column; gap: 0.5rem; backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 280px;
+        }
+        .hud-stat { display: flex; justify-content: space-between; gap: 1.5rem; }
+        .hud-stat .label { color: var(--text-muted); }
+        .hud-stat .value { color: var(--accent-cyan); font-weight: 600; }
+
+        .status-pill {
+            padding: 0.4rem 0.8rem; border-radius: 6px; text-align: center; font-weight: 700;
+            font-size: 0.85rem; letter-spacing: 0.5px; margin-top: 0.2rem; text-transform: uppercase;
+        }
+        .status-stable { background: rgba(16, 185, 129, 0.2); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); }
+        .status-marginal { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.4); }
+        .status-failure { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
+
+        .color-legend {
+            position: absolute; bottom: 1rem; right: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 0.7rem 1rem; backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; gap: 5px; font-family: var(--font-code); font-size: 0.72rem;
+            pointer-events: none;
+        }
+        .legend-bar { width: 220px; height: 10px; border-radius: 4px; background: linear-gradient(to right, #ef4444, #f59e0b, #10b981); }
+        .legend-labels { display: flex; justify-content: space-between; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
+        <div style="font-weight:700; color:var(--text-main);">Limit Equilibrium Slope Stability Assessor</div>
+    </nav>
+
+    <div class="app-layout">
+        <!-- Controls Sidebar -->
+        <div class="controls-panel">
+            <h2><i class="fa-solid fa-hill-rockslide"></i> Slope Parameters</h2>
+
+            <div class="section-label">Slope Profile Geometry</div>
+            <div class="control-group">
+                <label>Slope Height $H$ (m): <span id="valH" class="val">12.0</span></label>
+                <input type="range" id="sliderH" min="5" max="30" step="0.5" value="12" oninput="recalculate()">
+            </div>
+
+            <div class="control-group">
+                <label>Slope Angle $\beta$ (&deg;): <span id="valBeta" class="val">40</span></label>
+                <input type="range" id="sliderBeta" min="20" max="70" value="40" oninput="recalculate()">
+            </div>
+
+            <div class="control-group">
+                <label>Crest Width (m): <span id="valCrest" class="val">15</span></label>
+                <input type="range" id="sliderCrest" min="5" max="30" value="15" oninput="recalculate()">
+            </div>
+
+            <div class="section-label">Geotechnical Soil Properties</div>
+            <div class="control-group">
+                <label>Cohesion $c'$ (kPa): <span id="valC" class="val">15</span></label>
+                <input type="range" id="sliderC" min="0" max="50" value="15" oninput="recalculate()">
+            </div>
+
+            <div class="control-group">
+                <label>Friction Angle $\phi'$ (&deg;): <span id="valPhi" class="val">25</span></label>
+                <input type="range" id="sliderPhi" min="10" max="45" value="25" oninput="recalculate()">
+            </div>
+
+            <div class="control-group">
+                <label>Unit Weight $\gamma$ (kN/m$^3$): <span id="valGamma" class="val">19.0</span></label>
+                <input type="range" id="sliderGamma" min="14" max="26" step="0.5" value="19" oninput="recalculate()">
+            </div>
+
+            <div class="section-label">Hydrology & Loading</div>
+            <div class="control-group">
+                <label>Water Table Depth $h_w$ (m): <span id="valWater" class="val">4.0</span></label>
+                <input type="range" id="sliderWater" min="0" max="15" step="0.5" value="4" oninput="recalculate()">
+            </div>
+
+            <div class="control-group">
+                <label>Pore Pressure Ratio $r_u$: <span id="valRu" class="val">0.20</span></label>
+                <input type="range" id="sliderRu" min="0.0" max="0.5" step="0.05" value="0.20" oninput="recalculate()">
+            </div>
+
+            <div class="control-group">
+                <label>Crest Surcharge $q$ (kPa): <span id="valSurcharge" class="val">10</span></label>
+                <input type="range" id="sliderSurcharge" min="0" max="100" value="10" oninput="recalculate()">
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-action" onclick="recalculate()"><i class="fa-solid fa-rotate-right"></i> Search Critical Arc</button>
+            </div>
+        </div>
+
+        <!-- Simulation Viewport -->
+        <div class="simulation-viewport">
+            <div class="canvas-container">
+                <canvas id="slopeCanvas"></canvas>
+            </div>
+
+            <!-- HUD Overlay -->
+            <div class="hud-overlay">
+                <div class="hud-stat"><span class="label">Minimum Factor of Safety ($FS$):</span> <span id="hudFS" class="value" style="font-size:1.1rem; color:var(--accent-emerald);">1.42</span></div>
+                <div id="statusPill" class="status-pill status-stable">Stable Slope</div>
+                <hr style="border:0; border-top:1px solid var(--border-subtle); margin:0.3rem 0;">
+                <div class="hud-stat"><span class="label">Driving Shear Force ($\sum D_i$):</span> <span id="hudDriving" class="value">420.5 kN/m</span></div>
+                <div class="hud-stat"><span class="label">Resisting Shear Force ($\sum R_i$):</span> <span id="hudResisting" class="value">597.1 kN/m</span></div>
+                <div class="hud-stat"><span class="label">Critical Circle Center ($x, y$):</span> <span id="hudCenter" class="value">(18.2 m, 22.4 m)</span></div>
+                <div class="hud-stat"><span class="label">Critical Circle Radius ($R$):</span> <span id="hudRadius" class="value">16.8 m</span></div>
+                <div class="hud-stat"><span class="label">Evaluated Slip Surfaces:</span> <span id="hudArcs" class="value">320</span></div>
+            </div>
+
+            <!-- Color Scale Legend -->
+            <div class="color-legend">
+                <span>Factor of Safety ($FS$) Contour Spectrum</span>
+                <div class="legend-bar"></div>
+                <div class="legend-labels">
+                    <span>&lt; 1.0 (Failure)</span>
+                    <span>1.0 - 1.5</span>
+                    <span>&gt; 1.5 (Stable)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('slopeCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+
+        // Parameters
+        let H = 12.0;
+        let betaDeg = 40;
+        let crestW = 15.0;
+        let cPrime = 15;
+        let phiDeg = 25;
+        let gamma = 19.0;
+        let waterDepth = 4.0;
+        let ru = 0.20;
+        let surcharge = 10;
+
+        let evaluatedArcs = [];
+        let criticalArc = null;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            width = canvas.width = container.clientWidth;
+            height = canvas.height = container.clientHeight;
+            recalculate();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function recalculate() {
+            H = parseFloat(document.getElementById('sliderH').value);
+            betaDeg = parseFloat(document.getElementById('sliderBeta').value);
+            crestW = parseFloat(document.getElementById('sliderCrest').value);
+            cPrime = parseFloat(document.getElementById('sliderC').value);
+            phiDeg = parseFloat(document.getElementById('sliderPhi').value);
+            gamma = parseFloat(document.getElementById('sliderGamma').value);
+            waterDepth = parseFloat(document.getElementById('sliderWater').value);
+            ru = parseFloat(document.getElementById('sliderRu').value);
+            surcharge = parseFloat(document.getElementById('sliderSurcharge').value);
+
+            document.getElementById('valH').innerText = H.toFixed(1);
+            document.getElementById('valBeta').innerText = betaDeg;
+            document.getElementById('valCrest').innerText = crestW;
+            document.getElementById('valC').innerText = cPrime;
+            document.getElementById('valPhi').innerText = phiDeg;
+            document.getElementById('valGamma').innerText = gamma.toFixed(1);
+            document.getElementById('valWater').innerText = waterDepth.toFixed(1);
+            document.getElementById('valRu').innerText = ru.toFixed(2);
+            document.getElementById('valSurcharge').innerText = surcharge;
+
+            performLimitEquilibriumSearch();
+            render();
+        }
+
+        // Ordinary Method of Slices (Fellenius Method) Search Engine
+        function performLimitEquilibriumSearch() {
+            evaluatedArcs = [];
+            criticalArc = null;
+            let minFS = 999;
+
+            const betaRad = (betaDeg * Math.PI) / 180;
+            const phiRad = (phiDeg * Math.PI) / 180;
+
+            // Geometry Points (in meters)
+            const toeX = 10.0;
+            const toeY = 5.0;
+            const topX = toeX + H / Math.tan(betaRad);
+            const topY = toeY + H;
+            const crestEndX = topX + crestW;
+
+            // Elevation profile function y = f(x)
+            function getGroundElevation(x) {
+                if (x <= toeX) return toeY;
+                if (x >= topX) return topY;
+                return toeY + (x - toeX) * Math.tan(betaRad);
+            }
+
+            // Grid Search for Slip Circle Centers & Radii
+            const gridMinX = toeX - 5;
+            const gridMaxX = topX + 10;
+            const gridMinY = topY + 2;
+            const gridMaxY = topY + H * 1.5;
+
+            const stepX = (gridMaxX - gridMinX) / 18;
+            const stepY = (gridMaxY - gridMinY) / 14;
+
+            for (let cx = gridMinX; cx <= gridMaxX; cx += stepX) {
+                for (let cy = gridMinY; cy <= gridMaxY; cy += stepY) {
+
+                    // Radii range passing near toe to crest
+                    const Rmin = Math.hypot(cx - toeX, cy - toeY) - 2;
+                    const Rmax = Math.hypot(cx - crestEndX, cy - topY) + 5;
+
+                    for (let R = Rmin; R <= Rmax; R += 2.0) {
+                        if (R <= 0) continue;
+
+                        // Find entry & exit intersections of circle with ground
+                        let xEntry = -1, xExit = -1;
+
+                        for (let x = toeX - 8; x <= crestEndX + 5; x += 0.25) {
+                            const term = R * R - (x - cx) * (x - cx);
+                            if (term >= 0) {
+                                const yCircle = cy - Math.sqrt(term);
+                                const yGround = getGroundElevation(x);
+
+                                if (yCircle <= yGround) {
+                                    if (xEntry < 0) xEntry = x;
+                                    xExit = x;
+                                }
+                            }
+                        }
+
+                        if (xEntry < 0 || xExit <= xEntry + 2.0) continue;
+
+                        // Ordinary Method of Slices (N = 25 Slices)
+                        const N = 25;
+                        const sliceW = (xExit - xEntry) / N;
+
+                        let totalDriving = 0;
+                        let totalResisting = 0;
+
+                        for (let i = 0; i < N; i++) {
+                            const xMid = xEntry + (i + 0.5) * sliceW;
+                            const yGround = getGroundElevation(xMid);
+
+                            const term = R * R - (xMid - cx) * (xMid - cx);
+                            if (term <= 0) continue;
+
+                            const yArc = cy - Math.sqrt(term);
+                            const hSlice = yGround - yArc;
+                            if (hSlice <= 0) continue;
+
+                            // Base Inclination Alpha
+                            const alpha = Math.atan2(xMid - cx, cy - yArc);
+
+                            // Weight & Surcharge
+                            let sliceWeight = gamma * sliceW * hSlice;
+                            if (xMid >= topX) sliceWeight += surcharge * sliceW; // Add Surcharge on crest
+
+                            // Pore water pressure u = ru * gamma * hSlice
+                            const u = ru * gamma * hSlice;
+                            const sliceLength = sliceW / Math.cos(alpha);
+
+                            // Forces
+                            const driving = sliceWeight * Math.sin(alpha);
+                            const normalEffective = Math.max(0, sliceWeight * Math.cos(alpha) - u * sliceLength);
+                            const resisting = cPrime * sliceLength + normalEffective * Math.tan(phiRad);
+
+                            totalDriving += driving;
+                            totalResisting += resisting;
+                        }
+
+                        if (totalDriving > 0) {
+                            const FS = totalResisting / totalDriving;
+
+                            const arcData = { cx, cy, R, FS, totalDriving, totalResisting, xEntry, xExit };
+                            evaluatedArcs.push(arcData);
+
+                            if (FS < minFS) {
+                                minFS = FS;
+                                criticalArc = arcData;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Update HUD Stats
+            if (criticalArc) {
+                const fsVal = criticalArc.FS;
+                const hudFS = document.getElementById('hudFS');
+                const pill = document.getElementById('statusPill');
+
+                hudFS.innerText = fsVal.toFixed(2);
+                document.getElementById('hudDriving').innerText = criticalArc.totalDriving.toFixed(1) + " kN/m";
+                document.getElementById('hudResisting').innerText = criticalArc.totalResisting.toFixed(1) + " kN/m";
+                document.getElementById('hudCenter').innerText = `(${criticalArc.cx.toFixed(1)} m, ${criticalArc.cy.toFixed(1)} m)`;
+                document.getElementById('hudRadius').innerText = criticalArc.R.toFixed(1) + " m";
+                document.getElementById('hudArcs').innerText = evaluatedArcs.length;
+
+                if (fsVal < 1.0) {
+                    hudFS.style.color = "#ef4444";
+                    pill.className = "status-pill status-failure";
+                    pill.innerText = "UNSTABLE / FAILURE";
+                } else if (fsVal <= 1.3) {
+                    hudFS.style.color = "#f59e0b";
+                    pill.className = "status-pill status-marginal";
+                    pill.innerText = "CRITICAL / MARGINAL";
+                } else {
+                    hudFS.style.color = "#10b981";
+                    pill.className = "status-pill status-stable";
+                    pill.innerText = "STABLE SLOPE";
+                }
+            }
+        }
+
+        // Render Slope Canvas
+        function render() {
+            ctx.fillStyle = "#050811";
+            ctx.fillRect(0, 0, width, height);
+
+            const betaRad = (betaDeg * Math.PI) / 180;
+            const toeX = 10.0;
+            const toeY = 5.0;
+            const topX = toeX + H / Math.tan(betaRad);
+            const topY = toeY + H;
+            const crestEndX = topX + crestW;
+
+            // World to Screen Coordinate Scaling
+            const scale = Math.min((width - 80) / (crestEndX + 10), (height - 100) / (topY + 15));
+            const originX = 40;
+            const originY = height - 50;
+
+            function toScreenX(x) { return originX + x * scale; }
+            function toScreenY(y) { return originY - y * scale; }
+
+            // Grid Lines
+            ctx.strokeStyle = "rgba(255,255,255,0.04)";
+            ctx.lineWidth = 1;
+            for (let x = 0; x < 80; x += 5) {
+                ctx.beginPath();
+                ctx.moveTo(toScreenX(x), 0);
+                ctx.lineTo(toScreenX(x), height);
+                ctx.stroke();
+            }
+
+            // Draw Evaluated Arcs Spectrum
+            evaluatedArcs.forEach(arc => {
+                let strokeColor;
+                if (arc.FS < 1.0) strokeColor = "rgba(239, 68, 68, 0.08)";
+                else if (arc.FS < 1.3) strokeColor = "rgba(245, 158, 11, 0.06)";
+                else strokeColor = "rgba(16, 185, 129, 0.03)";
+
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.arc(toScreenX(arc.cx), toScreenY(arc.cy), arc.R * scale, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+
+            // Fill Soil Body
+            ctx.fillStyle = "rgba(30, 41, 59, 0.85)";
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(0), toScreenY(0));
+            ctx.lineTo(toScreenX(0), toScreenY(toeY));
+            ctx.lineTo(toScreenX(toeX), toScreenY(toeY));
+            ctx.lineTo(toScreenX(topX), toScreenY(topY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(topY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(0));
+            ctx.closePath();
+            ctx.fill();
+
+            // Slope Outline
+            ctx.strokeStyle = "#38bdf8";
+            ctx.lineWidth = 2.5;
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(0), toScreenY(toeY));
+            ctx.lineTo(toScreenX(toeX), toScreenY(toeY));
+            ctx.lineTo(toScreenX(topX), toScreenY(topY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(topY));
+            ctx.stroke();
+
+            // Phreatic Water Table Line
+            const waterY = Math.max(0, topY - waterDepth);
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.7)";
+            ctx.setLineDash([6, 4]);
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(0), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Surcharge Load Visualization
+            if (surcharge > 0) {
+                ctx.strokeStyle = "#ec4899";
+                ctx.fillStyle = "rgba(236, 72, 153, 0.2)";
+                ctx.lineWidth = 1.5;
+
+                for (let sx = topX + 1; sx <= crestEndX; sx += 2.5) {
+                    const scX = toScreenX(sx);
+                    const scY = toScreenY(topY);
+                    ctx.beginPath();
+                    ctx.moveTo(scX, scY - 18);
+                    ctx.lineTo(scX, scY);
+                    ctx.stroke();
+                    // Arrowhead
+                    ctx.beginPath();
+                    ctx.arc(scX, scY, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Highlight Critical Failure Slip Arc
+            if (criticalArc) {
+                const fs = criticalArc.FS;
+                let arcColor = fs < 1.0 ? "#ef4444" : (fs <= 1.3 ? "#f59e0b" : "#10b981");
+
+                // Glowing Arc
+                ctx.strokeStyle = arcColor;
+                ctx.lineWidth = 4;
+                ctx.shadowColor = arcColor;
+                ctx.shadowBlur = 12;
+
+                ctx.beginPath();
+                ctx.arc(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy), criticalArc.R * scale, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.shadowBlur = 0; // Reset glow
+
+                // Center Point Marker
+                ctx.fillStyle = arcColor;
+                ctx.beginPath();
+                ctx.arc(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy), 5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+        }
+
+        // Initialize
+        resizeCanvas();
+    </script>
+</body>
+</html>
