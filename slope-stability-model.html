@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Geotechnical Slope Stability Assessor | Dr. Kunwar Mrityunjai Sharma</title>
+    <title>Multi-Layer Geotechnical Slope Stability Assessor | Dr. Kunwar Mrityunjai Sharma</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,6 +16,7 @@
             --accent-amber: #f59e0b;
             --accent-red: #ef4444;
             --accent-pink: #ec4899;
+            --accent-purple: #a855f7;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -29,7 +30,7 @@
         nav { padding: 0.8rem 2%; background: rgba(9, 13, 22, 0.95); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
         nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
 
-        .app-layout { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 49px); }
+        .app-layout { display: grid; grid-template-columns: 370px 1fr; height: calc(100vh - 49px); }
 
         /* Sidebar Controls */
         .controls-panel {
@@ -47,6 +48,17 @@
 
         .section-label { font-family: var(--font-code); font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); letter-spacing: 1px; margin-top: 0.2rem; }
 
+        /* Layer Selector Tabs */
+        .layer-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 0.5rem; }
+        .layer-tab {
+            padding: 0.45rem 0.75rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;
+            border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03);
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .layer-tab:hover { border-color: var(--accent-cyan); color: var(--text-main); }
+        .layer-tab.active { background: rgba(56, 189, 248, 0.15); border-color: var(--accent-cyan); color: var(--accent-cyan); }
+
         .control-group { display: flex; flex-direction: column; gap: 0.3rem; }
         .control-group label { font-size: 0.82rem; font-family: 'Inter', sans-serif; color: var(--text-main); display: flex; justify-content: space-between; }
         .control-group label span.val { color: var(--accent-cyan); font-family: var(--font-code); font-weight: 600; }
@@ -57,14 +69,16 @@
 
         .btn-row { display: flex; gap: 8px; margin-top: 0.4rem; }
         .btn-action {
-            flex: 1; padding: 0.65rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem;
+            flex: 1; padding: 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;
             border: 1px solid var(--border-subtle); background: rgba(245, 158, 11, 0.15);
             color: var(--accent-amber); cursor: pointer; text-align: center; transition: all 0.2s;
             display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn-action:hover { background: var(--accent-amber); color: #090d16; font-weight: 700; }
+        .btn-secondary { background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan); border-color: rgba(56, 189, 248, 0.3); }
+        .btn-secondary:hover { background: var(--accent-cyan); color: #090d16; }
 
-        /* Simulation Canvas & Viewport */
+        /* Simulation Viewport */
         .simulation-viewport { position: relative; background: #050811; display: flex; flex-direction: column; }
         .canvas-container { flex: 1; position: relative; width: 100%; height: 100%; }
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: grab; }
@@ -72,7 +86,7 @@
 
         /* Floating Viewport Toolbar */
         .viewport-toolbar {
-            position: absolute; top: 1rem; left: 1rem;
+            position: absolute; top: 1rem; left: 3rem;
             background: var(--bg-card); border: 1px solid var(--border-subtle);
             border-radius: 8px; padding: 0.4rem; display: flex; gap: 6px; backdrop-filter: blur(8px);
             z-index: 5; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
@@ -85,11 +99,11 @@
         .btn-icon:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(56, 189, 248, 0.1); }
 
         .helper-text {
-            position: absolute; bottom: 1rem; left: 1rem;
+            position: absolute; bottom: 2.2rem; left: 3rem;
             background: var(--bg-card); border: 1px solid var(--border-subtle);
             border-radius: 8px; padding: 0.5rem 0.9rem; font-family: var(--font-code); font-size: 0.75rem;
             color: var(--accent-cyan); display: flex; align-items: center; gap: 8px; backdrop-filter: blur(8px);
-            pointer-events: none;
+            pointer-events: none; z-index: 5;
         }
 
         /* HUD Overlay */
@@ -97,8 +111,8 @@
             position: absolute; top: 1rem; right: 1rem;
             background: var(--bg-card); border: 1px solid var(--border-subtle);
             border-radius: 10px; padding: 1rem 1.2rem; font-family: var(--font-code); font-size: 0.8rem;
-            display: flex; flex-direction: column; gap: 0.5rem; backdrop-filter: blur(8px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 290px; z-index: 5;
+            display: flex; flex-direction: column; gap: 0.45rem; backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 300px; z-index: 5;
         }
         .hud-stat { display: flex; justify-content: space-between; gap: 1.5rem; }
         .hud-stat .label { color: var(--text-muted); }
@@ -113,7 +127,7 @@
         .status-failure { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4); }
 
         .color-legend {
-            position: absolute; bottom: 1rem; right: 1rem;
+            position: absolute; bottom: 2.2rem; right: 1rem;
             background: var(--bg-card); border: 1px solid var(--border-subtle);
             border-radius: 8px; padding: 0.7rem 1rem; backdrop-filter: blur(8px);
             display: flex; flex-direction: column; gap: 5px; font-family: var(--font-code); font-size: 0.72rem;
@@ -121,21 +135,55 @@
         }
         .legend-bar { width: 220px; height: 10px; border-radius: 4px; background: linear-gradient(to right, #ef4444, #f59e0b, #10b981); }
         .legend-labels { display: flex; justify-content: space-between; color: var(--text-muted); }
+
+        .dot-badge { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
     </style>
 </head>
 <body>
 
     <nav>
         <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
-        <div style="font-weight:700; color:var(--text-main);">Limit Equilibrium Slope Stability Assessor</div>
+        <div style="font-weight:700; color:var(--text-main);">Multi-Layer Limit Equilibrium Slope Stability Assessor</div>
     </nav>
 
     <div class="app-layout">
         <!-- Controls Sidebar -->
         <div class="controls-panel">
-            <h2><i class="fa-solid fa-hill-rockslide"></i> Slope Parameters</h2>
+            <h2><i class="fa-solid fa-layer-group"></i> Multi-Layer Stratigraphy</h2>
 
-            <div class="section-label">Slope Profile Geometry</div>
+            <div class="section-label">Select Active Soil / Rock Layer</div>
+            <div id="layerTabsContainer" class="layer-tabs">
+                <!-- Layer tabs dynamically rendered -->
+            </div>
+
+            <!-- Active Layer Editor -->
+            <div id="layerEditorBox" style="background: rgba(255,255,255,0.02); padding: 0.8rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                <div class="control-group" style="margin-bottom: 0.6rem;">
+                    <label>Layer Title: <span id="valLayerTitle" class="val">Layer 1</span></label>
+                </div>
+
+                <div class="control-group">
+                    <label>Effective Cohesion <i>c</i>' (kPa): <span id="valC" class="val">15</span></label>
+                    <input type="range" id="sliderC" min="0" max="60" value="15" oninput="updateActiveLayerProps()">
+                </div>
+
+                <div class="control-group">
+                    <label>Friction Angle <i>&phi;</i>' (&deg;): <span id="valPhi" class="val">25</span></label>
+                    <input type="range" id="sliderPhi" min="5" max="50" value="25" oninput="updateActiveLayerProps()">
+                </div>
+
+                <div class="control-group">
+                    <label>Unit Weight <i>&gamma;</i> (kN/m&sup3;): <span id="valGamma" class="val">19.0</span></label>
+                    <input type="range" id="sliderGamma" min="14" max="28" step="0.5" value="19" oninput="updateActiveLayerProps()">
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-action btn-secondary" onclick="addSoilLayer()"><i class="fa-solid fa-plus"></i> Add Layer</button>
+                <button class="btn-action btn-secondary" onclick="removeSoilLayer()"><i class="fa-solid fa-minus"></i> Remove Layer</button>
+            </div>
+
+            <div class="section-label">Overall Slope Geometry</div>
             <div class="control-group">
                 <label>Slope Height <i>H</i> (m): <span id="valH" class="val">12.0</span></label>
                 <input type="range" id="sliderH" min="5" max="30" step="0.5" value="12" oninput="updateFromSliders()">
@@ -151,26 +199,10 @@
                 <input type="range" id="sliderCrest" min="5" max="30" value="15" oninput="updateFromSliders()">
             </div>
 
-            <div class="section-label">Geotechnical Soil Properties</div>
-            <div class="control-group">
-                <label>Effective Cohesion <i>c</i>' (kPa): <span id="valC" class="val">15</span></label>
-                <input type="range" id="sliderC" min="0" max="50" value="15" oninput="recalculate()">
-            </div>
-
-            <div class="control-group">
-                <label>Friction Angle <i>&phi;</i>' (&deg;): <span id="valPhi" class="val">25</span></label>
-                <input type="range" id="sliderPhi" min="10" max="45" value="25" oninput="recalculate()">
-            </div>
-
-            <div class="control-group">
-                <label>Unit Weight <i>&gamma;</i> (kN/m&sup3;): <span id="valGamma" class="val">19.0</span></label>
-                <input type="range" id="sliderGamma" min="14" max="26" step="0.5" value="19" oninput="recalculate()">
-            </div>
-
-            <div class="section-label">Hydrology &amp; Loading</div>
+            <div class="section-label">Hydrology &amp; Crest Surcharge</div>
             <div class="control-group">
                 <label>Water Table Depth <i>h</i><sub>w</sub> (m): <span id="valWater" class="val">4.0</span></label>
-                <input type="range" id="sliderWater" min="0" max="15" step="0.5" value="4" oninput="updateWaterFromSlider()">
+                <input type="range" id="sliderWater" min="0" max="20" step="0.5" value="4" oninput="updateWaterFromSlider()">
             </div>
 
             <div class="control-group">
@@ -184,13 +216,12 @@
             </div>
 
             <div class="btn-row">
-                <button class="btn-action" onclick="resetProfileGeometry()"><i class="fa-solid fa-rotate-right"></i> Reset Geometry</button>
+                <button class="btn-action" onclick="resetProfileGeometry()"><i class="fa-solid fa-rotate-right"></i> Reset Default</button>
             </div>
         </div>
 
         <!-- Simulation Viewport -->
         <div class="simulation-viewport">
-            <!-- Viewport Canvas Controls -->
             <div class="viewport-toolbar">
                 <button class="btn-icon" onclick="zoomCanvas(1.2)" title="Zoom In"><i class="fa-solid fa-plus"></i></button>
                 <button class="btn-icon" onclick="zoomCanvas(0.8)" title="Zoom Out"><i class="fa-solid fa-minus"></i></button>
@@ -202,7 +233,7 @@
             </div>
 
             <div class="helper-text">
-                <i class="fa-solid fa-hand-pointer"></i> Drag amber/cyan handles to edit shape | Scroll/Drag canvas to Zoom/Pan
+                <i class="fa-solid fa-hand-pointer"></i> Drag Amber (Ground), Purple (Layer Interfaces), Cyan (Water Table) handles | Scroll/Drag Canvas to Zoom/Pan
             </div>
 
             <!-- HUD Overlay -->
@@ -210,14 +241,13 @@
                 <div class="hud-stat"><span class="label">Factor of Safety (FS):</span> <span id="hudFS" class="value" style="font-size:1.1rem; color:var(--accent-emerald);">1.42</span></div>
                 <div id="statusPill" class="status-pill status-stable">Stable Slope</div>
                 <hr style="border:0; border-top:1px solid var(--border-subtle); margin:0.3rem 0;">
-                <div class="hud-stat"><span class="label">Driving Shear Force (&Sigma;D<sub>i</sub>):</span> <span id="hudDriving" class="value">420.5 kN/m</span></div>
-                <div class="hud-stat"><span class="label">Resisting Shear Force (&Sigma;R<sub>i</sub>):</span> <span id="hudResisting" class="value">597.1 kN/m</span></div>
+                <div class="hud-stat"><span class="label">Total Soil Layers:</span> <span id="hudLayerCount" class="value">2 Layers</span></div>
+                <div class="hud-stat"><span class="label">Driving Force (&Sigma;D<sub>i</sub>):</span> <span id="hudDriving" class="value">420.5 kN/m</span></div>
+                <div class="hud-stat"><span class="label">Resisting Force (&Sigma;R<sub>i</sub>):</span> <span id="hudResisting" class="value">597.1 kN/m</span></div>
                 <div class="hud-stat"><span class="label">Critical Center (x<sub>c</sub>, y<sub>c</sub>):</span> <span id="hudCenter" class="value">(18.2 m, 22.4 m)</span></div>
                 <div class="hud-stat"><span class="label">Critical Radius (R):</span> <span id="hudRadius" class="value">16.8 m</span></div>
-                <div class="hud-stat"><span class="label">Evaluated Slip Arcs:</span> <span id="hudArcs" class="value">320</span></div>
             </div>
 
-            <!-- Color Scale Legend -->
             <div class="color-legend">
                 <span>Factor of Safety (FS) Spectrum</span>
                 <div class="legend-bar"></div>
@@ -236,32 +266,54 @@
 
         let width, height;
 
-        // Geotechnical Parameters
-        let cPrime = 15;
-        let phiDeg = 25;
-        let gamma = 19.0;
+        // Global Parameters
         let ru = 0.20;
         let surcharge = 10;
+        let activeLayerIdx = 0;
 
-        // Draggable Control Nodes (World Coordinates in Meters)
-        let groundNodes = [];
-        let waterNodes = [];
+        // Multi-Layer Data Structure
+        let layers = [
+            {
+                name: "Layer 1: Upper Soil",
+                cPrime: 15,
+                phiDeg: 25,
+                gamma: 18.5,
+                colorGrad: ["rgba(180, 110, 50, 0.85)", "rgba(130, 70, 30, 0.95)"],
+                handleColor: "#f59e0b",
+                bottomNodes: [] // Sub-surface interface nodes
+            },
+            {
+                name: "Layer 2: Stiff Clay / Bedrock",
+                cPrime: 30,
+                phiDeg: 32,
+                gamma: 21.0,
+                colorGrad: ["rgba(90, 105, 120, 0.85)", "rgba(50, 65, 80, 0.95)"],
+                handleColor: "#a855f7",
+                bottomNodes: []
+            }
+        ];
 
-        // Camera Transformation (Pan & Zoom)
-        let zoomScale = 22; // Pixels per meter
-        let panX = 60;
-        let panY = 60;
+        // Boundary Nodes (Meters)
+        let groundNodes = []; // Ground surface (Amber handles)
+        let waterNodes = [];  // Phreatic line (Cyan handles)
 
-        // Interaction State
+        // Camera Transform
+        let zoomScale = 22;
+        let panX = 80;
+        let panY = 70;
+
+        // Dragging & Interaction State
         let isPanning = false;
         let dragStartMouse = { x: 0, y: 0 };
-        let draggedHandle = null;
+        let draggedHandle = null; // { type: 'ground'|'layer'|'water', layerIdx: number, nodeIdx: number }
         let hoveredHandle = null;
 
         let evaluatedArcs = [];
         let criticalArc = null;
 
-        function initNodes(H = 12.0, betaDeg = 40, crestW = 15.0, waterDepth = 4.0) {
+        const RULER_THICKNESS = 30;
+
+        function initStratigraphy(H = 12.0, betaDeg = 40, crestW = 15.0, waterDepth = 4.0) {
             const betaRad = (betaDeg * Math.PI) / 180;
             const toeX = 10.0;
             const toeY = 5.0;
@@ -277,6 +329,26 @@
                 { x: crestEndX + 15, y: topY }
             ];
 
+            // Sub-layer 1 Interface (Below Upper Soil)
+            const subY1 = Math.max(0, toeY - 3.5);
+            layers[0].bottomNodes = [
+                { x: 0, y: subY1 },
+                { x: toeX + 2, y: subY1 },
+                { x: topX + 2, y: topY - 3.5 },
+                { x: crestEndX + 15, y: topY - 3.5 }
+            ];
+
+            // Sub-layer 2 Bottom Interface
+            const subY2 = Math.max(-5, toeY - 10);
+            if (layers[1]) {
+                layers[1].bottomNodes = [
+                    { x: 0, y: subY2 },
+                    { x: toeX + 2, y: subY2 },
+                    { x: topX + 2, y: subY2 },
+                    { x: crestEndX + 15, y: subY2 }
+                ];
+            }
+
             const wY = Math.max(0, topY - waterDepth);
             waterNodes = [
                 { x: 0, y: toeY - 0.5 },
@@ -284,9 +356,85 @@
                 { x: topX, y: wY },
                 { x: crestEndX + 15, y: wY }
             ];
+
+            renderLayerTabs();
         }
 
-        // Coordinate Transformation
+        function renderLayerTabs() {
+            const container = document.getElementById('layerTabsContainer');
+            container.innerHTML = layers.map((ly, idx) => `
+                <button class="layer-tab ${idx === activeLayerIdx ? 'active' : ''}" onclick="selectActiveLayer(${idx})">
+                    <span class="dot-badge" style="background:${ly.handleColor};"></span>
+                    Layer ${idx + 1}
+                </button>
+            `).join('');
+
+            const curr = layers[activeLayerIdx];
+            document.getElementById('valLayerTitle').innerText = curr.name;
+            document.getElementById('sliderC').value = curr.cPrime;
+            document.getElementById('sliderPhi').value = curr.phiDeg;
+            document.getElementById('sliderGamma').value = curr.gamma;
+
+            document.getElementById('valC').innerText = curr.cPrime;
+            document.getElementById('valPhi').innerText = curr.phiDeg;
+            document.getElementById('valGamma').innerText = curr.gamma.toFixed(1);
+            document.getElementById('hudLayerCount').innerText = `${layers.length} Soil Layers`;
+        }
+
+        function selectActiveLayer(idx) {
+            activeLayerIdx = idx;
+            renderLayerTabs();
+        }
+
+        function updateActiveLayerProps() {
+            const curr = layers[activeLayerIdx];
+            curr.cPrime = parseFloat(document.getElementById('sliderC').value);
+            curr.phiDeg = parseFloat(document.getElementById('sliderPhi').value);
+            curr.gamma = parseFloat(document.getElementById('sliderGamma').value);
+
+            document.getElementById('valC').innerText = curr.cPrime;
+            document.getElementById('valPhi').innerText = curr.phiDeg;
+            document.getElementById('valGamma').innerText = curr.gamma.toFixed(1);
+
+            recalculate();
+        }
+
+        function addSoilLayer() {
+            if (layers.length >= 4) return;
+            const newIdx = layers.length;
+            const colors = [
+                { grad: ["rgba(168, 85, 247, 0.85)", "rgba(126, 34, 206, 0.95)"], color: "#a855f7" },
+                { grad: ["rgba(16, 185, 129, 0.85)", "rgba(4, 120, 87, 0.95)"], color: "#10b981" }
+            ];
+            const col = colors[(newIdx - 2) % colors.length];
+
+            const lastBottom = layers[newIdx - 1].bottomNodes;
+            const newBottom = lastBottom.map(pt => ({ x: pt.x, y: pt.y - 4 }));
+
+            layers.push({
+                name: `Layer ${newIdx + 1}: Dense Strata`,
+                cPrime: 40,
+                phiDeg: 35,
+                gamma: 22.0,
+                colorGrad: col.grad,
+                handleColor: col.color,
+                bottomNodes: newBottom
+            });
+
+            activeLayerIdx = newIdx;
+            renderLayerTabs();
+            recalculate();
+        }
+
+        function removeSoilLayer() {
+            if (layers.length <= 1) return;
+            layers.pop();
+            activeLayerIdx = Math.min(activeLayerIdx, layers.length - 1);
+            renderLayerTabs();
+            recalculate();
+        }
+
+        // Coordinate Transforms
         function worldToScreen(wx, wy) {
             return {
                 x: panX + wx * zoomScale,
@@ -306,7 +454,7 @@
             width = canvas.width = container.clientWidth;
             height = canvas.height = container.clientHeight;
             if (groundNodes.length === 0) {
-                initNodes();
+                initStratigraphy();
                 fitView();
             } else {
                 recalculate();
@@ -323,12 +471,12 @@
                 if (pt.y > maxY) maxY = pt.y;
             });
 
-            const bboxW = maxX - minX + 10;
-            const bboxH = maxY - minY + 10;
+            const bboxW = maxX - minX + 12;
+            const bboxH = maxY - minY + 12;
 
-            zoomScale = Math.min((width - 120) / bboxW, (height - 120) / bboxH);
-            panX = 60 - minX * zoomScale;
-            panY = 60 - minY * zoomScale;
+            zoomScale = Math.min((width - 160) / bboxW, (height - 160) / bboxH);
+            panX = 90 - minX * zoomScale;
+            panY = 80 - minY * zoomScale;
             recalculate();
         }
 
@@ -338,7 +486,7 @@
             const wBefore = screenToWorld(cx, cy);
 
             zoomScale *= factor;
-            zoomScale = Math.max(5, Math.min(100, zoomScale));
+            zoomScale = Math.max(6, Math.min(120, zoomScale));
 
             panX = cx - wBefore.x * zoomScale;
             panY = height - cy - wBefore.y * zoomScale;
@@ -351,7 +499,7 @@
             const crestW = parseFloat(document.getElementById('sliderCrest').value);
             const waterDepth = parseFloat(document.getElementById('sliderWater').value);
 
-            initNodes(H, betaDeg, crestW, waterDepth);
+            initStratigraphy(H, betaDeg, crestW, waterDepth);
             recalculate();
         }
 
@@ -374,35 +522,29 @@
             fitView();
         }
 
-        // Interpolate Profile Elevation y = f(x)
-        function getGroundElevation(x) {
-            const pts = groundNodes;
-            if (x <= pts[0].x) return pts[0].y;
-            if (x >= pts[pts.length - 1].x) return pts[pts.length - 1].y;
+        // Interpolate Interface Elevation at x
+        function getNodeElevation(nodes, x) {
+            if (x <= nodes[0].x) return nodes[0].y;
+            if (x >= nodes[nodes.length - 1].x) return nodes[nodes.length - 1].y;
 
-            for (let i = 0; i < pts.length - 1; i++) {
-                if (x >= pts[i].x && x <= pts[i + 1].x) {
-                    const t = (x - pts[i].x) / (pts[i + 1].x - pts[i].x + 1e-6);
-                    return pts[i].y + t * (pts[i + 1].y - pts[i].y);
+            for (let i = 0; i < nodes.length - 1; i++) {
+                if (x >= nodes[i].x && x <= nodes[i + 1].x) {
+                    const t = (x - nodes[i].x) / (nodes[i + 1].x - nodes[i].x + 1e-6);
+                    return nodes[i].y + t * (nodes[i + 1].y - nodes[i].y);
                 }
             }
-            return pts[0].y;
+            return nodes[0].y;
         }
 
+        function getGroundElevation(x) { return getNodeElevation(groundNodes, x); }
+
         function recalculate() {
-            cPrime = parseFloat(document.getElementById('sliderC').value);
-            phiDeg = parseFloat(document.getElementById('sliderPhi').value);
-            gamma = parseFloat(document.getElementById('sliderGamma').value);
             ru = parseFloat(document.getElementById('sliderRu').value);
             surcharge = parseFloat(document.getElementById('sliderSurcharge').value);
 
-            document.getElementById('valC').innerText = cPrime;
-            document.getElementById('valPhi').innerText = phiDeg;
-            document.getElementById('valGamma').innerText = gamma.toFixed(1);
             document.getElementById('valRu').innerText = ru.toFixed(2);
             document.getElementById('valSurcharge').innerText = surcharge;
 
-            // Sync Sliders Display
             const toeX = groundNodes[1].x;
             const topX = groundNodes[2].x;
             const topY = groundNodes[2].y;
@@ -423,13 +565,25 @@
             render();
         }
 
-        // Limit Equilibrium Method of Slices Solver
+        // Identify Layer Index at Coordinate (x, y)
+        function getLayerIndexAt(x, y) {
+            const yGround = getGroundElevation(x);
+            if (y > yGround) return -1; // Above ground
+
+            for (let k = 0; k < layers.length; k++) {
+                const yBottom = getNodeElevation(layers[k].bottomNodes, x);
+                if (y <= yGround && y >= yBottom) {
+                    return k;
+                }
+            }
+            return layers.length - 1; // Deepest layer fallback
+        }
+
+        // Multi-Layer Limit Equilibrium Ordinary Method of Slices
         function performLimitEquilibriumSearch() {
             evaluatedArcs = [];
             criticalArc = null;
             let minFS = 999;
-
-            const phiRad = (phiDeg * Math.PI) / 180;
 
             const toeX = groundNodes[1].x;
             const toeY = groundNodes[1].y;
@@ -494,17 +648,36 @@
                             const hSlice = yGMid - yArcMid;
                             if (hSlice <= 0) continue;
 
-                            const alpha = Math.atan2(xMid - cx, cy - yArcMid);
+                            // Calculate Slice Weight W considering multi-layer thicknesses
+                            let sliceWeight = 0;
+                            let yTopSeg = yGMid;
 
-                            let sliceWeight = gamma * sliceW * hSlice;
+                            for (let k = 0; k < layers.length; k++) {
+                                const yBotLayer = getNodeElevation(layers[k].bottomNodes, xMid);
+                                const ySegLower = Math.max(yArcMid, yBotLayer);
+
+                                if (yTopSeg > ySegLower) {
+                                    const thick = yTopSeg - ySegLower;
+                                    sliceWeight += thick * layers[k].gamma * sliceW;
+                                    yTopSeg = ySegLower;
+                                }
+                            }
                             if (xMid >= topX) sliceWeight += surcharge * sliceW;
 
-                            const u = ru * gamma * hSlice;
+                            // Base Shearing Parameters from Layer at Arc Base
+                            const baseLayerIdx = getLayerIndexAt(xMid, yArcMid);
+                            const baseLayer = layers[Math.max(0, baseLayerIdx)];
+                            const cBase = baseLayer.cPrime;
+                            const phiBaseRad = (baseLayer.phiDeg * Math.PI) / 180;
+
+                            const alpha = Math.atan2(xMid - cx, cy - yArcMid);
+                            const avgGamma = sliceWeight / (sliceW * hSlice + 1e-5);
+                            const u = ru * avgGamma * hSlice;
                             const sliceLength = sliceW / Math.cos(alpha);
 
                             const driving = sliceWeight * Math.sin(alpha);
                             const normalEffective = Math.max(0, sliceWeight * Math.cos(alpha) - u * sliceLength);
-                            const resisting = cPrime * sliceLength + normalEffective * Math.tan(phiRad);
+                            const resisting = cBase * sliceLength + normalEffective * Math.tan(phiBaseRad);
 
                             totalDriving += driving;
                             totalResisting += resisting;
@@ -542,7 +715,6 @@
                 document.getElementById('hudResisting').innerText = criticalArc.totalResisting.toFixed(1) + " kN/m";
                 document.getElementById('hudCenter').innerText = `(${criticalArc.cx.toFixed(1)} m, ${criticalArc.cy.toFixed(1)} m)`;
                 document.getElementById('hudRadius').innerText = criticalArc.R.toFixed(1) + " m";
-                document.getElementById('hudArcs').innerText = evaluatedArcs.length;
 
                 if (fsVal < 1.0) {
                     hudFS.style.color = "#ef4444";
@@ -560,13 +732,100 @@
             }
         }
 
-        // Clean Render Routine
+        // Draw Edge Metric Rulers
+        function renderRulers() {
+            ctx.save();
+
+            ctx.fillStyle = "rgba(9, 13, 22, 0.95)";
+            ctx.fillRect(0, height - RULER_THICKNESS, width, RULER_THICKNESS);
+            ctx.fillRect(0, 0, RULER_THICKNESS, height);
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+            ctx.lineWidth = 1;
+
+            ctx.beginPath();
+            ctx.moveTo(0, height - RULER_THICKNESS);
+            ctx.lineTo(width, height - RULER_THICKNESS);
+            ctx.moveTo(RULER_THICKNESS, 0);
+            ctx.lineTo(RULER_THICKNESS, height);
+            ctx.stroke();
+
+            ctx.fillStyle = "#1e293b";
+            ctx.fillRect(0, height - RULER_THICKNESS, RULER_THICKNESS, RULER_THICKNESS);
+            ctx.strokeStyle = "rgba(56, 189, 248, 0.3)";
+            ctx.strokeRect(0, height - RULER_THICKNESS, RULER_THICKNESS, RULER_THICKNESS);
+
+            ctx.font = "700 10px 'Fira Code', monospace";
+            ctx.fillStyle = "#38bdf8";
+            ctx.fillText("m", 11, height - 10);
+
+            let unitStep = 1;
+            if (zoomScale < 12) unitStep = 5;
+            if (zoomScale < 6) unitStep = 10;
+
+            const wLeft = screenToWorld(RULER_THICKNESS, 0).x;
+            const wRight = screenToWorld(width, 0).x;
+
+            const startX = Math.floor(wLeft / unitStep) * unitStep;
+            const endX = Math.ceil(wRight / unitStep) * unitStep;
+
+            ctx.font = "500 10px 'Fira Code', monospace";
+            ctx.fillStyle = "#9ca3af";
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+
+            for (let wx = startX; wx <= endX; wx += unitStep) {
+                const sc = worldToScreen(wx, 0);
+                if (sc.x < RULER_THICKNESS || sc.x > width) continue;
+
+                const isMajor = wx % (unitStep * 5) === 0 || unitStep >= 5;
+                const tickHeight = isMajor ? 12 : 6;
+
+                ctx.beginPath();
+                ctx.moveTo(sc.x, height - RULER_THICKNESS);
+                ctx.lineTo(sc.x, height - RULER_THICKNESS + tickHeight);
+                ctx.stroke();
+
+                if (isMajor) {
+                    ctx.fillText(`${wx}`, sc.x - 6, height - 6);
+                }
+            }
+
+            const wBottom = screenToWorld(0, height - RULER_THICKNESS).y;
+            const wTop = screenToWorld(0, 0).y;
+
+            const startY = Math.floor(wBottom / unitStep) * unitStep;
+            const endY = Math.ceil(wTop / unitStep) * unitStep;
+
+            for (let wy = startY; wy <= endY; wy += unitStep) {
+                const sc = worldToScreen(0, wy);
+                if (sc.y > height - RULER_THICKNESS || sc.y < 0) continue;
+
+                const isMajor = wy % (unitStep * 5) === 0 || unitStep >= 5;
+                const tickWidth = isMajor ? 12 : 6;
+
+                ctx.beginPath();
+                ctx.moveTo(RULER_THICKNESS - tickWidth, sc.y);
+                ctx.lineTo(RULER_THICKNESS, sc.y);
+                ctx.stroke();
+
+                if (isMajor) {
+                    ctx.save();
+                    ctx.translate(12, sc.y + 4);
+                    ctx.fillText(`${wy}`, 0, 0);
+                    ctx.restore();
+                }
+            }
+
+            ctx.restore();
+        }
+
+        // Render Canvas Stratigraphy
         function render() {
             ctx.fillStyle = "#050811";
             ctx.fillRect(0, 0, width, height);
 
-            // World Axis Grid
-            ctx.strokeStyle = "rgba(255,255,255,0.04)";
+            // World Axis Grid (5m)
+            ctx.strokeStyle = "rgba(255,255,255,0.035)";
             ctx.lineWidth = 1;
             const startX = Math.floor(screenToWorld(0, 0).x / 5) * 5;
             const endX = Math.ceil(screenToWorld(width, 0).x / 5) * 5;
@@ -579,54 +838,64 @@
                 ctx.stroke();
             }
 
-            // 1. Unsaturated Soil Body
-            const topY = groundNodes[2].y;
-            const scTopY = worldToScreen(0, topY).y;
-            const scBotY = worldToScreen(0, 0).y;
+            // Render Stratigraphic Layers
+            for (let k = 0; k < layers.length; k++) {
+                const layer = layers[k];
+                const topBoundary = (k === 0) ? groundNodes : layers[k - 1].bottomNodes;
+                const botBoundary = layer.bottomNodes;
 
-            const soilGrad = ctx.createLinearGradient(0, scTopY, 0, scBotY);
-            soilGrad.addColorStop(0, "rgba(180, 110, 50, 0.85)");
-            soilGrad.addColorStop(1, "rgba(120, 65, 25, 0.95)");
+                const scTopY = worldToScreen(0, topBoundary[2].y).y;
+                const scBotY = worldToScreen(0, botBoundary[2].y).y;
 
-            ctx.fillStyle = soilGrad;
-            ctx.beginPath();
-            const pt0 = worldToScreen(groundNodes[0].x, 0);
-            ctx.moveTo(pt0.x, pt0.y);
+                const grad = ctx.createLinearGradient(0, scTopY, 0, scBotY);
+                grad.addColorStop(0, layer.colorGrad[0]);
+                grad.addColorStop(1, layer.colorGrad[1]);
 
-            groundNodes.forEach(pt => {
-                const sc = worldToScreen(pt.x, pt.y);
-                ctx.lineTo(sc.x, sc.y);
-            });
+                ctx.fillStyle = grad;
+                ctx.beginPath();
 
-            const ptLast = worldToScreen(groundNodes[groundNodes.length - 1].x, 0);
-            ctx.lineTo(ptLast.x, ptLast.y);
-            ctx.closePath();
-            ctx.fill();
+                // Top interface from Left to Right
+                topBoundary.forEach((pt, idx) => {
+                    const sc = worldToScreen(pt.x, pt.y);
+                    if (idx === 0) ctx.moveTo(sc.x, sc.y);
+                    else ctx.lineTo(sc.x, sc.y);
+                });
 
-            // 2. Saturated Soil Layer (Below Phreatic Line)
-            ctx.fillStyle = "rgba(20, 60, 85, 0.80)";
-            ctx.beginPath();
-            const w0 = worldToScreen(waterNodes[0].x, 0);
-            ctx.moveTo(w0.x, w0.y);
+                // Bottom interface from Right to Left
+                for (let idx = botBoundary.length - 1; idx >= 0; idx--) {
+                    const sc = worldToScreen(botBoundary[idx].x, botBoundary[idx].y);
+                    ctx.lineTo(sc.x, sc.y);
+                }
 
-            waterNodes.forEach(pt => {
-                const sc = worldToScreen(pt.x, pt.y);
-                ctx.lineTo(sc.x, sc.y);
-            });
+                ctx.closePath();
+                ctx.fill();
 
-            const wLast = worldToScreen(waterNodes[waterNodes.length - 1].x, 0);
-            ctx.lineTo(wLast.x, wLast.y);
-            ctx.closePath();
-            ctx.fill();
+                // Draw Layer Boundary Interface Line
+                if (k > 0) {
+                    ctx.strokeStyle = layer.handleColor;
+                    ctx.setLineDash([4, 4]);
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    topBoundary.forEach((pt, idx) => {
+                        const sc = worldToScreen(pt.x, pt.y);
+                        if (idx === 0) ctx.moveTo(sc.x, sc.y);
+                        else ctx.lineTo(sc.x, sc.y);
+                    });
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
 
-            // 3. Phreatic Line & Translucent Water Body Overlay
+            // Water Table Overlay & Line
             ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
             ctx.beginPath();
+            const w0 = worldToScreen(waterNodes[0].x, -10);
             ctx.moveTo(w0.x, w0.y);
             waterNodes.forEach(pt => {
                 const sc = worldToScreen(pt.x, pt.y);
                 ctx.lineTo(sc.x, sc.y);
             });
+            const wLast = worldToScreen(waterNodes[waterNodes.length - 1].x, -10);
             ctx.lineTo(wLast.x, wLast.y);
             ctx.closePath();
             ctx.fill();
@@ -643,7 +912,7 @@
             ctx.stroke();
             ctx.setLineDash([]);
 
-            // Slope Outline
+            // Ground Surface Outline
             ctx.strokeStyle = "#f8fafc";
             ctx.lineWidth = 2.5;
             ctx.beginPath();
@@ -656,6 +925,7 @@
 
             // Surcharge Load Block & Vectors
             const topX = groundNodes[2].x;
+            const topY = groundNodes[2].y;
             const crestEndX = groundNodes[3].x;
 
             if (surcharge > 0) {
@@ -688,7 +958,7 @@
                 ctx.fillText(`q = ${surcharge} kPa`, scLbl.x - 30, scLbl.y);
             }
 
-            // Render Method of Slices and Critical Failure Mass
+            // Render Method of Slices & Highlighted Critical Failure Mass
             if (criticalArc && criticalArc.slices) {
                 const fs = criticalArc.FS;
                 let arcColor = fs < 1.0 ? "#ef4444" : (fs <= 1.3 ? "#f59e0b" : "#10b981");
@@ -754,9 +1024,10 @@
             }
 
             // Draw Interactive Draggable Handles
+            // 1. Ground Handles (Amber)
             groundNodes.forEach((pt, idx) => {
                 const sc = worldToScreen(pt.x, pt.y);
-                const isHovered = hoveredHandle && hoveredHandle.type === 'ground' && hoveredHandle.index === idx;
+                const isHovered = hoveredHandle && hoveredHandle.type === 'ground' && hoveredHandle.nodeIdx === idx;
 
                 ctx.fillStyle = isHovered ? "#ffffff" : "#f59e0b";
                 ctx.beginPath();
@@ -767,9 +1038,26 @@
                 ctx.stroke();
             });
 
+            // 2. Layer Sub-surface Handles (Purple/Green)
+            layers.forEach((ly, kIdx) => {
+                ly.bottomNodes.forEach((pt, nIdx) => {
+                    const sc = worldToScreen(pt.x, pt.y);
+                    const isHovered = hoveredHandle && hoveredHandle.type === 'layer' && hoveredHandle.layerIdx === kIdx && hoveredHandle.nodeIdx === nIdx;
+
+                    ctx.fillStyle = isHovered ? "#ffffff" : ly.handleColor;
+                    ctx.beginPath();
+                    ctx.arc(sc.x, sc.y, isHovered ? 8 : 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = "#090d16";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                });
+            });
+
+            // 3. Water Table Handles (Cyan)
             waterNodes.forEach((pt, idx) => {
                 const sc = worldToScreen(pt.x, pt.y);
-                const isHovered = hoveredHandle && hoveredHandle.type === 'water' && hoveredHandle.index === idx;
+                const isHovered = hoveredHandle && hoveredHandle.type === 'water' && hoveredHandle.nodeIdx === idx;
 
                 ctx.fillStyle = isHovered ? "#ffffff" : "#38bdf8";
                 ctx.beginPath();
@@ -779,9 +1067,12 @@
                 ctx.lineWidth = 2;
                 ctx.stroke();
             });
+
+            // Draw Edge Metric Rulers
+            renderRulers();
         }
 
-        // Mouse & Touch Interactivity
+        // Mouse Interactivity
         function getCanvasMousePos(e) {
             const rect = canvas.getBoundingClientRect();
             return {
@@ -792,16 +1083,27 @@
 
         function findHandleNear(sx, sy) {
             const radius = 12;
+
             for (let i = 0; i < groundNodes.length; i++) {
                 const sc = worldToScreen(groundNodes[i].x, groundNodes[i].y);
                 if (Math.hypot(sc.x - sx, sc.y - sy) <= radius) {
-                    return { type: 'ground', index: i };
+                    return { type: 'ground', layerIdx: 0, nodeIdx: i };
                 }
             }
+
+            for (let k = 0; k < layers.length; k++) {
+                for (let i = 0; i < layers[k].bottomNodes.length; i++) {
+                    const sc = worldToScreen(layers[k].bottomNodes[i].x, layers[k].bottomNodes[i].y);
+                    if (Math.hypot(sc.x - sx, sc.y - sy) <= radius) {
+                        return { type: 'layer', layerIdx: k, nodeIdx: i };
+                    }
+                }
+            }
+
             for (let i = 0; i < waterNodes.length; i++) {
                 const sc = worldToScreen(waterNodes[i].x, waterNodes[i].y);
                 if (Math.hypot(sc.x - sx, sc.y - sy) <= radius) {
-                    return { type: 'water', index: i };
+                    return { type: 'water', layerIdx: 0, nodeIdx: i };
                 }
             }
             return null;
@@ -809,6 +1111,8 @@
 
         canvas.addEventListener('mousedown', (e) => {
             const pos = getCanvasMousePos(e);
+            if (pos.x < RULER_THICKNESS || pos.y > height - RULER_THICKNESS) return;
+
             const handle = findHandleNear(pos.x, pos.y);
 
             if (handle) {
@@ -825,11 +1129,14 @@
             if (draggedHandle) {
                 const wPos = screenToWorld(pos.x, pos.y);
                 if (draggedHandle.type === 'ground') {
-                    groundNodes[draggedHandle.index].x = Math.max(0, wPos.x);
-                    groundNodes[draggedHandle.index].y = Math.max(0, wPos.y);
+                    groundNodes[draggedHandle.nodeIdx].x = Math.max(0, wPos.x);
+                    groundNodes[draggedHandle.nodeIdx].y = Math.max(0, wPos.y);
+                } else if (draggedHandle.type === 'layer') {
+                    layers[draggedHandle.layerIdx].bottomNodes[draggedHandle.nodeIdx].x = Math.max(0, wPos.x);
+                    layers[draggedHandle.layerIdx].bottomNodes[draggedHandle.nodeIdx].y = wPos.y;
                 } else if (draggedHandle.type === 'water') {
-                    waterNodes[draggedHandle.index].x = Math.max(0, wPos.x);
-                    waterNodes[draggedHandle.index].y = Math.max(0, wPos.y);
+                    waterNodes[draggedHandle.nodeIdx].x = Math.max(0, wPos.x);
+                    waterNodes[draggedHandle.nodeIdx].y = Math.max(0, wPos.y);
                 }
                 recalculate();
             } else if (isPanning) {
@@ -841,7 +1148,7 @@
                 render();
             } else {
                 const handle = findHandleNear(pos.x, pos.y);
-                if (handle !== hoveredHandle) {
+                if (JSON.stringify(handle) !== JSON.stringify(hoveredHandle)) {
                     hoveredHandle = handle;
                     canvas.style.cursor = handle ? 'pointer' : 'grab';
                     render();
@@ -862,7 +1169,7 @@
 
             const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
             zoomScale *= zoomFactor;
-            zoomScale = Math.max(5, Math.min(120, zoomScale));
+            zoomScale = Math.max(6, Math.min(120, zoomScale));
 
             panX = pos.x - wBefore.x * zoomScale;
             panY = height - pos.y - wBefore.y * zoomScale;
