@@ -15,6 +15,7 @@
             --accent-emerald: #10b981;
             --accent-amber: #f59e0b;
             --accent-red: #ef4444;
+            --accent-pink: #ec4899;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -47,8 +48,8 @@
         .section-label { font-family: var(--font-code); font-size: 0.75rem; text-transform: uppercase; color: var(--accent-amber); letter-spacing: 1px; margin-top: 0.2rem; }
 
         .control-group { display: flex; flex-direction: column; gap: 0.3rem; }
-        .control-group label { font-size: 0.78rem; font-family: var(--font-code); color: var(--text-muted); display: flex; justify-content: space-between; }
-        .control-group label span.val { color: var(--accent-cyan); font-weight: 600; }
+        .control-group label { font-size: 0.82rem; font-family: 'Inter', sans-serif; color: var(--text-main); display: flex; justify-content: space-between; }
+        .control-group label span.val { color: var(--accent-cyan); font-family: var(--font-code); font-weight: 600; }
 
         input[type="range"] {
             width: 100%; accent-color: var(--accent-amber); background: rgba(255,255,255,0.05); border-radius: 4px; height: 5px;
@@ -73,7 +74,7 @@
             background: var(--bg-card); border: 1px solid var(--border-subtle);
             border-radius: 10px; padding: 1rem 1.2rem; font-family: var(--font-code); font-size: 0.8rem;
             display: flex; flex-direction: column; gap: 0.5rem; backdrop-filter: blur(8px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 280px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 290px;
         }
         .hud-stat { display: flex; justify-content: space-between; gap: 1.5rem; }
         .hud-stat .label { color: var(--text-muted); }
@@ -112,12 +113,12 @@
 
             <div class="section-label">Slope Profile Geometry</div>
             <div class="control-group">
-                <label>Slope Height $H$ (m): <span id="valH" class="val">12.0</span></label>
+                <label>Slope Height <i>H</i> (m): <span id="valH" class="val">12.0</span></label>
                 <input type="range" id="sliderH" min="5" max="30" step="0.5" value="12" oninput="recalculate()">
             </div>
 
             <div class="control-group">
-                <label>Slope Angle $\beta$ (&deg;): <span id="valBeta" class="val">40</span></label>
+                <label>Slope Angle <i>&beta;</i> (&deg;): <span id="valBeta" class="val">40</span></label>
                 <input type="range" id="sliderBeta" min="20" max="70" value="40" oninput="recalculate()">
             </div>
 
@@ -128,33 +129,33 @@
 
             <div class="section-label">Geotechnical Soil Properties</div>
             <div class="control-group">
-                <label>Cohesion $c'$ (kPa): <span id="valC" class="val">15</span></label>
+                <label>Effective Cohesion <i>c</i>' (kPa): <span id="valC" class="val">15</span></label>
                 <input type="range" id="sliderC" min="0" max="50" value="15" oninput="recalculate()">
             </div>
 
             <div class="control-group">
-                <label>Friction Angle $\phi'$ (&deg;): <span id="valPhi" class="val">25</span></label>
+                <label>Friction Angle <i>&phi;</i>' (&deg;): <span id="valPhi" class="val">25</span></label>
                 <input type="range" id="sliderPhi" min="10" max="45" value="25" oninput="recalculate()">
             </div>
 
             <div class="control-group">
-                <label>Unit Weight $\gamma$ (kN/m$^3$): <span id="valGamma" class="val">19.0</span></label>
+                <label>Unit Weight <i>&gamma;</i> (kN/m&sup3;): <span id="valGamma" class="val">19.0</span></label>
                 <input type="range" id="sliderGamma" min="14" max="26" step="0.5" value="19" oninput="recalculate()">
             </div>
 
-            <div class="section-label">Hydrology & Loading</div>
+            <div class="section-label">Hydrology &amp; Loading</div>
             <div class="control-group">
-                <label>Water Table Depth $h_w$ (m): <span id="valWater" class="val">4.0</span></label>
+                <label>Water Table Depth <i>h</i><sub>w</sub> (m): <span id="valWater" class="val">4.0</span></label>
                 <input type="range" id="sliderWater" min="0" max="15" step="0.5" value="4" oninput="recalculate()">
             </div>
 
             <div class="control-group">
-                <label>Pore Pressure Ratio $r_u$: <span id="valRu" class="val">0.20</span></label>
+                <label>Pore Pressure Ratio <i>r</i><sub>u</sub>: <span id="valRu" class="val">0.20</span></label>
                 <input type="range" id="sliderRu" min="0.0" max="0.5" step="0.05" value="0.20" oninput="recalculate()">
             </div>
 
             <div class="control-group">
-                <label>Crest Surcharge $q$ (kPa): <span id="valSurcharge" class="val">10</span></label>
+                <label>Crest Surcharge <i>q</i> (kPa): <span id="valSurcharge" class="val">10</span></label>
                 <input type="range" id="sliderSurcharge" min="0" max="100" value="10" oninput="recalculate()">
             </div>
 
@@ -171,24 +172,24 @@
 
             <!-- HUD Overlay -->
             <div class="hud-overlay">
-                <div class="hud-stat"><span class="label">Minimum Factor of Safety ($FS$):</span> <span id="hudFS" class="value" style="font-size:1.1rem; color:var(--accent-emerald);">1.42</span></div>
+                <div class="hud-stat"><span class="label">Factor of Safety (FS):</span> <span id="hudFS" class="value" style="font-size:1.1rem; color:var(--accent-emerald);">1.42</span></div>
                 <div id="statusPill" class="status-pill status-stable">Stable Slope</div>
                 <hr style="border:0; border-top:1px solid var(--border-subtle); margin:0.3rem 0;">
-                <div class="hud-stat"><span class="label">Driving Shear Force ($\sum D_i$):</span> <span id="hudDriving" class="value">420.5 kN/m</span></div>
-                <div class="hud-stat"><span class="label">Resisting Shear Force ($\sum R_i$):</span> <span id="hudResisting" class="value">597.1 kN/m</span></div>
-                <div class="hud-stat"><span class="label">Critical Circle Center ($x, y$):</span> <span id="hudCenter" class="value">(18.2 m, 22.4 m)</span></div>
-                <div class="hud-stat"><span class="label">Critical Circle Radius ($R$):</span> <span id="hudRadius" class="value">16.8 m</span></div>
-                <div class="hud-stat"><span class="label">Evaluated Slip Surfaces:</span> <span id="hudArcs" class="value">320</span></div>
+                <div class="hud-stat"><span class="label">Driving Shear Force (&Sigma;D<sub>i</sub>):</span> <span id="hudDriving" class="value">420.5 kN/m</span></div>
+                <div class="hud-stat"><span class="label">Resisting Shear Force (&Sigma;R<sub>i</sub>):</span> <span id="hudResisting" class="value">597.1 kN/m</span></div>
+                <div class="hud-stat"><span class="label">Critical Center (x<sub>c</sub>, y<sub>c</sub>):</span> <span id="hudCenter" class="value">(18.2 m, 22.4 m)</span></div>
+                <div class="hud-stat"><span class="label">Critical Radius (R):</span> <span id="hudRadius" class="value">16.8 m</span></div>
+                <div class="hud-stat"><span class="label">Evaluated Slip Arcs:</span> <span id="hudArcs" class="value">320</span></div>
             </div>
 
             <!-- Color Scale Legend -->
             <div class="color-legend">
-                <span>Factor of Safety ($FS$) Contour Spectrum</span>
+                <span>Factor of Safety (FS) Spectrum</span>
                 <div class="legend-bar"></div>
                 <div class="legend-labels">
                     <span>&lt; 1.0 (Failure)</span>
-                    <span>1.0 - 1.5</span>
-                    <span>&gt; 1.5 (Stable)</span>
+                    <span>1.0 - 1.3</span>
+                    <span>&gt; 1.3 (Stable)</span>
                 </div>
             </div>
         </div>
@@ -257,21 +258,18 @@
             const betaRad = (betaDeg * Math.PI) / 180;
             const phiRad = (phiDeg * Math.PI) / 180;
 
-            // Geometry Points (in meters)
             const toeX = 10.0;
             const toeY = 5.0;
             const topX = toeX + H / Math.tan(betaRad);
             const topY = toeY + H;
             const crestEndX = topX + crestW;
 
-            // Elevation profile function y = f(x)
             function getGroundElevation(x) {
                 if (x <= toeX) return toeY;
                 if (x >= topX) return topY;
                 return toeY + (x - toeX) * Math.tan(betaRad);
             }
 
-            // Grid Search for Slip Circle Centers & Radii
             const gridMinX = toeX - 5;
             const gridMaxX = topX + 10;
             const gridMinY = topY + 2;
@@ -283,14 +281,12 @@
             for (let cx = gridMinX; cx <= gridMaxX; cx += stepX) {
                 for (let cy = gridMinY; cy <= gridMaxY; cy += stepY) {
 
-                    // Radii range passing near toe to crest
                     const Rmin = Math.hypot(cx - toeX, cy - toeY) - 2;
                     const Rmax = Math.hypot(cx - crestEndX, cy - topY) + 5;
 
                     for (let R = Rmin; R <= Rmax; R += 2.0) {
                         if (R <= 0) continue;
 
-                        // Find entry & exit intersections of circle with ground
                         let xEntry = -1, xExit = -1;
 
                         for (let x = toeX - 8; x <= crestEndX + 5; x += 0.25) {
@@ -308,48 +304,56 @@
 
                         if (xEntry < 0 || xExit <= xEntry + 2.0) continue;
 
-                        // Ordinary Method of Slices (N = 25 Slices)
-                        const N = 25;
+                        const N = 20; // 20 Slices
                         const sliceW = (xExit - xEntry) / N;
 
                         let totalDriving = 0;
                         let totalResisting = 0;
+                        const slices = [];
 
                         for (let i = 0; i < N; i++) {
+                            const xL = xEntry + i * sliceW;
+                            const xR = xEntry + (i + 1) * sliceW;
                             const xMid = xEntry + (i + 0.5) * sliceW;
-                            const yGround = getGroundElevation(xMid);
 
-                            const term = R * R - (xMid - cx) * (xMid - cx);
-                            if (term <= 0) continue;
+                            const yGL = getGroundElevation(xL);
+                            const yGR = getGroundElevation(xR);
+                            const yGMid = getGroundElevation(xMid);
 
-                            const yArc = cy - Math.sqrt(term);
-                            const hSlice = yGround - yArc;
+                            const termMid = R * R - (xMid - cx) * (xMid - cx);
+                            if (termMid <= 0) continue;
+
+                            const yArcMid = cy - Math.sqrt(termMid);
+                            const hSlice = yGMid - yArcMid;
                             if (hSlice <= 0) continue;
 
-                            // Base Inclination Alpha
-                            const alpha = Math.atan2(xMid - cx, cy - yArc);
+                            const alpha = Math.atan2(xMid - cx, cy - yArcMid);
 
-                            // Weight & Surcharge
                             let sliceWeight = gamma * sliceW * hSlice;
-                            if (xMid >= topX) sliceWeight += surcharge * sliceW; // Add Surcharge on crest
+                            if (xMid >= topX) sliceWeight += surcharge * sliceW;
 
-                            // Pore water pressure u = ru * gamma * hSlice
                             const u = ru * gamma * hSlice;
                             const sliceLength = sliceW / Math.cos(alpha);
 
-                            // Forces
                             const driving = sliceWeight * Math.sin(alpha);
                             const normalEffective = Math.max(0, sliceWeight * Math.cos(alpha) - u * sliceLength);
                             const resisting = cPrime * sliceLength + normalEffective * Math.tan(phiRad);
 
                             totalDriving += driving;
                             totalResisting += resisting;
+
+                            const termL = R * R - (xL - cx) * (xL - cx);
+                            const termR = R * R - (xR - cx) * (xR - cx);
+
+                            const yArcL = termL > 0 ? cy - Math.sqrt(termL) : yGL;
+                            const yArcR = termR > 0 ? cy - Math.sqrt(termR) : yGR;
+
+                            slices.push({ xL, xR, yGL, yGR, yArcL, yArcR });
                         }
 
                         if (totalDriving > 0) {
                             const FS = totalResisting / totalDriving;
-
-                            const arcData = { cx, cy, R, FS, totalDriving, totalResisting, xEntry, xExit };
+                            const arcData = { cx, cy, R, FS, totalDriving, totalResisting, xEntry, xExit, slices };
                             evaluatedArcs.push(arcData);
 
                             if (FS < minFS) {
@@ -361,7 +365,6 @@
                 }
             }
 
-            // Update HUD Stats
             if (criticalArc) {
                 const fsVal = criticalArc.FS;
                 const hudFS = document.getElementById('hudFS');
@@ -402,7 +405,6 @@
             const topY = toeY + H;
             const crestEndX = topX + crestW;
 
-            // World to Screen Coordinate Scaling
             const scale = Math.min((width - 80) / (crestEndX + 10), (height - 100) / (topY + 15));
             const originX = 40;
             const originY = height - 50;
@@ -420,7 +422,7 @@
                 ctx.stroke();
             }
 
-            // Draw Evaluated Arcs Spectrum
+            // Draw Evaluated Trial Failure Arcs Heatmap
             evaluatedArcs.forEach(arc => {
                 let strokeColor;
                 if (arc.FS < 1.0) strokeColor = "rgba(239, 68, 68, 0.08)";
@@ -434,8 +436,14 @@
                 ctx.stroke();
             });
 
-            // Fill Soil Body
-            ctx.fillStyle = "rgba(30, 41, 59, 0.85)";
+            // 1. Unsaturated Soil Body (Top Layer)
+            const waterY = Math.max(0, topY - waterDepth);
+
+            const soilGrad = ctx.createLinearGradient(0, toScreenY(topY), 0, toScreenY(0));
+            soilGrad.addColorStop(0, "rgba(180, 110, 50, 0.85)"); // Terracotta Unsaturated
+            soilGrad.addColorStop(1, "rgba(120, 65, 25, 0.95)");
+
+            ctx.fillStyle = soilGrad;
             ctx.beginPath();
             ctx.moveTo(toScreenX(0), toScreenY(0));
             ctx.lineTo(toScreenX(0), toScreenY(toeY));
@@ -446,8 +454,43 @@
             ctx.closePath();
             ctx.fill();
 
-            // Slope Outline
+            // 2. Saturated Soil Layer (Below Phreatic Water Table)
+            ctx.fillStyle = "rgba(20, 60, 85, 0.80)"; // Moist/Saturated Soil Zone
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(0), toScreenY(0));
+            ctx.lineTo(toScreenX(0), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(0));
+            ctx.closePath();
+            ctx.fill();
+
+            // 3. Phreatic Water Table Dashed Line & Translucent Water Overlay
+            ctx.fillStyle = "rgba(56, 189, 248, 0.12)";
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(0), toScreenY(0));
+            ctx.lineTo(toScreenX(0), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(0));
+            ctx.closePath();
+            ctx.fill();
+
             ctx.strokeStyle = "#38bdf8";
+            ctx.setLineDash([8, 5]);
+            ctx.lineWidth = 2.0;
+            ctx.beginPath();
+            ctx.moveTo(toScreenX(0), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
+            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
+            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset line dash
+
+            // Slope Surface Profile Outline
+            ctx.strokeStyle = "#f8fafc";
             ctx.lineWidth = 2.5;
             ctx.beginPath();
             ctx.moveTo(toScreenX(0), toScreenY(toeY));
@@ -456,49 +499,65 @@
             ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(topY));
             ctx.stroke();
 
-            // Phreatic Water Table Line
-            const waterY = Math.max(0, topY - waterDepth);
-            ctx.strokeStyle = "rgba(56, 189, 248, 0.7)";
-            ctx.setLineDash([6, 4]);
-            ctx.lineWidth = 1.8;
-            ctx.beginPath();
-            ctx.moveTo(toScreenX(0), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(toeX), toScreenY(toeY - 0.5));
-            ctx.lineTo(toScreenX(topX), toScreenY(waterY));
-            ctx.lineTo(toScreenX(crestEndX + 10), toScreenY(waterY));
-            ctx.stroke();
-            ctx.setLineDash([]);
-
             // Surcharge Load Visualization
             if (surcharge > 0) {
-                ctx.strokeStyle = "#ec4899";
-                ctx.fillStyle = "rgba(236, 72, 153, 0.2)";
+                const surchargeColor = "#ec4899";
+                ctx.strokeStyle = surchargeColor;
+                ctx.fillStyle = "rgba(236, 72, 153, 0.18)";
                 ctx.lineWidth = 1.5;
 
-                for (let sx = topX + 1; sx <= crestEndX; sx += 2.5) {
+                // Surcharge Block on Crest
+                ctx.fillRect(toScreenX(topX), toScreenY(topY + 2.0), crestW * scale, 2.0 * scale);
+                ctx.strokeRect(toScreenX(topX), toScreenY(topY + 2.0), crestW * scale, 2.0 * scale);
+
+                // Load Arrows
+                for (let sx = topX + 1.5; sx <= crestEndX - 0.5; sx += 3.0) {
                     const scX = toScreenX(sx);
                     const scY = toScreenY(topY);
                     ctx.beginPath();
-                    ctx.moveTo(scX, scY - 18);
+                    ctx.moveTo(scX, scY - 22);
                     ctx.lineTo(scX, scY);
                     ctx.stroke();
-                    // Arrowhead
+
                     ctx.beginPath();
                     ctx.arc(scX, scY, 2.5, 0, Math.PI * 2);
+                    ctx.fillStyle = surchargeColor;
                     ctx.fill();
                 }
+
+                // Surcharge Label
+                ctx.font = "600 11px 'Fira Code', monospace";
+                ctx.fillStyle = surchargeColor;
+                ctx.fillText(`q = ${surcharge} kPa`, toScreenX(topX + crestW / 2 - 3), toScreenY(topY + 3.2));
             }
 
-            // Highlight Critical Failure Slip Arc
-            if (criticalArc) {
+            // Render Method of Slices and Critical Failure Mass
+            if (criticalArc && criticalArc.slices) {
                 const fs = criticalArc.FS;
                 let arcColor = fs < 1.0 ? "#ef4444" : (fs <= 1.3 ? "#f59e0b" : "#10b981");
+                let fillMassColor = fs < 1.0 ? "rgba(239, 68, 68, 0.35)" : (fs <= 1.3 ? "rgba(245, 158, 11, 0.30)" : "rgba(16, 185, 129, 0.25)");
 
-                // Glowing Arc
+                // Draw Slice Boundaries
+                criticalArc.slices.forEach(sl => {
+                    ctx.fillStyle = fillMassColor;
+                    ctx.beginPath();
+                    ctx.moveTo(toScreenX(sl.xL), toScreenY(sl.yGL));
+                    ctx.lineTo(toScreenX(sl.xR), toScreenY(sl.yGR));
+                    ctx.lineTo(toScreenX(sl.xR), toScreenY(sl.yArcR));
+                    ctx.lineTo(toScreenX(sl.xL), toScreenY(sl.yArcL));
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                });
+
+                // Glowing Critical Slip Circle Arc
                 ctx.strokeStyle = arcColor;
                 ctx.lineWidth = 4;
                 ctx.shadowColor = arcColor;
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 14;
 
                 ctx.beginPath();
                 ctx.arc(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy), criticalArc.R * scale, 0, Math.PI * 2);
@@ -506,18 +565,31 @@
 
                 ctx.shadowBlur = 0; // Reset glow
 
-                // Center Point Marker
+                // Center Rotation Radius Lines
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+                ctx.lineWidth = 1.2;
+                ctx.setLineDash([4, 4]);
+
+                ctx.beginPath();
+                ctx.moveTo(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy));
+                ctx.lineTo(toScreenX(criticalArc.xEntry), toScreenY(toeY));
+                ctx.moveTo(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy));
+                ctx.lineTo(toScreenX(criticalArc.xExit), toScreenY(topY));
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Rotation Center Point Marker
                 ctx.fillStyle = arcColor;
                 ctx.beginPath();
-                ctx.arc(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy), 5, 0, Math.PI * 2);
+                ctx.arc(toScreenX(criticalArc.cx), toScreenY(criticalArc.cy), 6, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = "#ffffff";
-                ctx.lineWidth = 1.5;
+                ctx.lineWidth = 2;
                 ctx.stroke();
             }
         }
 
-        // Initialize
+        // Initialize App
         resizeCanvas();
     </script>
 </body>
