@@ -18,6 +18,7 @@
             --accent-pink: #ec4899;
             --accent-purple: #a855f7;
             --accent-red: #ef4444;
+            --accent-teal: #14b8a6;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
             --border-glow: rgba(56, 189, 248, 0.25);
@@ -74,11 +75,8 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .badge-model { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); }
+        .badge-modflow { background: rgba(20, 184, 166, 0.18); color: var(--accent-teal); border: 1px solid rgba(20, 184, 166, 0.4); }
         .badge-blog { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-code { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
-        .badge-transport { background: rgba(236, 72, 153, 0.15); color: var(--accent-pink); border: 1px solid rgba(236, 72, 153, 0.3); }
-        .badge-ghg { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
         .badge-slope { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.4); }
 
         /* Card Layouts */
@@ -149,7 +147,7 @@
         <div class="hero-text">
             <h1>Dr. Kunwar Mrityunjai Sharma</h1>
             <h2>Engineering Geologist, Hydrogeologist & Subsurface Scientist</h2>
-            <p>Ph.D. researcher specializing in engineering geology, slope stability assessments, hydrogeology, process-based subsurface numerical modeling, Channel Network Models (CNM), and custom scientific Python tool development (<code>pychan3d</code>) for geotechnical safety and deep geological repositories.</p>
+            <p>Ph.D. researcher specializing in engineering geology, hydrogeology, MODFLOW-USG / USG-Transport numerical modeling, Connected Linear Networks (CLN), density-dependent flow, PFAS transport, and custom scientific Python pipelines (<code>pychan3d</code>) for water resources and safety assessments.</p>
             
             <div class="btn-group">
                 <a href="#models" class="btn btn-primary"><i class="fa-solid fa-flask"></i> Explore Models</a>
@@ -175,25 +173,25 @@
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-slope"><i class="fa-solid fa-hill-rockslide"></i> Geotechnical Simulator</span>
+                        <span class="badge badge-modflow"><i class="fa-solid fa-network-wired"></i> USGT v2.8.0 Simulator</span>
                         <span class="card-date">August 2026</span>
                     </div>
-                    <h3>Slope Stability & Critical Failure Assessor</h3>
-                    <p>Interactive Limit Equilibrium Method (Fellenius / Method of Slices) calculator to evaluate Factor of Safety ($FS$), critical slip arcs, pore water ratios, and crest surcharges on custom geometries.</p>
+                    <h3>MODFLOW-USG & USG-Transport 2.8.0 Simulator</h3>
+                    <p>Advanced process-based simulator incorporating unstructured grids, Connected Linear Networks (CLN), PFAS precursor chain decay, Borehole Heat Exchangers (BHE), and density-dependent flow.</p>
                 </div>
-                <a href="slope-stability-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Slope Assessor</a>
+                <a href="modflow-usg-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch USG Simulator</a>
             </div>
 
             <div class="card">
                 <div>
                     <div class="card-top">
-                        <span class="badge badge-transport"><i class="fa-solid fa-droplet"></i> Hydro Model</span>
+                        <span class="badge badge-slope"><i class="fa-solid fa-hill-rockslide"></i> Geotechnical Simulator</span>
                         <span class="card-date">August 2026</span>
                     </div>
-                    <h3>2D Aquifer Contaminant Plume Model</h3>
-                    <p>Interactive 2D hydrogeological simulator for point-source contaminant transport, advection-dispersion plume evolution, extraction wells, and boundary head customization.</p>
+                    <h3>Slope Stability & Critical Failure Assessor</h3>
+                    <p>Limit Equilibrium Method calculator evaluating Factor of Safety ($FS$), critical slip arcs, and multi-layer soil stratigraphy with 1:1 metric edge rulers.</p>
                 </div>
-                <a href="transport-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Simulation</a>
+                <a href="slope-stability-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Slope Model</a>
             </div>
 
             <!-- Dynamic Blog Card (Automatically populated from Notion) -->
@@ -217,16 +215,25 @@
         <h2 class="section-title"><i class="fa-solid fa-flask"></i> Dedicated Computational Process Models</h2>
 
         <div class="grid-models">
-            <!-- 1. Slope Stability Assessment Model -->
+            <!-- 1. MODFLOW-USG / USG-Transport 2.8.0 Model -->
             <div class="card">
                 <div>
-                    <h3><i class="fa-solid fa-hill-rockslide" style="color: var(--accent-amber);"></i> Geotechnical Slope Stability & Failure Assessor</h3>
-                    <p>Computes Factor of Safety ($FS$) across user-defined slope geometries, cohesive-frictional soil layers ($c', \phi'$), pore water pressure ($r_u$), and crest surcharges using Ordinary Method of Slices grid search.</p>
+                    <h3><i class="fa-solid fa-diagram-project" style="color: var(--accent-teal);"></i> MODFLOW-USG / USG-Transport v2.8.0 Simulator</h3>
+                    <p>Simulates advanced groundwater flow &amp; transport using unstructured Control Volume Finite Difference (CVFD) grids, Connected Linear Networks (CLN), PFAS precursor chain decay, geothermal BHE loops, Richards vadose flow, and IMS adaptive matrix solvers.</p>
+                </div>
+                <a href="modflow-usg-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch MODFLOW-USG Model</a>
+            </div>
+
+            <!-- 2. Slope Stability Model -->
+            <div class="card">
+                <div>
+                    <h3><i class="fa-solid fa-hill-rockslide" style="color: var(--accent-amber);"></i> Slope Stability & Multi-Layer Stratigraphy Assessor</h3>
+                    <p>Computes Factor of Safety ($FS$) across user-defined multi-layer soil/rock profiles, cohesive-frictional layers ($c', \phi'$), pore water pressure ($r_u$), and crest surcharges with Ordinary Method of Slices.</p>
                 </div>
                 <a href="slope-stability-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Slope Model</a>
             </div>
 
-            <!-- 2. KBS-3 Canister Spacing Model -->
+            <!-- 3. KBS-3 Canister Spacing Model -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-cubes" style="color: var(--accent-red);"></i> KBS-3 DGR Canister Spacing & Thermal Sandbox</h3>
@@ -235,7 +242,7 @@
                 <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Canister Spacing Model</a>
             </div>
 
-            <!-- 3. Soil-Atmosphere Carbon Model -->
+            <!-- 4. Soil-Atmosphere Carbon Model -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-wind" style="color: var(--accent-purple);"></i> Soil-Atmosphere Carbon & GHG Flux Model</h3>
@@ -244,7 +251,7 @@
                 <a href="ghg-atmosphere-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
             </div>
 
-            <!-- 4. 2D Aquifer Contaminant Transport -->
+            <!-- 5. 2D Aquifer Contaminant Transport -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-droplet" style="color: var(--accent-pink);"></i> 2D Aquifer Contaminant Plume Model</h3>
@@ -253,7 +260,7 @@
                 <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Transport Model</a>
             </div>
 
-            <!-- 5. 2D Channel Network Model -->
+            <!-- 6. 2D Channel Network Model -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-network-wired" style="color: var(--accent-cyan);"></i> 2D Channel Network Model (CNM)</h3>
@@ -262,7 +269,7 @@
                 <a href="cnm-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch CNM Model</a>
             </div>
 
-            <!-- 6. Matrix Infiltration Dynamics -->
+            <!-- 7. Matrix Infiltration Dynamics -->
             <div class="card">
                 <div>
                     <h3><i class="fa-solid fa-cloud-rain" style="color: var(--accent-blue);"></i> Matrix Infiltration Dynamics</h3>
@@ -283,7 +290,7 @@
                 <div class="timeline-title">Senior Scientist</div>
                 <div class="timeline-meta">VTT Technical Research Centre of Finland | May 2023 – Dec 2025</div>
                 <ul class="timeline-bullets">
-                    <li>Led numerical flow, slope stability, and solute transport modeling in rock masses and engineered barrier caps for national safety frameworks.</li>
+                    <li>Led numerical groundwater flow, MODFLOW-USG transport, and slope stability modeling in rock masses and engineered barrier caps for national safety frameworks.</li>
                     <li>Developed customized Python packages to convert 3D fracture networks into calculation matrices and integrated finite-element modeling with GoldSim.</li>
                 </ul>
             </div>
