@@ -30,7 +30,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
 
-        /* COMSOL-Style Top Header Bar */
+        /* Top Header Bar */
         header.comsol-header {
             background: var(--bg-header); border-bottom: 1px solid var(--border-subtle);
             height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 30;
@@ -42,7 +42,7 @@
 
         .study-controls { display: flex; align-items: center; gap: 6px; }
         .btn-study {
-            padding: 0.35rem 0.8rem; border-radius: 5px; font-size: 0.78rem; font-weight: 600;
+            padding: 0.35rem 0.75rem; border-radius: 5px; font-size: 0.76rem; font-weight: 600;
             border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main);
             cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
         }
@@ -53,24 +53,18 @@
         .btn-study.restart:hover { background: var(--accent-amber); color: #090d16; }
 
         /* Ribbon Toolbar */
-        .ribbon-bar {
-            background: #0d1322; border-bottom: 1px solid var(--border-subtle);
-            display: flex; flex-direction: column; z-index: 25;
-        }
+        .ribbon-bar { background: #0d1322; border-bottom: 1px solid var(--border-subtle); display: flex; flex-direction: column; z-index: 25; }
         .ribbon-tabs { display: flex; background: #070a12; padding-left: 0.5rem; border-bottom: 1px solid var(--border-subtle); }
-        .ribbon-tab {
-            padding: 0.4rem 1rem; font-size: 0.78rem; font-weight: 600; color: var(--text-muted);
-            cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
-        }
+        .ribbon-tab { padding: 0.4rem 1rem; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; }
         .ribbon-tab:hover { color: var(--text-main); }
         .ribbon-tab.active { color: var(--accent-teal); border-bottom-color: var(--accent-teal); background: #0d1322; }
 
-        .ribbon-tools-content { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 1rem; overflow-x: auto; }
-        .ribbon-group { display: flex; align-items: center; gap: 6px; padding-right: 1rem; border-right: 1px solid var(--border-subtle); }
+        .ribbon-tools-content { display: flex; align-items: center; gap: 0.8rem; padding: 0.45rem 1rem; overflow-x: auto; }
+        .ribbon-group { display: flex; align-items: center; gap: 6px; padding-right: 0.8rem; border-right: 1px solid var(--border-subtle); }
         .ribbon-group-title { font-family: var(--font-code); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
 
         .btn-ribbon {
-            padding: 0.45rem 0.7rem; border-radius: 5px; font-size: 0.75rem; font-weight: 600;
+            padding: 0.4rem 0.65rem; border-radius: 5px; font-size: 0.75rem; font-weight: 600;
             border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02); color: var(--text-muted);
             cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;
         }
@@ -78,17 +72,11 @@
         .btn-ribbon.active { background: rgba(20, 184, 166, 0.2); border-color: var(--accent-teal); color: var(--accent-teal); }
 
         /* Main Workstation Layout */
-        .workstation-grid {
-            display: grid; grid-template-columns: 310px 1fr 310px; grid-template-rows: 1fr 26px;
-            flex: 1; height: calc(100vh - 90px); overflow: hidden;
-        }
+        .workstation-grid { display: grid; grid-template-columns: 310px 1fr 310px; grid-template-rows: 1fr 26px; flex: 1; height: calc(100vh - 90px); overflow: hidden; }
 
-        /* Left COMSOL Tree & Properties Panel */
-        .tree-panel {
-            background: var(--bg-panel); border-right: 1px solid var(--border-subtle);
-            display: flex; flex-direction: column; overflow-y: auto; z-index: 10;
-        }
-        .panel-section { border-bottom: 1px solid var(--border-subtle); padding: 0.9rem; }
+        /* Left Panel */
+        .tree-panel { background: var(--bg-panel); border-right: 1px solid var(--border-subtle); display: flex; flex-direction: column; overflow-y: auto; z-index: 10; }
+        .panel-section { border-bottom: 1px solid var(--border-subtle); padding: 0.85rem; }
         .panel-header { font-family: var(--font-code); font-size: 0.73rem; font-weight: 700; text-transform: uppercase; color: var(--accent-teal); letter-spacing: 1px; margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between; }
 
         .tree-node { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
@@ -96,20 +84,20 @@
         .tree-node.active { background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); font-weight: 600; }
         .tree-indent { margin-left: 1rem; border-left: 1px dashed rgba(255,255,255,0.1); padding-left: 0.5rem; }
 
-        .prop-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.7rem; }
+        .prop-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.65rem; }
         .prop-group label { font-size: 0.78rem; color: var(--text-main); display: flex; justify-content: space-between; }
         .prop-group label span.val { color: var(--accent-cyan); font-family: var(--font-code); font-weight: 600; }
 
         input[type="range"] { width: 100%; accent-color: var(--accent-teal); background: rgba(255,255,255,0.05); border-radius: 4px; height: 5px; }
         select, input[type="number"] { width: 100%; background: #070a12; border: 1px solid var(--border-subtle); color: var(--text-main); font-family: var(--font-code); font-size: 0.78rem; padding: 0.35rem 0.5rem; border-radius: 4px; }
 
-        /* Central Graphics Viewport */
-        .center-viewport { position: relative; background: #050811; display: grid; grid-template-rows: 32px 1fr 32px; grid-template-columns: 160px 1fr 160px; padding: 6px; gap: 6px; }
+        /* Central Viewport */
+        .center-viewport { position: relative; background: #050811; display: grid; grid-template-rows: 30px 1fr 30px; grid-template-columns: 150px 1fr 150px; padding: 6px; gap: 6px; }
 
         .region-banner {
             background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border-subtle); border-radius: 5px;
-            display: flex; align-items: center; justify-content: center; font-family: var(--font-code); font-size: 0.7rem;
-            font-weight: 600; color: var(--text-muted); padding: 0.3rem 0.6rem; backdrop-filter: blur(8px); text-align: center; gap: 6px; z-index: 2;
+            display: flex; align-items: center; justify-content: center; font-family: var(--font-code); font-size: 0.68rem;
+            font-weight: 600; color: var(--text-muted); padding: 0.25rem 0.5rem; backdrop-filter: blur(8px); text-align: center; gap: 6px; z-index: 2;
         }
         .region-banner.top { grid-column: 1 / -1; grid-row: 1; border-color: rgba(56, 189, 248, 0.25); color: var(--accent-cyan); }
         .region-banner.bottom { grid-column: 1 / -1; grid-row: 3; border-color: rgba(245, 158, 11, 0.25); color: var(--accent-amber); }
@@ -120,16 +108,16 @@
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
 
         /* Canvas Overlays */
-        .gis-north { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-code); font-size: 0.68rem; font-weight: 700; color: var(--accent-cyan); z-index: 5; pointer-events: none; }
-        .gis-scale { position: absolute; bottom: 1rem; left: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 5px; padding: 0.4rem 0.7rem; font-family: var(--font-code); font-size: 0.7rem; color: var(--text-muted); z-index: 5; pointer-events: none; }
-        .scale-bar-line { width: 90px; height: 4px; background: linear-gradient(90deg, var(--text-main) 50%, transparent 50%); border: 1px solid var(--text-muted); margin-top: 3px; }
+        .gis-north { position: absolute; top: 0.8rem; right: 0.8rem; width: 38px; height: 40px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-code); font-size: 0.65rem; font-weight: 700; color: var(--accent-cyan); z-index: 5; pointer-events: none; }
+        .gis-scale { position: absolute; bottom: 0.8rem; left: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 5px; padding: 0.35rem 0.65rem; font-family: var(--font-code); font-size: 0.68rem; color: var(--text-muted); z-index: 5; pointer-events: none; }
+        .scale-bar-line { width: 80px; height: 4px; background: linear-gradient(90deg, var(--text-main) 50%, transparent 50%); border: 1px solid var(--text-muted); margin-top: 2px; }
 
-        .tool-banner { position: absolute; top: 1rem; left: 1rem; background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 5px; padding: 0.45rem 0.8rem; font-family: var(--font-code); font-size: 0.75rem; color: var(--accent-teal); backdrop-filter: blur(8px); z-index: 5; pointer-events: none; }
+        .tool-banner { position: absolute; top: 0.8rem; left: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 5px; padding: 0.4rem 0.75rem; font-family: var(--font-code); font-size: 0.73rem; color: var(--accent-teal); backdrop-filter: blur(8px); z-index: 5; pointer-events: none; }
 
-        /* Right Inspector & Results Panel */
+        /* Right Inspector Panel */
         .inspector-panel { background: var(--bg-panel); border-left: 1px solid var(--border-subtle); display: flex; flex-direction: column; overflow-y: auto; z-index: 10; }
         .inspector-card { background: rgba(7, 10, 18, 0.6); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.75rem; }
-        .inspector-row { display: flex; justify-content: space-between; font-family: var(--font-code); font-size: 0.74rem; padding: 0.2rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .inspector-row { display: flex; justify-content: space-between; font-family: var(--font-code); font-size: 0.73rem; padding: 0.2rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
         .inspector-row:last-child { border-bottom: none; }
         .inspector-row .lbl { color: var(--text-muted); }
         .inspector-row .val { color: var(--accent-cyan); font-weight: 600; }
@@ -146,7 +134,7 @@
 </head>
 <body>
 
-    <!-- COMSOL Top Header Bar -->
+    <!-- Header Bar -->
     <header class="comsol-header">
         <div class="comsol-title">
             <i class="fa-solid fa-diagram-project"></i>
@@ -162,25 +150,25 @@
         </div>
     </header>
 
-    <!-- Ribbon Navigation Tabs Bar -->
+    <!-- Ribbon Tabs Bar -->
     <div class="ribbon-bar">
         <div class="ribbon-tabs">
-            <div class="ribbon-tab active" onclick="setRibbonTab('home')">Home</div>
-            <div class="ribbon-tab" onclick="setRibbonTab('geometry')">Geometry &amp; Paint</div>
-            <div class="ribbon-tab" onclick="setRibbonTab('physics')">Physics &amp; Boundaries</div>
-            <div class="ribbon-tab" onclick="setRibbonTab('mesh')">Mesh Discretization</div>
-            <div class="ribbon-tab" onclick="setRibbonTab('results')">Results &amp; Plots</div>
+            <div class="ribbon-tab active" id="tabHome" onclick="setRibbonTab('home')">Home</div>
+            <div class="ribbon-tab" id="tabGeometry" onclick="setRibbonTab('geometry')">Geometry &amp; Paint</div>
+            <div class="ribbon-tab" id="tabPhysics" onclick="setRibbonTab('physics')">Physics &amp; Boundaries</div>
+            <div class="ribbon-tab" id="tabMesh" onclick="setRibbonTab('mesh')">Mesh Discretization</div>
+            <div class="ribbon-tab" id="tabResults" onclick="setRibbonTab('results')">Results &amp; Plots</div>
         </div>
 
         <div id="ribbonContent" class="ribbon-tools-content">
-            <!-- Dynamically populated ribbon actions -->
+            <!-- Ribbon options dynamically injected -->
         </div>
     </div>
 
-    <!-- Main Workstation Layout -->
+    <!-- Main Workstation Area -->
     <div class="workstation-grid">
         
-        <!-- Left COMSOL Tree & Properties Panel -->
+        <!-- Left Panel -->
         <div class="tree-panel">
             
             <div class="panel-section">
@@ -188,15 +176,15 @@
                     <span><i class="fa-solid fa-sitemap"></i> Model Builder Tree</span>
                 </div>
                 <div>
-                    <div class="tree-node active"><i class="fa-solid fa-cube"></i> Root Model (2D Domain)</div>
+                    <div class="tree-node active" onclick="setRibbonTab('home')"><i class="fa-solid fa-cube"></i> Root Model (2D Domain)</div>
                     <div class="tree-indent">
-                        <div class="tree-node"><i class="fa-solid fa-draw-polygon"></i> Geometry (1000m &times; 666m)</div>
-                        <div class="tree-node"><i class="fa-solid fa-layer-group"></i> Materials &amp; K-Zones</div>
-                        <div class="tree-node"><i class="fa-solid fa-water"></i> GWF Groundwater Flow</div>
-                        <div class="tree-node"><i class="fa-solid fa-biohazard"></i> Transport (PFAS Precursors)</div>
-                        <div class="tree-node"><i class="fa-solid fa-network-wired"></i> CLN Conduit Networks</div>
-                        <div class="tree-node"><i class="fa-solid fa-border-all"></i> Mesh (Unstructured CVFD)</div>
-                        <div class="tree-node"><i class="fa-solid fa-clock"></i> Study (Transient Solver)</div>
+                        <div class="tree-node" onclick="setRibbonTab('geometry')"><i class="fa-solid fa-draw-polygon"></i> Geometry (1000m &times; 666m)</div>
+                        <div class="tree-node" onclick="setRibbonTab('geometry')"><i class="fa-solid fa-layer-group"></i> Materials &amp; K-Zones</div>
+                        <div class="tree-node" onclick="setRibbonTab('physics')"><i class="fa-solid fa-water"></i> GWF Groundwater Flow</div>
+                        <div class="tree-node" onclick="setRibbonTab('physics')"><i class="fa-solid fa-biohazard"></i> Transport (PFAS Precursors)</div>
+                        <div class="tree-node" onclick="setRibbonTab('physics')"><i class="fa-solid fa-network-wired"></i> CLN Conduit Networks</div>
+                        <div class="tree-node" onclick="setRibbonTab('mesh')"><i class="fa-solid fa-border-all"></i> Mesh (Unstructured CVFD)</div>
+                        <div class="tree-node" onclick="setRibbonTab('results')"><i class="fa-solid fa-clock"></i> Study (Transient Solver)</div>
                     </div>
                 </div>
             </div>
@@ -207,7 +195,7 @@
                 </div>
 
                 <div class="prop-group">
-                    <label>Preset Geological Material:</label>
+                    <label>Geological Material Preset:</label>
                     <select id="selectMaterial" onchange="applyMaterialPreset()">
                         <option value="custom">Custom Parameters</option>
                         <option value="gravel">Clean Gravel (K=80m/d, ne=0.32)</option>
@@ -219,7 +207,7 @@
                 </div>
 
                 <div class="prop-group">
-                    <label>Brush Size (Cells): <span id="valBrush" class="val">1 &times; 1</span></label>
+                    <label>Brush Radius (Cells): <span id="valBrush" class="val">1 &times; 1</span></label>
                     <input type="range" id="sliderBrush" min="1" max="5" value="1" oninput="updateSettings()">
                 </div>
 
@@ -246,10 +234,9 @@
 
         </div>
 
-        <!-- Central Viewport & Canvas Area -->
+        <!-- Central Viewport -->
         <div class="center-viewport">
             
-            <!-- Out-of-Domain Regional Boundary Banners -->
             <div class="region-banner top"><i class="fa-solid fa-cloud-sun-rain"></i> REGIONAL RECHARGE ZONE &amp; AGRICULTURAL RUNOFF AREA (TOP BOUNDARY)</div>
             <div class="region-banner west"><i class="fa-solid fa-mountain"></i> INLAND MOUNTAIN FOOT-HILLS — HIGH HEAD H_WEST</div>
             <div class="region-banner east"><i class="fa-solid fa-water"></i> REGIONAL RIVER BASIN &amp; ESTUARY — LOW HEAD H_EAST</div>
@@ -276,7 +263,7 @@
 
         </div>
 
-        <!-- Right Dock Panel: Inspector & Probe Chart -->
+        <!-- Right Inspector Panel -->
         <div class="inspector-panel">
             
             <div class="panel-section">
@@ -321,7 +308,7 @@
 
         </div>
 
-        <!-- Bottom CAD Status Bar -->
+        <!-- Status Bar -->
         <div class="comsol-statusbar">
             <div class="status-item"><i class="fa-solid fa-crosshairs"></i> Position: <span id="statusPos" class="hl">X: 0.0m, Y: 0.0m</span></div>
             <div class="status-item"><i class="fa-solid fa-check-circle" style="color: var(--accent-emerald);"></i> Solver: <span id="statusSolver" class="hl">CONVERGED (IMS Residual &lt; 1e-6)</span></div>
@@ -338,22 +325,19 @@
         let isRunning = true;
         let simTime = 0;
 
-        // Discretization Grid (NX x NY)
+        // Grid Dimensions (NX x NY)
         let NX = 60;
         let NY = 40;
 
-        // FDM CVFD Matrix Arrays
+        // Flow & Transport Arrays
         let gridHead, gridType, gridK, gridQ, gridVx, gridVy;
 
-        // Active State
-        let activeTool = 'inspect'; // inspect, brush_head, brush_k2, well_pump, well_inject, cln, pfas, barrier, erase, box_head, probe, measure
+        // Tool States
+        let activeTool = 'inspect'; // inspect, brush_head, brush_k2, well_pump, well_inject, cln, pfas, barrier, erase, measure, probe
         let brushSize = 1;
         let currentHeadVal = 102.0;
         let currentQVal = 60.0;
-        let activeRibbon = 'home';
-        let colorPalette = 'cyan';
 
-        let mousePos = { x: 0, y: 0 };
         let hoveredCell = { i: 0, j: 0 };
         let isMouseDown = false;
         let strokeStartCell = null;
@@ -363,11 +347,12 @@
         let measureEnd = null;
         let probeCell = null;
 
-        // Undo Stack
+        // Undo/Redo Stacks
         let historyUndo = [];
+        let historyRedo = [];
         const MAX_UNDO = 10;
 
-        // Physics Parameters
+        // Hydrogeological Properties
         let k1 = 25.0;
         let k2 = 2.5;
         let porosity = 0.25;
@@ -399,7 +384,6 @@
                 }
             }
 
-            // Boundary Heads
             for (let j = 0; j < NY; j++) {
                 gridType[0][j] = 1; gridHead[0][j] = hWest;
                 gridType[NX - 1][j] = 1; gridHead[NX - 1][j] = hEast;
@@ -423,11 +407,27 @@
                 }
             }
             historyUndo.push({ copyType, copyHead, copyK, copyQ, sources: JSON.parse(JSON.stringify(sources)) });
+            historyRedo = [];
         }
 
         function undoAction() {
             if (historyUndo.length === 0) return;
             const state = historyUndo.pop();
+
+            // Push current to redo
+            const copyType = new Int8Array(NX * NY);
+            const copyHead = new Float32Array(NX * NY);
+            const copyK = new Float32Array(NX * NY);
+            const copyQ = new Float32Array(NX * NY);
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    const idx = i * NY + j;
+                    copyType[idx] = gridType[i][j]; copyHead[idx] = gridHead[i][j];
+                    copyK[idx] = gridK[i][j]; copyQ[idx] = gridQ[i][j];
+                }
+            }
+            historyRedo.push({ copyType, copyHead, copyK, copyQ, sources: JSON.parse(JSON.stringify(sources)) });
+
             for (let i = 0; i < NX; i++) {
                 for (let j = 0; j < NY; j++) {
                     const idx = i * NY + j;
@@ -449,7 +449,6 @@
 
         window.addEventListener('resize', resizeCanvas);
 
-        // Pre-configured Model Presets
         function loadPreset(template) {
             saveUndoState();
             initArrays();
@@ -458,8 +457,8 @@
 
             if (template === 'pfas') {
                 sources.push({ i: 12, j: 18 });
-                for (let i = 25; i <= 45; i++) gridType[i][20] = 3; // CLN Line
-                for (let j = 10; j <= 28; j++) gridType[38][j] = 2; // Barrier Wall
+                for (let i = 25; i <= 45; i++) gridType[i][20] = 3;
+                for (let j = 10; j <= 28; j++) gridType[38][j] = 2;
                 gridQ[48][20] = -currentQVal;
             } else if (template === 'capture') {
                 gridQ[35][20] = -120;
@@ -467,7 +466,7 @@
                 sources.push({ i: 10, j: 28 });
             } else if (template === 'barrier') {
                 for (let j = 5; j <= 35; j++) gridType[30][j] = 2;
-                gridType[30][20] = 0; // Gap in barrier
+                gridType[30][20] = 0;
                 sources.push({ i: 12, j: 20 });
             }
 
@@ -475,9 +474,9 @@
         }
 
         function setRibbonTab(tab) {
-            activeRibbon = tab;
             document.querySelectorAll('.ribbon-tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
+            const tabElem = document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+            if (tabElem) tabElem.classList.add('active');
 
             const content = document.getElementById('ribbonContent');
             if (tab === 'home') {
@@ -519,19 +518,24 @@
                         <button class="btn-ribbon" onclick="setTool('pfas')"><i class="fa-solid fa-biohazard"></i> PFAS Source</button>
                     </div>
                 `;
+            } else if (tab === 'mesh') {
+                content.innerHTML = `
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title">Discretization</div>
+                        <button class="btn-ribbon" onclick="regridModel(50)"><i class="fa-solid fa-border-all"></i> Medium Grid (50x33)</button>
+                        <button class="btn-ribbon" onclick="regridModel(70)"><i class="fa-solid fa-table-cells"></i> Fine Grid (70x46)</button>
+                    </div>
+                `;
             } else if (tab === 'results') {
                 content.innerHTML = `
                     <div class="ribbon-group">
-                        <div class="ribbon-group-title">Color Palette</div>
-                        <button class="btn-ribbon" onclick="setPalette('cyan')"><i class="fa-solid fa-palette"></i> Teal/Cyan</button>
-                        <button class="btn-ribbon" onclick="setPalette('thermal')"><i class="fa-solid fa-fire"></i> Thermal</button>
-                        <button class="btn-ribbon" onclick="setPalette('viridis')"><i class="fa-solid fa-leaf"></i> Viridis</button>
+                        <div class="ribbon-group-title">Export Options</div>
+                        <button class="btn-ribbon" onclick="exportSnapshot()"><i class="fa-solid fa-camera"></i> Save Viewport Image</button>
+                        <button class="btn-ribbon" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Download CSV Matrix</button>
                     </div>
                 `;
             }
         }
-
-        function setPalette(pal) { colorPalette = pal; render(); }
 
         function setTool(tool) {
             activeTool = tool;
@@ -586,7 +590,17 @@
             }
         }
 
-        // Smooth Drag Brush Painting (Bresenham Line Interpolation)
+        function regridModel(newNX) {
+            saveUndoState();
+            NX = newNX || 60;
+            NY = Math.round(NX * 0.66);
+            initArrays();
+            sources = [];
+            particles = [];
+            render();
+        }
+
+        // Cell Paint Application
         function applyBrushToCell(i, j) {
             const half = Math.floor(brushSize / 2);
             for (let di = -half; di <= half; di++) {
@@ -627,7 +641,7 @@
             }
         }
 
-        // Solver Engine (Gauss-Seidel FDM Matrix Solver)
+        // FDM Matrix Solver
         function solveFlowField() {
             const iterations = 8;
             for (let it = 0; it < iterations; it++) {
@@ -636,7 +650,7 @@
                         if (gridType[i][j] === 1 || gridType[i][j] === 2) continue;
 
                         let cond = gridK[i][j];
-                        if (gridType[i][j] === 3) cond = k1 * 10.0; // CLN High-K Conduit
+                        if (gridType[i][j] === 3) cond = k1 * 10.0;
 
                         let sumHead = 0, count = 0;
 
@@ -652,15 +666,10 @@
                 }
             }
 
-            let maxV = 0, minH = 999, maxH = -999;
             const dx = width / NX, dy = height / NY;
 
             for (let i = 0; i < NX; i++) {
                 for (let j = 0; j < NY; j++) {
-                    const h = gridHead[i][j];
-                    if (h < minH) minH = h;
-                    if (h > maxH) maxH = h;
-
                     if (gridType[i][j] === 2) { gridVx[i][j] = 0; gridVy[i][j] = 0; continue; }
 
                     let dhdx = 0;
@@ -674,9 +683,6 @@
 
                     gridVx[i][j] = -(cond / porosity) * dhdx * 16;
                     gridVy[i][j] = -(cond / porosity) * dhdy * 16;
-
-                    const mag = Math.hypot(gridVx[i][j], gridVy[i][j]);
-                    if (mag > maxV) maxV = mag;
                 }
             }
 
@@ -704,7 +710,45 @@
             render();
         }
 
-        // Render Graphics Workstation
+        // Particle Class
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y; this.age = 0;
+                this.species = 'precursor';
+            }
+
+            update(dt) {
+                this.age += dt;
+                const vel = getVelocityAt(this.x, this.y);
+                const vMag = Math.hypot(vel.vx, vel.vy) + 1e-5;
+
+                if (this.species === 'precursor' && Math.random() < lambdaDecay * dt) {
+                    this.species = 'daughter';
+                }
+
+                const randL = (Math.random() + Math.random() - 1.0) * 1.5;
+                const randT = (Math.random() + Math.random() - 1.0) * 1.5;
+
+                const dispL = randL * Math.sqrt(2 * alphaL * vMag * dt);
+                const dispT = randT * Math.sqrt(2 * (alphaL * 0.2) * vMag * dt);
+
+                const ux = vel.vx / vMag;
+                const uy = vel.vy / vMag;
+
+                this.x += (vel.vx * dt) + (dispL * ux - dispT * uy);
+                this.y += (vel.vy * dt) + (dispL * uy + dispT * ux);
+            }
+
+            draw() {
+                let color = (this.species === 'precursor') ? 'rgba(236, 72, 153, 0.85)' : 'rgba(168, 85, 247, 0.75)';
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3.2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Render Canvas
         function renderMeshGrid() {
             const dx = width / NX;
             const dy = height / NY;
@@ -743,7 +787,7 @@
                 ctx.fillStyle = "#ec4899"; ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#ffffff"; ctx.stroke();
             });
 
-            // Draw Virtual Probe Indicator
+            // Draw Virtual Probe Line
             if (probeCell) {
                 const px = probeCell.i * dx + dx / 2;
                 const py = probeCell.j * dy + dy / 2;
@@ -752,7 +796,7 @@
                 ctx.beginPath(); ctx.moveTo(px - 14, py); ctx.lineTo(px + 14, py); ctx.moveTo(px, py - 14); ctx.lineTo(px, py + 14); ctx.stroke();
             }
 
-            // Draw Distance Measurement Tape
+            // Draw Measurement Line
             if (measureStart && measureEnd) {
                 const p1 = { x: measureStart.i * dx + dx / 2, y: measureStart.j * dy + dy / 2 };
                 const p2 = { x: measureEnd.i * dx + dx / 2, y: measureEnd.j * dy + dy / 2 };
@@ -765,12 +809,17 @@
                 ctx.fillText(`${distM.toFixed(1)} m`, (p1.x + p2.x) / 2 + 10, (p1.y + p2.y) / 2 - 10);
             }
 
-            // Highlight Hovered Cell
+            // Hover Cursor Brush Outline Box
             const hcX = hoveredCell.i * dx, hcY = hoveredCell.j * dy;
-            ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.5; ctx.strokeRect(hcX, hcY, dx, dy);
+            const half = Math.floor(brushSize / 2);
+            const bWidth = brushSize * dx;
+            const bHeight = brushSize * dy;
+
+            ctx.strokeStyle = "#14b8a6"; ctx.lineWidth = 1.8;
+            ctx.strokeRect(hcX - half * dx, hcY - half * dy, bWidth, bHeight);
         }
 
-        // Canvas Click & Drag Handling
+        // Cell Interaction Logic
         function handleCellClick(i, j) {
             if (activeTool === 'pfas') sources.push({ i, j });
             else if (activeTool === 'well_pump') { gridType[i][j] = 0; gridQ[i][j] = -currentQVal; }
@@ -778,51 +827,64 @@
             else if (activeTool === 'probe') { probeCell = { i, j }; document.getElementById('probeLoc').innerText = `Cell (${i}, ${j})`; }
         }
 
+        function getCellFromMouse(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const i = Math.max(0, Math.min(NX - 1, Math.floor((x / rect.width) * NX)));
+            const j = Math.max(0, Math.min(NY - 1, Math.floor((y / rect.height) * NY)));
+            return { i, j, x, y };
+        }
+
         canvas.addEventListener('mousedown', (e) => {
             isMouseDown = true;
             saveUndoState();
-            const rect = canvas.getBoundingClientRect();
-            const i = Math.max(0, Math.min(NX - 1, Math.floor(((e.clientX - rect.left) / width) * NX)));
-            const j = Math.max(0, Math.min(NY - 1, Math.floor(((e.clientY - rect.top) / height) * NY)));
+            const cell = getCellFromMouse(e);
 
-            strokeStartCell = { i, j };
-            if (activeTool === 'measure') measureStart = { i, j };
-            else handleCellClick(i, j);
+            strokeStartCell = cell;
+            if (activeTool === 'measure') measureStart = cell;
+            else handleCellClick(cell.i, cell.j);
             render();
         });
 
         canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const i = Math.max(0, Math.min(NX - 1, Math.floor(((e.clientX - rect.left) / width) * NX)));
-            const j = Math.max(0, Math.min(NY - 1, Math.floor(((e.clientY - rect.top) / height) * NY)));
+            const cell = getCellFromMouse(e);
+            hoveredCell = cell;
 
-            const currentCell = { i, j };
-            hoveredCell = currentCell;
-
-            const wx = (i / NX) * 1000;
-            const wy = ((NY - j) / NY) * 666;
-            document.getElementById('cellIdx').innerText = `(${i}, ${j})`;
+            const wx = (cell.i / NX) * 1000;
+            const wy = ((NY - cell.j) / NY) * 666;
+            document.getElementById('cellIdx').innerText = `(${cell.i}, ${cell.j})`;
             document.getElementById('cellCoords').innerText = `${wx.toFixed(1)}, ${wy.toFixed(1)} m`;
-            document.getElementById('cellHead').innerText = `${gridHead[i][j].toFixed(2)} m`;
-            document.getElementById('cellVel').innerText = `${(Math.hypot(gridVx[i][j], gridVy[i][j]) / 16).toFixed(2)} m/d`;
-            document.getElementById('cellK').innerText = `${gridK[i][j].toFixed(1)} m/d`;
+            document.getElementById('cellHead').innerText = `${gridHead[cell.i][cell.j].toFixed(2)} m`;
+            document.getElementById('cellVel').innerText = `${(Math.hypot(gridVx[cell.i][cell.j], gridVy[cell.i][cell.j]) / 16).toFixed(2)} m/d`;
+            document.getElementById('cellK').innerText = `${gridK[cell.i][cell.j].toFixed(1)} m/d`;
 
             const bcMap = { 0: 'Active Matrix', 1: 'Const Head (Dirichlet)', 2: 'Low-K Barrier', 3: 'CLN High-K Pipe', 4: 'Zone 2 Low-K Soil' };
-            document.getElementById('cellBC').innerText = bcMap[gridType[i][j]] || 'Active Matrix';
+            document.getElementById('cellBC').innerText = bcMap[gridType[cell.i][cell.j]] || 'Active Matrix';
             document.getElementById('statusPos').innerText = `X: ${wx.toFixed(1)}m, Y: ${wy.toFixed(1)}m`;
 
             if (isMouseDown) {
                 if (activeTool === 'measure') {
-                    measureEnd = currentCell;
+                    measureEnd = cell;
                 } else if (strokeStartCell) {
-                    paintStrokeLine(strokeStartCell, currentCell);
-                    strokeStartCell = currentCell;
+                    paintStrokeLine(strokeStartCell, cell);
+                    strokeStartCell = cell;
                 }
                 render();
             }
         });
 
         window.addEventListener('mouseup', () => { isMouseDown = false; strokeStartCell = null; });
+        canvas.addEventListener('mouseleave', () => { isMouseDown = false; strokeStartCell = null; });
+
+        // Hotkey Shortcuts
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey && e.key === 'z') { undoAction(); }
+            else if (e.key === 'b') { setTool('brush_k2'); }
+            else if (e.key === 'e') { setTool('erase'); }
+            else if (e.key === 'm') { setTool('measure'); }
+            else if (e.key === 'r') { toggleCompute(); }
+        });
 
         function toggleCompute() {
             isRunning = !isRunning;
@@ -890,7 +952,7 @@
             requestAnimationFrame(animate);
         }
 
-        // Init App
+        // Initialize App
         initArrays();
         resizeCanvas();
         setRibbonTab('home');
