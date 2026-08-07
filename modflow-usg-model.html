@@ -10,7 +10,7 @@
         :root {
             --bg-dark: #070a12;
             --bg-panel: #0f172a;
-            --bg-panel-header: #1e293b;
+            --bg-header: #090d16;
             --bg-card: rgba(15, 23, 42, 0.95);
             --accent-teal: #14b8a6;
             --accent-cyan: #38bdf8;
@@ -30,240 +30,217 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
 
-        /* Top CAD Header Bar */
-        header.cad-navbar {
-            background: #090d16;
-            border-bottom: 1px solid var(--border-subtle);
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            z-index: 20;
+        /* COMSOL-Style Top Header Bar */
+        header.comsol-header {
+            background: var(--bg-header); border-bottom: 1px solid var(--border-subtle);
+            height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; z-index: 30;
         }
 
-        .cad-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.95rem; color: var(--text-main); }
-        .cad-title i { color: var(--accent-teal); font-size: 1.1rem; }
-        .cad-title .version-tag { background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); border: 1px solid rgba(20, 184, 166, 0.3); font-family: var(--font-code); font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 4px; }
+        .comsol-title { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 0.9rem; color: var(--text-main); }
+        .comsol-title i { color: var(--accent-teal); font-size: 1.1rem; }
+        .version-badge { background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); border: 1px solid rgba(20, 184, 166, 0.3); font-family: var(--font-code); font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 4px; }
 
-        .cad-menu-actions { display: flex; align-items: center; gap: 1rem; }
-        .cad-menu-actions a { color: var(--accent-cyan); text-decoration: none; font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .study-controls { display: flex; align-items: center; gap: 6px; }
+        .btn-study {
+            padding: 0.35rem 0.8rem; border-radius: 5px; font-size: 0.78rem; font-weight: 600;
+            border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03); color: var(--text-main);
+            cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+        }
+        .btn-study:hover { border-color: var(--accent-teal); color: var(--accent-teal); }
+        .btn-study.run { background: rgba(16, 185, 129, 0.2); border-color: var(--accent-emerald); color: var(--accent-emerald); }
+        .btn-study.run:hover { background: var(--accent-emerald); color: #090d16; }
+        .btn-study.restart { background: rgba(245, 158, 11, 0.2); border-color: var(--accent-amber); color: var(--accent-amber); }
+        .btn-study.restart:hover { background: var(--accent-amber); color: #090d16; }
 
-        /* App Main Workstation Layout */
+        /* Ribbon Toolbar */
+        .ribbon-bar {
+            background: #0d1322; border-bottom: 1px solid var(--border-subtle);
+            display: flex; flex-direction: column; z-index: 25;
+        }
+        .ribbon-tabs { display: flex; background: #070a12; padding-left: 0.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .ribbon-tab {
+            padding: 0.4rem 1rem; font-size: 0.78rem; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+        }
+        .ribbon-tab:hover { color: var(--text-main); }
+        .ribbon-tab.active { color: var(--accent-teal); border-bottom-color: var(--accent-teal); background: #0d1322; }
+
+        .ribbon-tools-content { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 1rem; overflow-x: auto; }
+        .ribbon-group { display: flex; align-items: center; gap: 6px; padding-right: 1rem; border-right: 1px solid var(--border-subtle); }
+        .ribbon-group-title { font-family: var(--font-code); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+
+        .btn-ribbon {
+            padding: 0.45rem 0.7rem; border-radius: 5px; font-size: 0.75rem; font-weight: 600;
+            border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02); color: var(--text-muted);
+            cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; white-space: nowrap;
+        }
+        .btn-ribbon:hover { border-color: var(--accent-teal); color: var(--text-main); background: rgba(20, 184, 166, 0.08); }
+        .btn-ribbon.active { background: rgba(20, 184, 166, 0.2); border-color: var(--accent-teal); color: var(--accent-teal); }
+
+        /* Main Workstation Layout */
         .workstation-grid {
-            display: grid;
-            grid-template-columns: 320px 1fr 300px;
-            grid-template-rows: 1fr 28px;
-            flex: 1;
-            height: calc(100vh - 48px);
-            overflow: hidden;
+            display: grid; grid-template-columns: 310px 1fr 310px; grid-template-rows: 1fr 26px;
+            flex: 1; height: calc(100vh - 90px); overflow: hidden;
         }
 
-        /* Left Dock Panel: Controls & Property Matrix */
-        .dock-panel {
-            background: var(--bg-panel);
-            border-right: 1px solid var(--border-subtle);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            z-index: 10;
+        /* Left COMSOL Tree & Properties Panel */
+        .tree-panel {
+            background: var(--bg-panel); border-right: 1px solid var(--border-subtle);
+            display: flex; flex-direction: column; overflow-y: auto; z-index: 10;
         }
+        .panel-section { border-bottom: 1px solid var(--border-subtle); padding: 0.9rem; }
+        .panel-header { font-family: var(--font-code); font-size: 0.73rem; font-weight: 700; text-transform: uppercase; color: var(--accent-teal); letter-spacing: 1px; margin-bottom: 0.6rem; display: flex; align-items: center; justify-content: space-between; }
 
-        .panel-section { border-bottom: 1px solid var(--border-subtle); padding: 1rem; }
-        .panel-header { font-family: var(--font-code); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--accent-teal); letter-spacing: 1px; margin-bottom: 0.8rem; display: flex; align-items: center; justify-content: space-between; }
+        .tree-node { font-size: 0.78rem; font-weight: 500; color: var(--text-muted); padding: 0.3rem 0.5rem; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .tree-node:hover { background: rgba(255,255,255,0.04); color: var(--text-main); }
+        .tree-node.active { background: rgba(20, 184, 166, 0.15); color: var(--accent-teal); font-weight: 600; }
+        .tree-indent { margin-left: 1rem; border-left: 1px dashed rgba(255,255,255,0.1); padding-left: 0.5rem; }
 
-        /* Tools Palette */
-        .tool-matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        .btn-cad-tool {
-            padding: 0.55rem 0.6rem; border-radius: 6px; font-size: 0.76rem; font-weight: 600;
-            border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.02);
-            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
-            display: flex; align-items: center; gap: 8px; justify-content: flex-start;
-        }
-        .btn-cad-tool:hover { border-color: var(--accent-teal); color: var(--text-main); background: rgba(20, 184, 166, 0.08); }
-        .btn-cad-tool.active { background: rgba(20, 184, 166, 0.2); border-color: var(--accent-teal); color: var(--accent-teal); box-shadow: 0 0 10px rgba(20, 184, 166, 0.2); }
-
-        /* Property Form Controls */
-        .prop-group { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.8rem; }
+        .prop-group { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.7rem; }
         .prop-group label { font-size: 0.78rem; color: var(--text-main); display: flex; justify-content: space-between; }
         .prop-group label span.val { color: var(--accent-cyan); font-family: var(--font-code); font-weight: 600; }
-        
+
         input[type="range"] { width: 100%; accent-color: var(--accent-teal); background: rgba(255,255,255,0.05); border-radius: 4px; height: 5px; }
-        select, input[type="number"] { width: 100%; background: #090d16; border: 1px solid var(--border-subtle); color: var(--text-main); font-family: var(--font-code); font-size: 0.8rem; padding: 0.4rem 0.6rem; border-radius: 4px; }
-        select:focus, input:focus { border-color: var(--accent-teal); outline: none; }
+        select, input[type="number"] { width: 100%; background: #070a12; border: 1px solid var(--border-subtle); color: var(--text-main); font-family: var(--font-code); font-size: 0.78rem; padding: 0.35rem 0.5rem; border-radius: 4px; }
 
-        .btn-row { display: flex; gap: 8px; margin-top: 0.5rem; }
-        .btn-action {
-            flex: 1; padding: 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;
-            border: 1px solid var(--border-subtle); background: rgba(20, 184, 166, 0.15);
-            color: var(--accent-teal); cursor: pointer; text-align: center; transition: all 0.2s;
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        /* Central Graphics Viewport */
+        .center-viewport { position: relative; background: #050811; display: grid; grid-template-rows: 32px 1fr 32px; grid-template-columns: 160px 1fr 160px; padding: 6px; gap: 6px; }
+
+        .region-banner {
+            background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border-subtle); border-radius: 5px;
+            display: flex; align-items: center; justify-content: center; font-family: var(--font-code); font-size: 0.7rem;
+            font-weight: 600; color: var(--text-muted); padding: 0.3rem 0.6rem; backdrop-filter: blur(8px); text-align: center; gap: 6px; z-index: 2;
         }
-        .btn-action:hover { background: var(--accent-teal); color: #090d16; font-weight: 700; }
-        .btn-danger { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #f87171; }
-        .btn-danger:hover { background: rgba(239, 68, 68, 0.3); color: #ffffff; }
+        .region-banner.top { grid-column: 1 / -1; grid-row: 1; border-color: rgba(56, 189, 248, 0.25); color: var(--accent-cyan); }
+        .region-banner.bottom { grid-column: 1 / -1; grid-row: 3; border-color: rgba(245, 158, 11, 0.25); color: var(--accent-amber); }
+        .region-banner.west { grid-column: 1; grid-row: 2; border-color: rgba(20, 184, 166, 0.25); color: var(--accent-teal); writing-mode: vertical-lr; transform: rotate(180deg); }
+        .region-banner.east { grid-column: 3; grid-row: 2; border-color: rgba(96, 165, 250, 0.25); color: var(--accent-blue); writing-mode: vertical-lr; }
 
-        /* Central Canvas Viewport */
-        .center-viewport { position: relative; background: #050811; overflow: hidden; display: flex; flex-direction: column; }
-        .canvas-area { position: relative; flex: 1; width: 100%; height: 100%; }
+        .canvas-area { grid-column: 2; grid-row: 2; position: relative; width: 100%; height: 100%; border: 1px stroke var(--accent-teal); border-radius: 6px; overflow: hidden; }
         canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: crosshair; }
 
-        /* CAD GIS Overlays on Canvas */
-        .gis-north-arrow {
-            position: absolute; top: 1.2rem; right: 1.2rem; width: 44px; height: 44px;
-            background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 50%;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-family: var(--font-code); font-size: 0.7rem; font-weight: 700; color: var(--accent-cyan);
-            backdrop-filter: blur(8px); box-shadow: 0 4px 15px rgba(0,0,0,0.5); pointer-events: none; z-index: 5;
-        }
+        /* Canvas Overlays */
+        .gis-north { position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--font-code); font-size: 0.68rem; font-weight: 700; color: var(--accent-cyan); z-index: 5; pointer-events: none; }
+        .gis-scale { position: absolute; bottom: 1rem; left: 1rem; background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 5px; padding: 0.4rem 0.7rem; font-family: var(--font-code); font-size: 0.7rem; color: var(--text-muted); z-index: 5; pointer-events: none; }
+        .scale-bar-line { width: 90px; height: 4px; background: linear-gradient(90deg, var(--text-main) 50%, transparent 50%); border: 1px solid var(--text-muted); margin-top: 3px; }
 
-        .gis-scale-bar {
-            position: absolute; bottom: 1.2rem; left: 1.2rem;
-            background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 6px;
-            padding: 0.5rem 0.8rem; font-family: var(--font-code); font-size: 0.72rem; color: var(--text-muted);
-            backdrop-filter: blur(8px); z-index: 5; pointer-events: none; display: flex; flex-direction: column; gap: 4px;
-        }
-        .scale-graphic { width: 100px; height: 6px; background: linear-gradient(90deg, var(--text-main) 50%, transparent 50%); border: 1px solid var(--text-muted); }
+        .tool-banner { position: absolute; top: 1rem; left: 1rem; background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 5px; padding: 0.45rem 0.8rem; font-family: var(--font-code); font-size: 0.75rem; color: var(--accent-teal); backdrop-filter: blur(8px); z-index: 5; pointer-events: none; }
 
-        .active-tool-banner {
-            position: absolute; top: 1.2rem; left: 1.2rem;
-            background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 6px;
-            padding: 0.55rem 0.9rem; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-teal);
-            backdrop-filter: blur(8px); z-index: 5; pointer-events: none; display: flex; align-items: center; gap: 8px;
-        }
-
-        /* Right Inspector Panel */
-        .inspector-panel {
-            background: var(--bg-panel);
-            border-left: 1px solid var(--border-subtle);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            z-index: 10;
-        }
-
-        .inspector-card { background: rgba(9, 13, 22, 0.6); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.8rem; margin-bottom: 0.8rem; }
-        .inspector-row { display: flex; justify-content: space-between; font-family: var(--font-code); font-size: 0.76rem; padding: 0.25rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        /* Right Inspector & Results Panel */
+        .inspector-panel { background: var(--bg-panel); border-left: 1px solid var(--border-subtle); display: flex; flex-direction: column; overflow-y: auto; z-index: 10; }
+        .inspector-card { background: rgba(7, 10, 18, 0.6); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem; margin-bottom: 0.75rem; }
+        .inspector-row { display: flex; justify-content: space-between; font-family: var(--font-code); font-size: 0.74rem; padding: 0.2rem 0; border-bottom: 1px dashed rgba(255,255,255,0.05); }
         .inspector-row:last-child { border-bottom: none; }
         .inspector-row .lbl { color: var(--text-muted); }
         .inspector-row .val { color: var(--accent-cyan); font-weight: 600; }
 
         /* Bottom Status Bar */
-        .cad-statusbar {
-            grid-column: 1 / -1;
-            background: #050811;
-            border-top: 1px solid var(--border-subtle);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            font-family: var(--font-code);
-            font-size: 0.72rem;
-            color: var(--text-muted);
-            z-index: 20;
-        }
+        .comsol-statusbar { grid-column: 1 / -1; background: #050811; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 1rem; font-family: var(--font-code); font-size: 0.7rem; color: var(--text-muted); z-index: 30; }
         .status-item { display: flex; align-items: center; gap: 6px; }
-        .status-item .highlight { color: var(--accent-teal); font-weight: 600; }
+        .status-item .hl { color: var(--accent-teal); font-weight: 600; }
 
-        .legend-bar-container { display: flex; flex-direction: column; gap: 4px; margin-top: 0.5rem; }
-        .legend-bar { width: 100%; height: 8px; border-radius: 4px; background: linear-gradient(to right, #090d16, #14b8a6, #38bdf8, #a855f7, #ec4899); }
-        .legend-labels { display: flex; justify-content: space-between; font-family: var(--font-code); font-size: 0.68rem; color: var(--text-muted); }
+        .legend-bar-container { display: flex; flex-direction: column; gap: 4px; margin-top: 0.4rem; }
+        .legend-bar { width: 100%; height: 8px; border-radius: 4px; background: linear-gradient(to right, #070a12, #14b8a6, #38bdf8, #a855f7, #ec4899); }
+        .legend-labels { display: flex; justify-content: space-between; font-family: var(--font-code); font-size: 0.65rem; color: var(--text-muted); }
     </style>
 </head>
 <body>
 
-    <!-- Top Navigation Header -->
-    <header class="cad-navbar">
-        <div class="cad-title">
+    <!-- COMSOL Top Header Bar -->
+    <header class="comsol-header">
+        <div class="comsol-title">
             <i class="fa-solid fa-diagram-project"></i>
-            <span>USG-Transport 2.8.0 Hydrogeological Workstation</span>
-            <span class="version-tag">MF-USG CVFD Matrix Engine</span>
+            <span>MODFLOW-USG / USG-Transport Hydrogeological Workstation</span>
+            <span class="version-badge">v2.8.0 IMS Engine</span>
         </div>
-        <div class="cad-menu-actions">
-            <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Portfolio Home</a>
+        <div class="study-controls">
+            <button class="btn-study run" onclick="toggleCompute()"><i class="fa-solid fa-play" id="iconRun"></i> <span id="lblRun">Compute Study</span></button>
+            <button class="btn-study restart" onclick="restartSimulation()" title="Reset Time = 0 &amp; Transport Particles without erasing painted geometry"><i class="fa-solid fa-rotate-left"></i> Restart Study (t=0)</button>
+            <button class="btn-study" onclick="undoAction()" title="Undo Last Painting Action (Ctrl+Z)"><i class="fa-solid fa-arrow-rotate-left"></i> Undo</button>
+            <button class="btn-study" onclick="exportSnapshot()"><i class="fa-solid fa-camera"></i> Snapshot</button>
+            <button class="btn-study" onclick="exportCSV()"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
         </div>
     </header>
 
-    <!-- Main CAD Workstation Area -->
+    <!-- Ribbon Navigation Tabs Bar -->
+    <div class="ribbon-bar">
+        <div class="ribbon-tabs">
+            <div class="ribbon-tab active" onclick="setRibbonTab('home')">Home</div>
+            <div class="ribbon-tab" onclick="setRibbonTab('geometry')">Geometry &amp; Paint</div>
+            <div class="ribbon-tab" onclick="setRibbonTab('physics')">Physics &amp; Boundaries</div>
+            <div class="ribbon-tab" onclick="setRibbonTab('mesh')">Mesh Discretization</div>
+            <div class="ribbon-tab" onclick="setRibbonTab('results')">Results &amp; Plots</div>
+        </div>
+
+        <div id="ribbonContent" class="ribbon-tools-content">
+            <!-- Dynamically populated ribbon actions -->
+        </div>
+    </div>
+
+    <!-- Main Workstation Layout -->
     <div class="workstation-grid">
         
-        <!-- Left Dock Panel: Controls & Property Palette -->
-        <div class="dock-panel">
+        <!-- Left COMSOL Tree & Properties Panel -->
+        <div class="tree-panel">
             
             <div class="panel-section">
                 <div class="panel-header">
-                    <span><i class="fa-solid fa-pen-ruler"></i> CAD Geometry Tools</span>
+                    <span><i class="fa-solid fa-sitemap"></i> Model Builder Tree</span>
                 </div>
-                <div class="tool-matrix">
-                    <button id="toolSelect" class="btn-cad-tool active" onclick="setTool('select')"><i class="fa-solid fa-arrow-pointer"></i> Inspect Cell</button>
-                    <button id="toolKZone" class="btn-cad-tool" onclick="setTool('kzone')"><i class="fa-solid fa-layer-group"></i> Paint K-Zone</button>
-                    <button id="toolDirichlet" class="btn-cad-tool" onclick="setTool('dirichlet')"><i class="fa-solid fa-water"></i> Head Boundary</button>
-                    <button id="toolWellPump" class="btn-cad-tool" onclick="setTool('pump')"><i class="fa-solid fa-filter"></i> Pumping Well</button>
-                    <button id="toolWellInject" class="btn-cad-tool" onclick="setTool('inject')"><i class="fa-solid fa-syringe"></i> Recharge Well</button>
-                    <button id="toolCLN" class="btn-cad-tool" onclick="setTool('cln')"><i class="fa-solid fa-network-wired"></i> CLN Conduit</button>
-                    <button id="toolPFAS" class="btn-cad-tool" onclick="setTool('pfas')"><i class="fa-solid fa-biohazard"></i> PFAS Source</button>
-                    <button id="toolBarrier" class="btn-cad-tool" onclick="setTool('barrier')"><i class="fa-solid fa-cubes"></i> Low-K Wall</button>
+                <div>
+                    <div class="tree-node active"><i class="fa-solid fa-cube"></i> Root Model (2D Domain)</div>
+                    <div class="tree-indent">
+                        <div class="tree-node"><i class="fa-solid fa-draw-polygon"></i> Geometry (1000m &times; 666m)</div>
+                        <div class="tree-node"><i class="fa-solid fa-layer-group"></i> Materials &amp; K-Zones</div>
+                        <div class="tree-node"><i class="fa-solid fa-water"></i> GWF Groundwater Flow</div>
+                        <div class="tree-node"><i class="fa-solid fa-biohazard"></i> Transport (PFAS Precursors)</div>
+                        <div class="tree-node"><i class="fa-solid fa-network-wired"></i> CLN Conduit Networks</div>
+                        <div class="tree-node"><i class="fa-solid fa-border-all"></i> Mesh (Unstructured CVFD)</div>
+                        <div class="tree-node"><i class="fa-solid fa-clock"></i> Study (Transient Solver)</div>
+                    </div>
                 </div>
             </div>
 
             <div class="panel-section">
                 <div class="panel-header">
-                    <span><i class="fa-solid fa-border-all"></i> Grid Discretization</span>
+                    <span><i class="fa-solid fa-gears"></i> Node Settings</span>
                 </div>
+
                 <div class="prop-group">
-                    <label>Grid Resolution (NX &times; NY): <span id="valGridRes" class="val">60 &times; 40</span></label>
-                    <input type="range" id="sliderGridRes" min="30" max="80" step="5" value="60" oninput="regridModel()">
-                </div>
-                <div class="prop-group">
-                    <label>Mesh Refinement Level: <span id="valMeshRef" class="val">Quadtree Nested</span></label>
-                    <select id="selectMeshType" onchange="render()">
-                        <option value="quadtree">Quadtree Local Refinement (Wells/CLN)</option>
-                        <option value="structured">Structured Orthogonal Grid</option>
+                    <label>Preset Geological Material:</label>
+                    <select id="selectMaterial" onchange="applyMaterialPreset()">
+                        <option value="custom">Custom Parameters</option>
+                        <option value="gravel">Clean Gravel (K=80m/d, ne=0.32)</option>
+                        <option value="sand" selected>Coarse Sand (K=25m/d, ne=0.25)</option>
+                        <option value="silt">Silty Sand (K=2.5m/d, ne=0.18)</option>
+                        <option value="clay">Clay / Till (K=0.1m/d, ne=0.10)</option>
+                        <option value="granite">Fractured Granite (K=12m/d, ne=0.12)</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="panel-section">
-                <div class="panel-header">
-                    <span><i class="fa-solid fa-sliders"></i> Hydraulic & Material Props</span>
-                </div>
                 <div class="prop-group">
-                    <label>Zone 1 Hydraulic Conductivity Kx (m/d): <span id="valK1" class="val">25.0</span></label>
-                    <input type="range" id="sliderK1" min="1" max="100" value="25" oninput="updateModelParams()">
-                </div>
-                <div class="prop-group">
-                    <label>Zone 2 Hydraulic Conductivity Kx (m/d): <span id="valK2" class="val">2.5</span></label>
-                    <input type="range" id="sliderK2" min="0.1" max="20" step="0.5" value="2.5" oninput="updateModelParams()">
-                </div>
-                <div class="prop-group">
-                    <label>Effective Porosity n_e: <span id="valPorosity" class="val">0.25</span></label>
-                    <input type="range" id="sliderPorosity" min="0.05" max="0.45" step="0.01" value="0.25" oninput="updateModelParams()">
-                </div>
-                <div class="prop-group">
-                    <label>Longitudinal Dispersivity &alpha;_L (m): <span id="valAlphaL" class="val">15.0</span></label>
-                    <input type="range" id="sliderAlphaL" min="2" max="50" value="15" oninput="updateModelParams()">
-                </div>
-            </div>
-
-            <div class="panel-section">
-                <div class="panel-header">
-                    <span><i class="fa-solid fa-gears"></i> Solver & Package Options</span>
-                </div>
-                <div class="prop-group">
-                    <label>Linear Matrix Solver Engine:</label>
-                    <select id="selectSolver">
-                        <option value="ims">IMS Solver (MODFLOW 6 Extracted)</option>
-                        <option value="sms">SMS Solver (Adaptive Guards)</option>
-                    </select>
-                </div>
-                <div class="prop-group">
-                    <label>Precursor Decay Rate &lambda; (/d): <span id="valLambda" class="val">0.03</span></label>
-                    <input type="range" id="sliderLambda" min="0.0" max="0.15" step="0.005" value="0.03" oninput="updateModelParams()">
+                    <label>Brush Size (Cells): <span id="valBrush" class="val">1 &times; 1</span></label>
+                    <input type="range" id="sliderBrush" min="1" max="5" value="1" oninput="updateSettings()">
                 </div>
 
-                <div class="btn-row">
-                    <button id="btnPause" class="btn-action" onclick="togglePause()"><i class="fa-solid fa-pause"></i> Pause</button>
-                    <button class="btn-action btn-danger" onclick="resetGrid()"><i class="fa-solid fa-trash"></i> Clear Grid</button>
+                <div class="prop-group">
+                    <label>Specified Head Value H (m): <span id="valHeadVal" class="val">102.0</span></label>
+                    <input type="range" id="sliderHeadVal" min="80" max="120" step="0.5" value="102" oninput="updateSettings()">
+                </div>
+
+                <div class="prop-group">
+                    <label>Pumping Rate Q (m&sup3;/d): <span id="valQVal" class="val">60</span></label>
+                    <input type="range" id="sliderQVal" min="10" max="200" value="60" oninput="updateSettings()">
+                </div>
+
+                <div class="prop-group">
+                    <label>Longitudinal Disp. &alpha;_L (m): <span id="valAlphaL" class="val">15.0</span></label>
+                    <input type="range" id="sliderAlphaL" min="2" max="50" value="15" oninput="updateSettings()">
+                </div>
+
+                <div class="prop-group">
+                    <label>PFAS Precursor Decay &lambda; (/d): <span id="valLambda" class="val">0.03</span></label>
+                    <input type="range" id="sliderLambda" min="0.0" max="0.15" step="0.005" value="0.03" oninput="updateSettings()">
                 </div>
             </div>
 
@@ -272,28 +249,34 @@
         <!-- Central Viewport & Canvas Area -->
         <div class="center-viewport">
             
-            <div id="toolBanner" class="active-tool-banner">
-                <i class="fa-solid fa-arrow-pointer"></i> <span>Tool: Hover / Click to Inspect Hydrogeological Cell</span>
-            </div>
-
-            <div class="gis-north-arrow">
-                <i class="fa-solid fa-location-arrow"></i>
-                <span>N</span>
-            </div>
+            <!-- Out-of-Domain Regional Boundary Banners -->
+            <div class="region-banner top"><i class="fa-solid fa-cloud-sun-rain"></i> REGIONAL RECHARGE ZONE &amp; AGRICULTURAL RUNOFF AREA (TOP BOUNDARY)</div>
+            <div class="region-banner west"><i class="fa-solid fa-mountain"></i> INLAND MOUNTAIN FOOT-HILLS — HIGH HEAD H_WEST</div>
+            <div class="region-banner east"><i class="fa-solid fa-water"></i> REGIONAL RIVER BASIN &amp; ESTUARY — LOW HEAD H_EAST</div>
+            <div class="region-banner bottom"><i class="fa-solid fa-cubes"></i> IMPERMEABLE CRYSTALLINE BASEMENT (NO-FLOW NEUMANN BOUNDARY)</div>
 
             <div class="canvas-area">
-                <canvas id="modflowCanvas"></canvas>
-            </div>
+                <canvas id="usgCanvas"></canvas>
 
-            <div class="gis-scale-bar">
-                <span>Scale: 1:2500 Metric</span>
-                <div class="scale-graphic"></div>
-                <span>0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 100 meters</span>
+                <div id="toolBanner" class="tool-banner">
+                    <i class="fa-solid fa-hand-pointer"></i> <span>Tool: Inspect Cell Properties</span>
+                </div>
+
+                <div class="gis-north">
+                    <i class="fa-solid fa-location-arrow"></i>
+                    <span>N</span>
+                </div>
+
+                <div class="gis-scale">
+                    <span>Scale: 1:2500 Metric</span>
+                    <div class="scale-bar-line"></div>
+                    <span>0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 100 m</span>
+                </div>
             </div>
 
         </div>
 
-        <!-- Right Dock Panel: Inspector & Real-Time Diagnostics -->
+        <!-- Right Dock Panel: Inspector & Probe Chart -->
         <div class="inspector-panel">
             
             <div class="panel-section">
@@ -307,34 +290,31 @@
                     <div class="inspector-row"><span class="lbl">Seepage Velocity (v):</span> <span id="cellVel" class="val">0.45 m/d</span></div>
                     <div class="inspector-row"><span class="lbl">Conductivity Kx:</span> <span id="cellK" class="val">25.0 m/d</span></div>
                     <div class="inspector-row"><span class="lbl">Cell Type / BC:</span> <span id="cellBC" class="val">Active Matrix</span></div>
-                    <div class="inspector-row"><span class="lbl">PFAS Concentration:</span> <span id="cellConc" class="val">0.00 µg/L</span></div>
                 </div>
             </div>
 
             <div class="panel-section">
                 <div class="panel-header">
-                    <span><i class="fa-solid fa-chart-line"></i> Model Diagnostics</span>
+                    <span><i class="fa-solid fa-chart-line"></i> Virtual Probe Log</span>
                 </div>
                 <div class="inspector-card">
-                    <div class="inspector-row"><span class="lbl">Active Cells:</span> <span id="diagCells" class="val">2,400</span></div>
-                    <div class="inspector-row"><span class="lbl">Head Range:</span> <span id="diagHeadRange" class="val">92.0 - 105.0 m</span></div>
-                    <div class="inspector-row"><span class="lbl">Max Flow Velocity:</span> <span id="diagMaxVel" class="val">0.82 m/d</span></div>
-                    <div class="inspector-row"><span class="lbl">Transport Particles:</span> <span id="diagParticles" class="val">0</span></div>
-                    <div class="inspector-row"><span class="lbl">CLN Nodes Active:</span> <span id="diagCLN" class="val">0</span></div>
-                    <div class="inspector-row"><span class="lbl">Stress Time:</span> <span id="diagTime" class="val">0.0 Days</span></div>
+                    <div class="inspector-row"><span class="lbl">Probe Location:</span> <span id="probeLoc" class="val">Click Probe Tool</span></div>
+                    <div class="inspector-row"><span class="lbl">Head h(t):</span> <span id="probeHead" class="val">-- m</span></div>
+                    <div class="inspector-row"><span class="lbl">PFAS Precursor:</span> <span id="probeConc" class="val">-- µg/L</span></div>
+                    <div class="inspector-row"><span class="lbl">Net Volumetric Flux:</span> <span id="diagNetQ" class="val">+0.12 m³/d</span></div>
                 </div>
             </div>
 
             <div class="panel-section">
                 <div class="panel-header">
-                    <span><i class="fa-solid fa-palette"></i> Concentration Scale</span>
+                    <span><i class="fa-solid fa-palette"></i> Concentration Legend</span>
                 </div>
                 <div class="legend-bar-container">
                     <div class="legend-bar"></div>
                     <div class="legend-labels">
                         <span>0.0 Clean</span>
-                        <span>Daughter Species</span>
-                        <span>Precursor Peak</span>
+                        <span>Daughter</span>
+                        <span>Precursor</span>
                     </div>
                 </div>
             </div>
@@ -342,55 +322,70 @@
         </div>
 
         <!-- Bottom CAD Status Bar -->
-        <div class="cad-statusbar">
-            <div class="status-item"><i class="fa-solid fa-crosshairs"></i> Cursor: <span id="statusPos" class="highlight">X: 0.0m, Y: 0.0m</span></div>
-            <div class="status-item"><i class="fa-solid fa-check-circle" style="color: var(--accent-emerald);"></i> Solver: <span id="statusSolver" class="highlight">CONVERGED (IMS Adaptive)</span></div>
-            <div class="status-item"><i class="fa-solid fa-database"></i> Mesh: <span id="statusMesh" class="highlight">Unstructured Control Volume</span></div>
+        <div class="comsol-statusbar">
+            <div class="status-item"><i class="fa-solid fa-crosshairs"></i> Position: <span id="statusPos" class="hl">X: 0.0m, Y: 0.0m</span></div>
+            <div class="status-item"><i class="fa-solid fa-check-circle" style="color: var(--accent-emerald);"></i> Solver: <span id="statusSolver" class="hl">CONVERGED (IMS Residual &lt; 1e-6)</span></div>
+            <div class="status-item"><i class="fa-solid fa-clock"></i> Stress Time: <span id="statusTime" class="hl">0.0 Days</span></div>
         </div>
 
     </div>
 
     <script>
-        const canvas = document.getElementById('modflowCanvas');
+        const canvas = document.getElementById('usgCanvas');
         const ctx = canvas.getContext('2d');
 
         let width, height;
         let isRunning = true;
         let simTime = 0;
 
-        // Model Discretization
+        // Discretization Grid (NX x NY)
         let NX = 60;
         let NY = 40;
 
-        // CVFD Flow Matrix Arrays
-        let gridHead, gridType, gridK, gridQ, gridVx, gridVy, gridConc;
+        // FDM CVFD Matrix Arrays
+        let gridHead, gridType, gridK, gridQ, gridVx, gridVy;
 
-        // Active Tool State
-        let activeTool = 'select'; // select, kzone, dirichlet, pump, inject, cln, pfas, barrier
+        // Active State
+        let activeTool = 'inspect'; // inspect, brush_head, brush_k2, well_pump, well_inject, cln, pfas, barrier, erase, box_head, probe, measure
+        let brushSize = 1;
+        let currentHeadVal = 102.0;
+        let currentQVal = 60.0;
+        let activeRibbon = 'home';
+        let colorPalette = 'cyan';
+
         let mousePos = { x: 0, y: 0 };
         let hoveredCell = { i: 0, j: 0 };
         let isMouseDown = false;
+        let strokeStartCell = null;
 
-        // Model Parameters
+        // Measurement & Probe Tools
+        let measureStart = null;
+        let measureEnd = null;
+        let probeCell = null;
+
+        // Undo Stack
+        let historyUndo = [];
+        const MAX_UNDO = 10;
+
+        // Physics Parameters
         let k1 = 25.0;
         let k2 = 2.5;
         let porosity = 0.25;
         let alphaL = 15.0;
         let lambdaDecay = 0.03;
 
-        // Objects & Particles
+        // Particles & Sources
         let sources = [];
         let particles = [];
         const MAX_PARTICLES = 3500;
 
         function initArrays() {
             gridHead = Array.from({ length: NX }, () => new Float32Array(NY));
-            gridType = Array.from({ length: NX }, () => new Int8Array(NY)); // 0: Active, 1: Dirichlet, 2: Barrier, 3: CLN, 4: K2 Zone
+            gridType = Array.from({ length: NX }, () => new Int8Array(NY)); // 0: Active, 1: Dirichlet Head, 2: Barrier, 3: CLN Pipe, 4: Zone 2 K
             gridK = Array.from({ length: NX }, () => new Float32Array(NY));
             gridQ = Array.from({ length: NX }, () => new Float32Array(NY));
             gridVx = Array.from({ length: NX }, () => new Float32Array(NY));
             gridVy = Array.from({ length: NX }, () => new Float32Array(NY));
-            gridConc = Array.from({ length: NX }, () => new Float32Array(NY));
 
             const hWest = 105.0;
             const hEast = 92.0;
@@ -400,18 +395,50 @@
                     gridType[i][j] = 0;
                     gridK[i][j] = k1;
                     gridQ[i][j] = 0;
-                    gridConc[i][j] = 0;
                     gridHead[i][j] = hWest - (i / (NX - 1)) * (hWest - hEast);
                 }
             }
 
             // Boundary Heads
             for (let j = 0; j < NY; j++) {
-                gridType[0][j] = 1;
-                gridHead[0][j] = hWest;
-                gridType[NX - 1][j] = 1;
-                gridHead[NX - 1][j] = hEast;
+                gridType[0][j] = 1; gridHead[0][j] = hWest;
+                gridType[NX - 1][j] = 1; gridHead[NX - 1][j] = hEast;
             }
+        }
+
+        function saveUndoState() {
+            if (historyUndo.length >= MAX_UNDO) historyUndo.shift();
+            const copyType = new Int8Array(NX * NY);
+            const copyHead = new Float32Array(NX * NY);
+            const copyK = new Float32Array(NX * NY);
+            const copyQ = new Float32Array(NX * NY);
+
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    const idx = i * NY + j;
+                    copyType[idx] = gridType[i][j];
+                    copyHead[idx] = gridHead[i][j];
+                    copyK[idx] = gridK[i][j];
+                    copyQ[idx] = gridQ[i][j];
+                }
+            }
+            historyUndo.push({ copyType, copyHead, copyK, copyQ, sources: JSON.parse(JSON.stringify(sources)) });
+        }
+
+        function undoAction() {
+            if (historyUndo.length === 0) return;
+            const state = historyUndo.pop();
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    const idx = i * NY + j;
+                    gridType[i][j] = state.copyType[idx];
+                    gridHead[i][j] = state.copyHead[idx];
+                    gridK[i][j] = state.copyK[idx];
+                    gridQ[i][j] = state.copyQ[idx];
+                }
+            }
+            sources = state.sources;
+            render();
         }
 
         function resizeCanvas() {
@@ -422,73 +449,196 @@
 
         window.addEventListener('resize', resizeCanvas);
 
-        function regridModel() {
-            NX = parseInt(document.getElementById('sliderGridRes').value);
-            NY = Math.round(NX * 0.66);
-            document.getElementById('valGridRes').innerText = `${NX} × ${NY}`;
+        // Pre-configured Model Presets
+        function loadPreset(template) {
+            saveUndoState();
             initArrays();
             sources = [];
             particles = [];
-            render();
+
+            if (template === 'pfas') {
+                sources.push({ i: 12, j: 18 });
+                for (let i = 25; i <= 45; i++) gridType[i][20] = 3; // CLN Line
+                for (let j = 10; j <= 28; j++) gridType[38][j] = 2; // Barrier Wall
+                gridQ[48][20] = -currentQVal;
+            } else if (template === 'capture') {
+                gridQ[35][20] = -120;
+                sources.push({ i: 10, j: 12 });
+                sources.push({ i: 10, j: 28 });
+            } else if (template === 'barrier') {
+                for (let j = 5; j <= 35; j++) gridType[30][j] = 2;
+                gridType[30][20] = 0; // Gap in barrier
+                sources.push({ i: 12, j: 20 });
+            }
+
+            restartSimulation();
         }
 
-        function updateModelParams() {
-            k1 = parseFloat(document.getElementById('sliderK1').value);
-            k2 = parseFloat(document.getElementById('sliderK2').value);
-            porosity = parseFloat(document.getElementById('sliderPorosity').value);
+        function setRibbonTab(tab) {
+            activeRibbon = tab;
+            document.querySelectorAll('.ribbon-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const content = document.getElementById('ribbonContent');
+            if (tab === 'home') {
+                content.innerHTML = `
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title">Model Templates</div>
+                        <button class="btn-ribbon" onclick="loadPreset('pfas')"><i class="fa-solid fa-biohazard"></i> PFAS Karst Plume</button>
+                        <button class="btn-ribbon" onclick="loadPreset('capture')"><i class="fa-solid fa-filter"></i> Well Capture Zone</button>
+                        <button class="btn-ribbon" onclick="loadPreset('barrier')"><i class="fa-solid fa-cubes"></i> Barrier Gap Flow</button>
+                    </div>
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title">Active Tools</div>
+                        <button class="btn-ribbon active" id="rbInspect" onclick="setTool('inspect')"><i class="fa-solid fa-arrow-pointer"></i> Inspect Cell</button>
+                        <button class="btn-ribbon" id="rbMeasure" onclick="setTool('measure')"><i class="fa-solid fa-ruler-combined"></i> Measure Distance</button>
+                        <button class="btn-ribbon" id="rbProbe" onclick="setTool('probe')"><i class="fa-solid fa-location-crosshairs"></i> Place Probe Well</button>
+                    </div>
+                `;
+            } else if (tab === 'geometry') {
+                content.innerHTML = `
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title">Painting Tools</div>
+                        <button class="btn-ribbon" onclick="setTool('brush_k2')"><i class="fa-solid fa-layer-group"></i> Paint K-Zone 2</button>
+                        <button class="btn-ribbon" onclick="setTool('barrier')"><i class="fa-solid fa-cubes"></i> Draw Fault Wall</button>
+                        <button class="btn-ribbon" onclick="setTool('erase')"><i class="fa-solid fa-eraser"></i> Erase Geometry</button>
+                    </div>
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title">Grid Operations</div>
+                        <button class="btn-ribbon" onclick="clearAllGeometry()"><i class="fa-solid fa-trash"></i> Wipe All Geometry</button>
+                    </div>
+                `;
+            } else if (tab === 'physics') {
+                content.innerHTML = `
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title">Boundaries &amp; Sources</div>
+                        <button class="btn-ribbon" onclick="setTool('brush_head')"><i class="fa-solid fa-water"></i> Paint Head Boundary</button>
+                        <button class="btn-ribbon" onclick="setTool('well_pump')"><i class="fa-solid fa-filter"></i> Pumping Well</button>
+                        <button class="btn-ribbon" onclick="setTool('well_inject')"><i class="fa-solid fa-syringe"></i> Recharge Well</button>
+                        <button class="btn-ribbon" onclick="setTool('cln')"><i class="fa-solid fa-network-wired"></i> CLN Conduit</button>
+                        <button class="btn-ribbon" onclick="setTool('pfas')"><i class="fa-solid fa-biohazard"></i> PFAS Source</button>
+                    </div>
+                `;
+            } else if (tab === 'results') {
+                content.innerHTML = `
+                    <div class="ribbon-group">
+                        <div class="ribbon-group-title">Color Palette</div>
+                        <button class="btn-ribbon" onclick="setPalette('cyan')"><i class="fa-solid fa-palette"></i> Teal/Cyan</button>
+                        <button class="btn-ribbon" onclick="setPalette('thermal')"><i class="fa-solid fa-fire"></i> Thermal</button>
+                        <button class="btn-ribbon" onclick="setPalette('viridis')"><i class="fa-solid fa-leaf"></i> Viridis</button>
+                    </div>
+                `;
+            }
+        }
+
+        function setPalette(pal) { colorPalette = pal; render(); }
+
+        function setTool(tool) {
+            activeTool = tool;
+            const banner = document.getElementById('toolBanner');
+            const map = {
+                inspect: 'Inspect Cell Properties',
+                brush_head: `Paint Head Boundary (H = ${currentHeadVal}m)`,
+                brush_k2: `Paint Low-K Zone 2 (K = ${k2}m/d)`,
+                well_pump: `Place Extraction Well (Q = -${currentQVal}m³/d)`,
+                well_inject: `Place Recharge Well (Q = +${currentQVal}m³/d)`,
+                cln: 'Draw CLN Conduit Network',
+                pfas: 'Place PFAS Contaminant Precursor Source',
+                barrier: 'Draw Low-K Fault Barrier',
+                erase: 'Erase Features to Active Matrix',
+                measure: 'Click & Drag to Measure Distance (m)',
+                probe: 'Click Cell to Place Monitoring Well Probe'
+            };
+            banner.innerHTML = `<i class="fa-solid fa-hand-pointer"></i> <span>Tool: ${map[tool] || tool}</span>`;
+        }
+
+        function updateSettings() {
+            brushSize = parseInt(document.getElementById('sliderBrush').value);
+            currentHeadVal = parseFloat(document.getElementById('sliderHeadVal').value);
+            currentQVal = parseFloat(document.getElementById('sliderQVal').value);
             alphaL = parseFloat(document.getElementById('sliderAlphaL').value);
             lambdaDecay = parseFloat(document.getElementById('sliderLambda').value);
 
-            document.getElementById('valK1').innerText = k1.toFixed(1);
-            document.getElementById('valK2').innerText = k2.toFixed(1);
-            document.getElementById('valPorosity').innerText = porosity.toFixed(2);
+            document.getElementById('valBrush').innerText = `${brushSize} × ${brushSize}`;
+            document.getElementById('valHeadVal').innerText = currentHeadVal.toFixed(1);
+            document.getElementById('valQVal').innerText = currentQVal;
             document.getElementById('valAlphaL').innerText = alphaL.toFixed(1);
             document.getElementById('valLambda').innerText = lambdaDecay.toFixed(3);
+        }
 
-            for (let i = 0; i < NX; i++) {
-                for (let j = 0; j < NY; j++) {
-                    if (gridType[i][j] === 4) gridK[i][j] = k2;
-                    else if (gridType[i][j] !== 2) gridK[i][j] = k1;
+        function applyMaterialPreset() {
+            const mat = document.getElementById('selectMaterial').value;
+            const presets = {
+                gravel: { k: 80, n: 0.32, a: 25 },
+                sand: { k: 25, n: 0.25, a: 15 },
+                silt: { k: 2.5, n: 0.18, a: 5 },
+                clay: { k: 0.1, n: 0.10, a: 1 },
+                granite: { k: 12, n: 0.12, a: 8 }
+            };
+            if (presets[mat]) {
+                k1 = presets[mat].k;
+                porosity = presets[mat].n;
+                alphaL = presets[mat].a;
+                document.getElementById('sliderAlphaL').value = alphaL;
+                updateSettings();
+                initArrays();
+                render();
+            }
+        }
+
+        // Smooth Drag Brush Painting (Bresenham Line Interpolation)
+        function applyBrushToCell(i, j) {
+            const half = Math.floor(brushSize / 2);
+            for (let di = -half; di <= half; di++) {
+                for (let dj = -half; dj <= half; dj++) {
+                    const ci = Math.max(0, Math.min(NX - 1, i + di));
+                    const cj = Math.max(0, Math.min(NY - 1, j + dj));
+
+                    if (activeTool === 'brush_head') {
+                        gridType[ci][cj] = 1; gridHead[ci][cj] = currentHeadVal;
+                    } else if (activeTool === 'brush_k2') {
+                        gridType[ci][cj] = 4; gridK[ci][cj] = k2;
+                    } else if (activeTool === 'barrier') {
+                        gridType[ci][cj] = 2; gridQ[ci][cj] = 0;
+                    } else if (activeTool === 'cln') {
+                        gridType[ci][cj] = 3; gridQ[ci][cj] = 0;
+                    } else if (activeTool === 'erase') {
+                        gridType[ci][cj] = 0; gridQ[ci][cj] = 0; gridK[ci][cj] = k1;
+                        sources = sources.filter(s => s.i !== ci || s.j !== cj);
+                    }
                 }
             }
         }
 
-        function setTool(tool) {
-            activeTool = tool;
-            document.querySelectorAll('.btn-cad-tool').forEach(b => b.classList.remove('active'));
-            const banner = document.getElementById('toolBanner');
+        function paintStrokeLine(c1, c2) {
+            let x0 = c1.i, y0 = c1.j;
+            const x1 = c2.i, y1 = c2.j;
+            const dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
+            const sx = (x0 < x1) ? 1 : -1;
+            const sy = (y0 < y1) ? 1 : -1;
+            let err = dx - dy;
 
-            const toolsMap = {
-                select: { id: 'toolSelect', icon: 'fa-arrow-pointer', name: 'Hover / Click Cell to Inspect Properties' },
-                kzone: { id: 'toolKZone', icon: 'fa-layer-group', name: 'Paint Low-K Stratigraphic Zone 2' },
-                dirichlet: { id: 'toolDirichlet', icon: 'fa-water', name: 'Paint Constant Head Boundary' },
-                pump: { id: 'toolWellPump', icon: 'fa-filter', name: 'Place Extraction / Pumping Well' },
-                inject: { id: 'toolWellInject', icon: 'fa-syringe', name: 'Place Recharge / Injection Well' },
-                cln: { id: 'toolCLN', icon: 'fa-network-wired', name: 'Draw Connected Linear Network (CLN) Conduit' },
-                pfas: { id: 'toolPFAS', icon: 'fa-biohazard', name: 'Place PFAS Contaminant Precursor Source' },
-                barrier: { id: 'toolBarrier', icon: 'fa-cubes', name: 'Draw Impermeable Low-K Fault Barrier' }
-            };
-
-            const t = toolsMap[tool];
-            if (t) {
-                document.getElementById(t.id).classList.add('active');
-                banner.innerHTML = `<i class="fa-solid ${t.icon}"></i> <span>Tool: ${t.name}</span>`;
+            while (true) {
+                applyBrushToCell(x0, y0);
+                if (x0 === x1 && y0 === y1) break;
+                const e2 = 2 * err;
+                if (e2 > -dy) { err -= dy; x0 += sx; }
+                if (e2 < dx) { err += dx; y0 += sy; }
             }
         }
 
-        // FDM Matrix Flow Solver Engine (Gauss-Seidel with Adaptive Relaxation)
+        // Solver Engine (Gauss-Seidel FDM Matrix Solver)
         function solveFlowField() {
             const iterations = 8;
             for (let it = 0; it < iterations; it++) {
                 for (let i = 0; i < NX; i++) {
                     for (let j = 0; j < NY; j++) {
-                        if (gridType[i][j] === 1 || gridType[i][j] === 2) continue; // Skip Boundary / Barrier
+                        if (gridType[i][j] === 1 || gridType[i][j] === 2) continue;
 
                         let cond = gridK[i][j];
                         if (gridType[i][j] === 3) cond = k1 * 10.0; // CLN High-K Conduit
 
-                        let sumHead = 0;
-                        let count = 0;
+                        let sumHead = 0, count = 0;
 
                         if (i > 0 && gridType[i - 1][j] !== 2) { sumHead += gridHead[i - 1][j]; count++; }
                         if (i < NX - 1 && gridType[i + 1][j] !== 2) { sumHead += gridHead[i + 1][j]; count++; }
@@ -502,10 +652,8 @@
                 }
             }
 
-            // Compute Seepage Velocities v = -K/n_e * grad(h)
             let maxV = 0, minH = 999, maxH = -999;
-            const dx = width / NX;
-            const dy = height / NY;
+            const dx = width / NX, dy = height / NY;
 
             for (let i = 0; i < NX; i++) {
                 for (let j = 0; j < NY; j++) {
@@ -513,9 +661,7 @@
                     if (h < minH) minH = h;
                     if (h > maxH) maxH = h;
 
-                    if (gridType[i][j] === 2) {
-                        gridVx[i][j] = 0; gridVy[i][j] = 0; continue;
-                    }
+                    if (gridType[i][j] === 2) { gridVx[i][j] = 0; gridVy[i][j] = 0; continue; }
 
                     let dhdx = 0;
                     if (i > 0 && i < NX - 1) dhdx = (gridHead[i + 1][j] - gridHead[i - 1][j]) / (2 * dx);
@@ -534,9 +680,7 @@
                 }
             }
 
-            document.getElementById('diagHeadRange').innerText = `${minH.toFixed(1)} - ${maxH.toFixed(1)} m`;
-            document.getElementById('diagMaxVel').innerText = `${(maxV / 16).toFixed(2)} m/d`;
-            document.getElementById('diagCells').innerText = (NX * NY).toLocaleString();
+            document.getElementById('probeHead').innerText = probeCell ? `${gridHead[probeCell.i][probeCell.j].toFixed(2)} m` : '-- m';
         }
 
         function getVelocityAt(x, y) {
@@ -545,184 +689,116 @@
             return { vx: gridVx[i][j], vy: gridVy[i][j], i, j };
         }
 
-        // Multicomponent Transport Particles
-        class Particle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.age = 0;
-                this.species = 'precursor';
-            }
-
-            update(dt) {
-                this.age += dt;
-
-                const vel = getVelocityAt(this.x, this.y);
-                const vMag = Math.hypot(vel.vx, vel.vy) + 1e-5;
-
-                if (this.species === 'precursor' && Math.random() < lambdaDecay * dt) {
-                    this.species = 'daughter';
-                }
-
-                const randL = (Math.random() + Math.random() - 1.0) * 1.5;
-                const randT = (Math.random() + Math.random() - 1.0) * 1.5;
-
-                const dispL = randL * Math.sqrt(2 * alphaL * vMag * dt);
-                const dispT = randT * Math.sqrt(2 * (alphaL * 0.2) * vMag * dt);
-
-                const ux = vel.vx / vMag;
-                const uy = vel.vy / vMag;
-
-                this.x += (vel.vx * dt) + (dispL * ux - dispT * uy);
-                this.y += (vel.vy * dt) + (dispL * uy + dispT * ux);
-            }
-
-            draw() {
-                let color = (this.species === 'precursor') ? 'rgba(236, 72, 153, 0.85)' : 'rgba(168, 85, 247, 0.75)';
-                ctx.fillStyle = color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, 3.2, 0, Math.PI * 2);
-                ctx.fill();
-            }
+        function restartSimulation() {
+            particles = [];
+            simTime = 0;
+            render();
         }
 
-        // Render Canvas Workstation Visuals
+        function clearAllGeometry() {
+            saveUndoState();
+            sources = [];
+            particles = [];
+            simTime = 0;
+            initArrays();
+            render();
+        }
+
+        // Render Graphics Workstation
         function renderMeshGrid() {
             const dx = width / NX;
             const dy = height / NY;
-            const isQuadtree = document.getElementById('selectMeshType').value === 'quadtree';
 
             ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
             ctx.lineWidth = 1;
-
-            let clnNodes = 0;
 
             for (let i = 0; i < NX; i++) {
                 for (let j = 0; j < NY; j++) {
                     const cellX = i * dx;
                     const cellY = j * dy;
 
-                    // Low-K Stratigraphic Zone 2 (Purple)
-                    if (gridType[i][j] === 4) {
-                        ctx.fillStyle = "rgba(168, 85, 247, 0.18)";
-                        ctx.fillRect(cellX, cellY, dx, dy);
-                    }
-                    // Barrier Wall (Amber)
-                    else if (gridType[i][j] === 2) {
-                        ctx.fillStyle = "rgba(245, 158, 11, 0.6)";
-                        ctx.fillRect(cellX, cellY, dx, dy);
-                    }
-                    // CLN High-K Network (Teal Pipe)
-                    else if (gridType[i][j] === 3) {
-                        clnNodes++;
-                        ctx.fillStyle = "rgba(20, 184, 166, 0.5)";
-                        ctx.fillRect(cellX, cellY, dx, dy);
-                        ctx.strokeStyle = "#14b8a6";
-                        ctx.strokeRect(cellX, cellY, dx, dy);
-                    }
-                    // Constant Head Boundary (Cyan)
-                    else if (gridType[i][j] === 1 && i !== 0 && i !== NX - 1) {
-                        ctx.fillStyle = "rgba(56, 189, 248, 0.4)";
-                        ctx.fillRect(cellX, cellY, dx, dy);
-                    }
+                    if (gridType[i][j] === 4) { ctx.fillStyle = "rgba(168, 85, 247, 0.18)"; ctx.fillRect(cellX, cellY, dx, dy); }
+                    else if (gridType[i][j] === 2) { ctx.fillStyle = "rgba(245, 158, 11, 0.6)"; ctx.fillRect(cellX, cellY, dx, dy); }
+                    else if (gridType[i][j] === 3) { ctx.fillStyle = "rgba(20, 184, 166, 0.5)"; ctx.fillRect(cellX, cellY, dx, dy); ctx.strokeStyle = "#14b8a6"; ctx.strokeRect(cellX, cellY, dx, dy); }
+                    else if (gridType[i][j] === 1 && i !== 0 && i !== NX - 1) { ctx.fillStyle = "rgba(56, 189, 248, 0.4)"; ctx.fillRect(cellX, cellY, dx, dy); }
 
-                    // Quadtree Refinement near Features
-                    if (isQuadtree && (gridType[i][j] === 3 || gridQ[i][j] !== 0)) {
-                        ctx.strokeStyle = "rgba(20, 184, 166, 0.25)";
-                        const subW = dx / 2;
-                        const subH = dy / 2;
-                        ctx.strokeRect(cellX, cellY, subW, subH);
-                        ctx.strokeRect(cellX + subW, cellY, subW, subH);
-                        ctx.strokeRect(cellX, cellY + subH, subW, subH);
-                        ctx.strokeRect(cellX + subW, cellY + subH, subW, subH);
-                    } else {
-                        ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
-                        ctx.strokeRect(cellX, cellY, dx, dy);
-                    }
+                    ctx.strokeStyle = "rgba(255, 255, 255, 0.04)";
+                    ctx.strokeRect(cellX, cellY, dx, dy);
 
-                    // Pumping Well
                     if (gridQ[i][j] < 0) {
-                        const cx = cellX + dx / 2;
-                        const cy = cellY + dy / 2;
-                        ctx.fillStyle = "rgba(20, 184, 166, 0.25)";
-                        ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
-                        ctx.fillStyle = "#14b8a6";
-                        ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
-                        ctx.strokeStyle = "#ffffff"; ctx.stroke();
-                    }
-                    // Injection Well
-                    else if (gridQ[i][j] > 0) {
-                        const cx = cellX + dx / 2;
-                        const cy = cellY + dy / 2;
-                        ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
-                        ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
-                        ctx.fillStyle = "#38bdf8";
-                        ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
-                        ctx.strokeStyle = "#ffffff"; ctx.stroke();
+                        const cx = cellX + dx / 2, cy = cellY + dy / 2;
+                        ctx.fillStyle = "rgba(20, 184, 166, 0.25)"; ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = "#14b8a6"; ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#ffffff"; ctx.stroke();
+                    } else if (gridQ[i][j] > 0) {
+                        const cx = cellX + dx / 2, cy = cellY + dy / 2;
+                        ctx.fillStyle = "rgba(56, 189, 248, 0.25)"; ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = "#38bdf8"; ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#ffffff"; ctx.stroke();
                     }
                 }
             }
 
-            document.getElementById('diagCLN').innerText = `${clnNodes} Nodes`;
-
-            // Draw PFAS Sources
             sources.forEach(s => {
-                const cx = s.i * dx + dx / 2;
-                const cy = s.j * dy + dy / 2;
-                ctx.fillStyle = "rgba(236, 72, 153, 0.35)";
-                ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = "#ec4899";
-                ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill();
-                ctx.strokeStyle = "#ffffff"; ctx.stroke();
+                const cx = s.i * dx + dx / 2, cy = s.j * dy + dy / 2;
+                ctx.fillStyle = "rgba(236, 72, 153, 0.35)"; ctx.beginPath(); ctx.arc(cx, cy, 12, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = "#ec4899"; ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = "#ffffff"; ctx.stroke();
             });
 
-            // Highlight Hovered Cell
-            const hcX = hoveredCell.i * dx;
-            const hcY = hoveredCell.j * dy;
-            ctx.strokeStyle = "#38bdf8";
-            ctx.lineWidth = 1.5;
-            ctx.strokeRect(hcX, hcY, dx, dy);
-        }
-
-        // Cell Interaction Logic
-        function handleCellClick(e) {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            const i = Math.max(0, Math.min(NX - 1, Math.floor((x / width) * NX)));
-            const j = Math.max(0, Math.min(NY - 1, Math.floor((y / height) * NY)));
-
-            if (activeTool === 'pfas') {
-                sources.push({ i, j });
-            } else if (activeTool === 'pump') {
-                gridType[i][j] = 0; gridQ[i][j] = -50;
-            } else if (activeTool === 'inject') {
-                gridType[i][j] = 0; gridQ[i][j] = 50;
-            } else if (activeTool === 'cln') {
-                gridType[i][j] = 3; gridQ[i][j] = 0;
-            } else if (activeTool === 'kzone') {
-                gridType[i][j] = 4; gridK[i][j] = k2;
-            } else if (activeTool === 'barrier') {
-                gridType[i][j] = 2; gridQ[i][j] = 0;
-            } else if (activeTool === 'dirichlet') {
-                gridType[i][j] = 1; gridHead[i][j] = 98.0; gridQ[i][j] = 0;
+            // Draw Virtual Probe Indicator
+            if (probeCell) {
+                const px = probeCell.i * dx + dx / 2;
+                const py = probeCell.j * dy + dy / 2;
+                ctx.strokeStyle = "#f59e0b"; ctx.lineWidth = 2;
+                ctx.beginPath(); ctx.arc(px, py, 10, 0, Math.PI * 2); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(px - 14, py); ctx.lineTo(px + 14, py); ctx.moveTo(px, py - 14); ctx.lineTo(px, py + 14); ctx.stroke();
             }
-            render();
+
+            // Draw Distance Measurement Tape
+            if (measureStart && measureEnd) {
+                const p1 = { x: measureStart.i * dx + dx / 2, y: measureStart.j * dy + dy / 2 };
+                const p2 = { x: measureEnd.i * dx + dx / 2, y: measureEnd.j * dy + dy / 2 };
+                const distM = Math.hypot((measureEnd.i - measureStart.i) * (1000 / NX), (measureEnd.j - measureStart.j) * (666 / NY));
+
+                ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+                ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke(); ctx.setLineDash([]);
+
+                ctx.font = "600 11px 'Fira Code', monospace"; ctx.fillStyle = "#38bdf8";
+                ctx.fillText(`${distM.toFixed(1)} m`, (p1.x + p2.x) / 2 + 10, (p1.y + p2.y) / 2 - 10);
+            }
+
+            // Highlight Hovered Cell
+            const hcX = hoveredCell.i * dx, hcY = hoveredCell.j * dy;
+            ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 1.5; ctx.strokeRect(hcX, hcY, dx, dy);
         }
 
-        canvas.addEventListener('mousedown', (e) => { isMouseDown = true; handleCellClick(e); });
+        // Canvas Click & Drag Handling
+        function handleCellClick(i, j) {
+            if (activeTool === 'pfas') sources.push({ i, j });
+            else if (activeTool === 'well_pump') { gridType[i][j] = 0; gridQ[i][j] = -currentQVal; }
+            else if (activeTool === 'well_inject') { gridType[i][j] = 0; gridQ[i][j] = currentQVal; }
+            else if (activeTool === 'probe') { probeCell = { i, j }; document.getElementById('probeLoc').innerText = `Cell (${i}, ${j})`; }
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            isMouseDown = true;
+            saveUndoState();
+            const rect = canvas.getBoundingClientRect();
+            const i = Math.max(0, Math.min(NX - 1, Math.floor(((e.clientX - rect.left) / width) * NX)));
+            const j = Math.max(0, Math.min(NY - 1, Math.floor(((e.clientY - rect.top) / height) * NY)));
+
+            strokeStartCell = { i, j };
+            if (activeTool === 'measure') measureStart = { i, j };
+            else handleCellClick(i, j);
+            render();
+        });
+
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+            const i = Math.max(0, Math.min(NX - 1, Math.floor(((e.clientX - rect.left) / width) * NX)));
+            const j = Math.max(0, Math.min(NY - 1, Math.floor(((e.clientY - rect.top) / height) * NY)));
 
-            const i = Math.max(0, Math.min(NX - 1, Math.floor((x / width) * NX)));
-            const j = Math.max(0, Math.min(NY - 1, Math.floor((y / height) * NY)));
+            const currentCell = { i, j };
+            hoveredCell = currentCell;
 
-            hoveredCell = { i, j };
-
-            // Update Inspector Panel
             const wx = (i / NX) * 1000;
             const wy = ((NY - j) / NY) * 666;
             document.getElementById('cellIdx').innerText = `(${i}, ${j})`;
@@ -733,30 +809,53 @@
 
             const bcMap = { 0: 'Active Matrix', 1: 'Const Head (Dirichlet)', 2: 'Low-K Barrier', 3: 'CLN High-K Pipe', 4: 'Zone 2 Low-K Soil' };
             document.getElementById('cellBC').innerText = bcMap[gridType[i][j]] || 'Active Matrix';
-
             document.getElementById('statusPos').innerText = `X: ${wx.toFixed(1)}m, Y: ${wy.toFixed(1)}m`;
 
-            if (isMouseDown && (activeTool === 'kzone' || activeTool === 'barrier' || activeTool === 'cln')) {
-                handleCellClick(e);
+            if (isMouseDown) {
+                if (activeTool === 'measure') {
+                    measureEnd = currentCell;
+                } else if (strokeStartCell) {
+                    paintStrokeLine(strokeStartCell, currentCell);
+                    strokeStartCell = currentCell;
+                }
+                render();
             }
         });
 
-        window.addEventListener('mouseup', () => isMouseDown = false);
+        window.addEventListener('mouseup', () => { isMouseDown = false; strokeStartCell = null; });
 
-        function togglePause() {
+        function toggleCompute() {
             isRunning = !isRunning;
-            document.getElementById('btnPause').innerHTML = isRunning ? '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Resume';
+            document.getElementById('lblRun').innerText = isRunning ? 'Compute Study' : 'Resume Study';
+            document.getElementById('iconRun').className = isRunning ? 'fa-solid fa-pause' : 'fa-solid fa-play';
         }
 
-        function resetGrid() {
-            sources = [];
-            particles = [];
-            simTime = 0;
-            initArrays();
-            render();
+        function exportSnapshot() {
+            const image = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            link.download = 'modflow_usg_study_snapshot.png';
+            link.href = image;
+            link.click();
         }
 
-        // Main Animation Loop
+        function exportCSV() {
+            let csv = "I,J,X_m,Y_m,Head_m,Vel_md,Conductivity_md,Type\n";
+            for (let i = 0; i < NX; i++) {
+                for (let j = 0; j < NY; j++) {
+                    const wx = (i / NX) * 1000;
+                    const wy = ((NY - j) / NY) * 666;
+                    const v = (Math.hypot(gridVx[i][j], gridVy[i][j]) / 16).toFixed(2);
+                    csv += `${i},${j},${wx.toFixed(1)},${wy.toFixed(1)},${gridHead[i][j].toFixed(2)},${v},${gridK[i][j].toFixed(1)},${gridType[i][j]}\n`;
+                }
+            }
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.download = 'usg_transport_matrix_results.csv';
+            link.href = window.URL.createObjectURL(blob);
+            link.click();
+        }
+
+        // Animation Loop
         function animate() {
             ctx.fillStyle = "rgba(5, 8, 17, 0.28)";
             ctx.fillRect(0, 0, width, height);
@@ -765,25 +864,19 @@
 
             if (isRunning) {
                 simTime += 0.2;
-                document.getElementById('diagTime').innerText = `${simTime.toFixed(1)} Days`;
+                document.getElementById('statusTime').innerText = `${simTime.toFixed(1)} Days`;
 
-                const dx = width / NX;
-                const dy = height / NY;
-
+                const dx = width / NX, dy = height / NY;
                 sources.forEach(s => {
-                    const cx = s.i * dx + dx / 2;
-                    const cy = s.j * dy + dy / 2;
+                    const cx = s.i * dx + dx / 2, cy = s.j * dy + dy / 2;
                     for (let k = 0; k < 3; k++) {
-                        if (particles.length < MAX_PARTICLES) {
-                            particles.push(new Particle(cx, cy));
-                        }
+                        if (particles.length < MAX_PARTICLES) particles.push(new Particle(cx, cy));
                     }
                 });
 
                 for (let i = particles.length - 1; i >= 0; i--) {
                     let p = particles[i];
                     p.update(0.12);
-
                     const vel = getVelocityAt(p.x, p.y);
                     if (gridQ[vel.i][vel.j] < 0 || p.x > width + 10 || p.x < -10 || p.y > height + 10 || p.y < -10) {
                         particles.splice(i, 1);
@@ -794,15 +887,14 @@
             particles.forEach(p => p.draw());
             renderMeshGrid();
 
-            document.getElementById('diagParticles').innerText = particles.length.toLocaleString();
-
             requestAnimationFrame(animate);
         }
 
-        // Initialize Application
+        // Init App
         initArrays();
         resizeCanvas();
-        updateModelParams();
+        setRibbonTab('home');
+        updateSettings();
         animate();
     </script>
 </body>
