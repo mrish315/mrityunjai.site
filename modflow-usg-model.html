@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MODFLOW-USG / USG-Transport v2.8.0 Simulator | Dr. Kunwar Mrityunjai Sharma</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: rgba(17, 24, 39, 0.92);
+            --accent-teal: #14b8a6;
+            --accent-cyan: #38bdf8;
+            --accent-blue: #60a5fa;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-purple: #a855f7;
+            --accent-red: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-glow: rgba(20, 184, 166, 0.35);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; overflow: hidden; }
+
+        nav { padding: 0.8rem 2%; background: rgba(9, 13, 22, 0.95); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        nav a { color: var(--accent-teal); text-decoration: none; font-weight: 600; font-size: 0.85rem; }
+
+        .app-layout { display: grid; grid-template-columns: 370px 1fr; height: calc(100vh - 49px); }
+
+        /* Sidebar Controls */
+        .controls-panel {
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 1px solid var(--border-subtle);
+            padding: 1.2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .controls-panel h2 { font-size: 1.05rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .controls-panel h2 i { color: var(--accent-teal); }
+
+        .section-label { font-family: var(--font-code); font-size: 0.75rem; text-transform: uppercase; color: var(--accent-teal); letter-spacing: 1px; margin-top: 0.2rem; }
+
+        /* Process Selection Grid */
+        .process-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .btn-proc {
+            padding: 0.55rem 0.6rem; border-radius: 6px; font-size: 0.76rem; font-weight: 600;
+            border: 1px solid var(--border-subtle); background: rgba(255,255,255,0.03);
+            color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; gap: 6px; justify-content: flex-start;
+        }
+        .btn-proc:hover { border-color: var(--accent-teal); color: var(--text-main); }
+        .btn-proc.active { background: rgba(20, 184, 166, 0.2); border-color: var(--accent-teal); color: var(--accent-teal); }
+
+        .control-group { display: flex; flex-direction: column; gap: 0.3rem; }
+        .control-group label { font-size: 0.82rem; font-family: 'Inter', sans-serif; color: var(--text-main); display: flex; justify-content: space-between; }
+        .control-group label span.val { color: var(--accent-teal); font-family: var(--font-code); font-weight: 600; }
+
+        input[type="range"] {
+            width: 100%; accent-color: var(--accent-teal); background: rgba(255,255,255,0.05); border-radius: 4px; height: 5px;
+        }
+
+        .btn-row { display: flex; gap: 8px; margin-top: 0.4rem; }
+        .btn-action {
+            flex: 1; padding: 0.65rem; border-radius: 6px; font-weight: 600; font-size: 0.82rem;
+            border: 1px solid var(--border-subtle); background: rgba(20, 184, 166, 0.15);
+            color: var(--accent-teal); cursor: pointer; text-align: center; transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-action:hover { background: var(--accent-teal); color: #090d16; font-weight: 700; }
+
+        /* Simulation Viewport */
+        .simulation-viewport { position: relative; background: #050811; display: flex; flex-direction: column; }
+        .canvas-container { flex: 1; position: relative; width: 100%; height: 100%; }
+        canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        /* Floating Toolbar */
+        .viewport-toolbar {
+            position: absolute; top: 1rem; left: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 0.4rem; display: flex; gap: 6px; backdrop-filter: blur(8px);
+            z-index: 5; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .btn-icon {
+            width: 34px; height: 34px; border-radius: 6px; border: 1px solid var(--border-subtle);
+            background: rgba(255,255,255,0.04); color: var(--text-main); font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-icon:hover { border-color: var(--accent-teal); color: var(--accent-teal); background: rgba(20, 184, 166, 0.15); }
+
+        /* HUD Overlay */
+        .hud-overlay {
+            position: absolute; top: 1rem; right: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 10px; padding: 1rem 1.2rem; font-family: var(--font-code); font-size: 0.78rem;
+            display: flex; flex-direction: column; gap: 0.45rem; backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5); pointer-events: none; min-width: 310px; z-index: 5;
+        }
+        .hud-stat { display: flex; justify-content: space-between; gap: 1.5rem; }
+        .hud-stat .label { color: var(--text-muted); }
+        .hud-stat .value { color: var(--accent-teal); font-weight: 600; }
+
+        .color-legend {
+            position: absolute; bottom: 1rem; right: 1rem;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 8px; padding: 0.7rem 1rem; backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; gap: 5px; font-family: var(--font-code); font-size: 0.72rem;
+            pointer-events: none; z-index: 5;
+        }
+        .legend-bar { width: 220px; height: 10px; border-radius: 4px; background: linear-gradient(to right, rgba(9,13,22,0.8), #14b8a6, #a855f7, #ec4899, #ef4444); }
+        .legend-labels { display: flex; justify-content: space-between; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div><a href="index.html"><i class="fa-solid fa-arrow-left"></i> Back to Portfolio</a></div>
+        <div style="font-weight:700; color:var(--text-main);">MODFLOW-USG / USG-Transport v2.8.0 Process Simulator</div>
+    </nav>
+
+    <div class="app-layout">
+        <!-- Controls Sidebar -->
+        <div class="controls-panel">
+            <h2><i class="fa-solid fa-diagram-project"></i> USG-Transport 2.8.0</h2>
+
+            <div class="section-label">Active Simulation Process Mode</div>
+            <div class="process-grid">
+                <button id="modePFAS" class="btn-proc active" onclick="setProcessMode('pfas')"><i class="fa-solid fa-biohazard"></i> PFAS Precursors</button>
+                <button id="modeCLN" class="btn-proc" onclick="setProcessMode('cln')"><i class="fa-solid fa-network-wired"></i> CLN Conduit Flow</button>
+                <button id="modeThermal" class="btn-proc" onclick="setProcessMode('thermal')"><i class="fa-solid fa-temperature-arrow-up"></i> BHE Geothermal</button>
+                <button id="modeSalt" class="btn-proc" onclick="setProcessMode('salt')"><i class="fa-solid fa-water"></i> Saltwater Density</button>
+            </div>
+
+            <div class="section-label">Mesh &amp; Solver Settings</div>
+            <div class="control-group">
+                <label>Grid Mesh Resolution: <span id="valMesh" class="val">Unstructured Quadtree</span></label>
+            </div>
+
+            <div class="control-group">
+                <label>SMS / IMS MF6 Solver Tolerance: <span id="valHiclose" class="val">1e-4</span></label>
+                <input type="range" id="sliderHiclose" min="1" max="5" value="4" oninput="updateSolver()">
+            </div>
+
+            <div class="control-group">
+                <label>Hydraulic Conductivity <i>K</i> (m/d): <span id="valK" class="val">25.0</span></label>
+                <input type="range" id="sliderK" min="2" max="80" value="25" oninput="updateParams()">
+            </div>
+
+            <div class="section-label">Process Specific Parameters</div>
+            <div id="processParamsBox">
+                <!-- Dynamically populated process sliders -->
+            </div>
+
+            <div class="btn-row">
+                <button id="btnPause" class="btn-action" onclick="togglePause()"><i class="fa-solid fa-pause"></i> Pause</button>
+                <button class="btn-action" onclick="resetSim()"><i class="fa-solid fa-rotate-right"></i> Reset Model</button>
+            </div>
+        </div>
+
+        <!-- Simulation Viewport -->
+        <div class="simulation-viewport">
+            <div class="viewport-toolbar">
+                <button class="btn-icon" onclick="toggleMesh()" title="Toggle Mesh Grid"><i class="fa-solid fa-border-all"></i></button>
+                <button class="btn-icon" onclick="toggleVectors()" title="Toggle Velocity Vectors"><i class="fa-solid fa-arrows-up-down-left-right"></i></button>
+            </div>
+
+            <div class="canvas-container">
+                <canvas id="usgCanvas"></canvas>
+            </div>
+
+            <!-- HUD Overlay -->
+            <div class="hud-overlay">
+                <div class="hud-stat"><span class="label">Linear Matrix Solver:</span> <span id="hudSolver" class="value">IMS MODFLOW 6 (Adaptive)</span></div>
+                <div class="hud-stat"><span class="label">Nonlinear Outer Iterations:</span> <span id="hudIter" class="value">4 / Stress Period</span></div>
+                <div class="hud-stat"><span class="label">GWF Unstructured Cells:</span> <span id="hudCells" class="value">2,840 Cells</span></div>
+                <div class="hud-stat"><span class="label">CLN Network Conduit Segments:</span> <span id="hudCLN" class="value">14 Nodes</span></div>
+                <div class="hud-stat"><span class="label">Active Transport Species:</span> <span id="hudSpecies" class="value">PFAS Precursor + Daughter</span></div>
+                <div class="hud-stat"><span class="label">Simulation Stress Time:</span> <span id="hudTime" class="value">0.0 Days</span></div>
+            </div>
+
+            <!-- Color Scale Legend -->
+            <div class="color-legend">
+                <span id="legendTitle">PFAS Concentration (µg/L)</span>
+                <div class="legend-bar"></div>
+                <div class="legend-labels">
+                    <span>0.0 (Clean)</span>
+                    <span>Mid</span>
+                    <span>Peak Concentration</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('usgCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let isRunning = true;
+        let simTime = 0;
+        let showMesh = true;
+        let showVectors = true;
+
+        let activeProcess = 'pfas'; // pfas, cln, thermal, salt
+
+        // Physics Parameters
+        let K = 25.0;
+        let param1 = 0.05; // Decay / Flow / Power
+        let param2 = 12.0; // Dispersivity / Radius
+
+        // Particles
+        let particles = [];
+        const MAX_PARTICLES = 3000;
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            width = canvas.width = container.clientWidth;
+            height = canvas.height = container.clientHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function setProcessMode(mode) {
+            activeProcess = mode;
+            document.querySelectorAll('.btn-proc').forEach(b => b.classList.remove('active'));
+
+            const box = document.getElementById('processParamsBox');
+            const legendTitle = document.getElementById('legendTitle');
+
+            if (mode === 'pfas') {
+                document.getElementById('modePFAS').classList.add('active');
+                legendTitle.innerText = "PFAS Precursor & Daughter Concentration";
+                document.getElementById('hudSpecies').innerText = "PFAS Precursor + Daughter";
+                box.innerHTML = `
+                    <div class="control-group">
+                        <label>PFAS Precursor Decay Rate (&lambda;): <span id="valP1" class="val">0.05 /d</span></label>
+                        <input type="range" id="sliderP1" min="0.01" max="0.2" step="0.01" value="0.05" oninput="updateParams()">
+                    </div>
+                    <div class="control-group">
+                        <label>Vadose Sorption Coeff (K_d): <span id="valP2" class="val">2.5 L/kg</span></label>
+                        <input type="range" id="sliderP2" min="0.5" max="8" step="0.5" value="2.5" oninput="updateParams()">
+                    </div>
+                `;
+            } else if (mode === 'cln') {
+                document.getElementById('modeCLN').classList.add('active');
+                legendTitle.innerText = "CLN Conduit Flow Velocity (m/d)";
+                document.getElementById('hudSpecies').innerText = "CLN Fully Coupled Flow";
+                box.innerHTML = `
+                    <div class="control-group">
+                        <label>CLN Conduit Conductance: <span id="valP1" class="val">150 m²/d</span></label>
+                        <input type="range" id="sliderP1" min="50" max="500" value="150" oninput="updateParams()">
+                    </div>
+                    <div class="control-group">
+                        <label>Manning Roughness (n): <span id="valP2" class="val">0.035</span></label>
+                        <input type="range" id="sliderP2" min="0.01" max="0.08" step="0.005" value="0.035" oninput="updateParams()">
+                    </div>
+                `;
+            } else if (mode === 'thermal') {
+                document.getElementById('modeThermal').classList.add('active');
+                legendTitle.innerText = "Geothermal Heat Plume (°C)";
+                document.getElementById('hudSpecies').innerText = "Thermal Energy & BHE";
+                box.innerHTML = `
+                    <div class="control-group">
+                        <label>BHE Thermal Power (Q_heat): <span id="valP1" class="val">45 W/m</span></label>
+                        <input type="range" id="sliderP1" min="10" max="100" value="45" oninput="updateParams()">
+                    </div>
+                    <div class="control-group">
+                        <label>Rock Thermal Conductivity: <span id="valP2" class="val">3.2 W/mK</span></label>
+                        <input type="range" id="sliderP2" min="1.0" max="6.0" step="0.2" value="3.2" oninput="updateParams()">
+                    </div>
+                `;
+            } else if (mode === 'salt') {
+                document.getElementById('modeSalt').classList.add('active');
+                legendTitle.innerText = "Saltwater Concentration (g/L TDS)";
+                document.getElementById('hudSpecies').innerText = "Saltwater Density Coupling";
+                box.innerHTML = `
+                    <div class="control-group">
+                        <label>Saltwater Density Ratio (&rho;_s/&rho;_f): <span id="valP1" class="val">1.025</span></label>
+                        <input type="range" id="sliderP1" min="1.005" max="1.050" step="0.005" value="1.025" oninput="updateParams()">
+                    </div>
+                    <div class="control-group">
+                        <label>Inland Head Gradient: <span id="valP2" class="val">0.008</span></label>
+                        <input type="range" id="sliderP2" min="0.002" max="0.02" step="0.001" value="0.008" oninput="updateParams()">
+                    </div>
+                `;
+            }
+            updateParams();
+            resetSim();
+        }
+
+        function updateParams() {
+            K = parseFloat(document.getElementById('sliderK').value);
+            document.getElementById('valK').innerText = K.toFixed(1);
+
+            const p1Elem = document.getElementById('sliderP1');
+            const p2Elem = document.getElementById('sliderP2');
+            if (p1Elem) param1 = parseFloat(p1Elem.value);
+            if (p2Elem) param2 = parseFloat(p2Elem.value);
+
+            if (document.getElementById('valP1')) document.getElementById('valP1').innerText = param1;
+            if (document.getElementById('valP2')) document.getElementById('valP2').innerText = param2;
+        }
+
+        function updateSolver() {
+            const val = document.getElementById('sliderHiclose').value;
+            const tol = Math.pow(10, -val);
+            document.getElementById('valHiclose').innerText = tol.toExponential(0);
+        }
+
+        function togglePause() {
+            isRunning = !isRunning;
+            document.getElementById('btnPause').innerHTML = isRunning ? '<i class="fa-solid fa-pause"></i> Pause' : '<i class="fa-solid fa-play"></i> Resume';
+        }
+
+        function toggleMesh() { showMesh = !showMesh; render(); }
+        function toggleVectors() { showVectors = !showVectors; render(); }
+
+        function resetSim() {
+            particles = [];
+            simTime = 0;
+            render();
+        }
+
+        // Particle Class for Transport
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.age = 0;
+                this.type = (Math.random() < 0.6) ? 'precursor' : 'daughter';
+                this.concentration = 1.0;
+            }
+
+            update(dt) {
+                this.age += dt;
+
+                // Base Seepage Flow
+                let vx = (K * 0.008) * 10;
+                let vy = (Math.random() - 0.5) * 2;
+
+                if (activeProcess === 'salt') {
+                    // Density-dependent downward sinking
+                    vy += (param1 - 1.0) * 80;
+                } else if (activeProcess === 'thermal') {
+                    // Thermal buoyancy upward rising near BHE
+                    if (Math.hypot(this.x - width * 0.4, this.y - height * 0.5) < 120) {
+                        vy -= (param1 / 10);
+                    }
+                } else if (activeProcess === 'pfas') {
+                    // Precursor transforms to daughter component
+                    if (this.type === 'precursor' && Math.random() < param1 * dt) {
+                        this.type = 'daughter';
+                    }
+                }
+
+                this.x += vx * dt * 15;
+                this.y += vy * dt * 15;
+            }
+
+            draw() {
+                let color;
+                if (activeProcess === 'pfas') {
+                    color = (this.type === 'precursor') ? 'rgba(236, 72, 153, 0.8)' : 'rgba(168, 85, 247, 0.8)';
+                } else if (activeProcess === 'thermal') {
+                    color = 'rgba(239, 68, 68, 0.8)';
+                } else if (activeProcess === 'salt') {
+                    color = 'rgba(20, 184, 166, 0.8)';
+                } else {
+                    color = 'rgba(56, 189, 248, 0.8)';
+                }
+
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Render Unstructured Quadtree Grid Mesh
+        function renderUnstructuredMesh() {
+            if (!showMesh) return;
+
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+            ctx.lineWidth = 1;
+
+            const baseSize = 80;
+            for (let x = 0; x < width; x += baseSize) {
+                for (let y = 0; y < height; y += baseSize) {
+                    // Local Refinement near Well / CLN Network
+                    const distToCenter = Math.hypot(x + 40 - width * 0.4, y + 40 - height * 0.5);
+                    if (distToCenter < 160) {
+                        // Subdivide cell into 4 sub-cells (Quadtree)
+                        const sub = baseSize / 2;
+                        for (let sx = 0; sx < 2; sx++) {
+                            for (let sy = 0; sy < 2; sy++) {
+                                ctx.strokeRect(x + sx * sub, y + sy * sub, sub, sub);
+                            }
+                        }
+                    } else {
+                        ctx.strokeRect(x, y, baseSize, baseSize);
+                    }
+                }
+            }
+        }
+
+        // Render Connected Linear Networks (CLN) Features
+        function renderCLNNetwork() {
+            if (activeProcess !== 'cln') return;
+
+            ctx.strokeStyle = "#14b8a6";
+            ctx.lineWidth = 4;
+            ctx.shadowColor = "#14b8a6";
+            ctx.shadowBlur = 10;
+
+            // Draw CLN Pipe / Conduit Network
+            ctx.beginPath();
+            ctx.moveTo(width * 0.1, height * 0.3);
+            ctx.lineTo(width * 0.4, height * 0.5);
+            ctx.lineTo(width * 0.8, height * 0.5);
+            ctx.lineTo(width * 0.9, height * 0.7);
+            ctx.stroke();
+
+            ctx.shadowBlur = 0; // Reset
+
+            // CLN Nodes
+            const nodes = [
+                { x: width * 0.1, y: height * 0.3 },
+                { x: width * 0.4, y: height * 0.5 },
+                { x: width * 0.8, y: height * 0.5 },
+                { x: width * 0.9, y: height * 0.7 }
+            ];
+
+            nodes.forEach((nd, idx) => {
+                ctx.fillStyle = "#38bdf8";
+                ctx.beginPath();
+                ctx.arc(nd.x, nd.y, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                ctx.font = "600 10px 'Fira Code', monospace";
+                ctx.fillStyle = "#14b8a6";
+                ctx.fillText(`CLN Node ${idx + 1}`, nd.x + 10, nd.y - 10);
+            });
+        }
+
+        // Render Borehole Heat Exchanger (BHE) Loop
+        function renderBHE() {
+            if (activeProcess !== 'thermal') return;
+
+            const cx = width * 0.4;
+            const cy = height * 0.5;
+
+            // BHE Thermal Plume
+            const rad = param1 * 2.2;
+            const grad = ctx.createRadialGradient(cx, cy, 5, cx, cy, rad);
+            grad.addColorStop(0, "rgba(239, 68, 68, 0.7)");
+            grad.addColorStop(0.6, "rgba(245, 158, 11, 0.3)");
+            grad.addColorStop(1, "rgba(239, 68, 68, 0)");
+
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, rad, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Closed Loop BHE Pipe
+            ctx.strokeStyle = "#ef4444";
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(cx, cy, 12, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "600 11px 'Fira Code', monospace";
+            ctx.fillText("BHE Closed Loop", cx - 45, cy - 20);
+        }
+
+        // Main Render Loop
+        function render() {
+            ctx.fillStyle = "#050811";
+            ctx.fillRect(0, 0, width, height);
+
+            renderUnstructuredMesh();
+            renderCLNNetwork();
+            renderBHE();
+
+            if (isRunning) {
+                simTime += 0.2;
+                document.getElementById('hudTime').innerText = simTime.toFixed(1) + " Days";
+
+                // Emit particles from upstream source
+                if (particles.length < MAX_PARTICLES) {
+                    for (let i = 0; i < 3; i++) {
+                        particles.push(new Particle(20, height * 0.2 + Math.random() * (height * 0.6)));
+                    }
+                }
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    let p = particles[i];
+                    p.update(0.1);
+
+                    if (p.x > width + 20 || p.y > height + 20 || p.y < -20) {
+                        particles.splice(i, 1);
+                    }
+                }
+            }
+
+            particles.forEach(p => p.draw());
+
+            requestAnimationFrame(render);
+        }
+
+        // Initialize App
+        resizeCanvas();
+        setProcessMode('pfas');
+    </script>
+</body>
+</html>
