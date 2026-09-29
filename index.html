@@ -1,440 +1,1299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Kunwar Mrityunjai Sharma | Computational Hydrogeologist & Geotechnical Modeler</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --bg-dark: #090d16;
-            --bg-card: rgba(17, 24, 39, 0.75);
-            --bg-card-hover: rgba(31, 41, 55, 0.85);
-            --accent-cyan: #38bdf8;
-            --accent-blue: #60a5fa;
-            --accent-emerald: #10b981;
-            --accent-amber: #f59e0b;
-            --accent-pink: #ec4899;
-            --accent-purple: #a855f7;
-            --accent-red: #ef4444;
-            --accent-teal: #14b8a6;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --border-glow: rgba(56, 189, 248, 0.25);
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --font-code: 'Fira Code', monospace;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dr. Kunwar Mrityunjai Sharma | Quantitative Analyst & Senior Researcher</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --primary: #0f4c81;
+      --primary-hover: #0a365c;
+      --accent: #0284c7;
+      --accent-subtle: #e0f2fe;
+      --tag-bg: #e2e8f0;
+      --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --max-width: 1140px;
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.6; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        /* Navigation */
-        nav {
-            position: fixed; top: 0; width: 100%; background: rgba(9, 13, 22, 0.92);
-            backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-subtle);
-            z-index: 1000; padding: 1rem 6%; display: flex; justify-content: space-between; align-items: center;
-        }
-        nav .brand { font-weight: 700; font-size: 1.15rem; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
-        nav .brand i { color: var(--accent-cyan); }
-        nav ul { display: flex; list-style: none; gap: 1.8rem; }
-        nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
-        nav a:hover, nav a.active { color: var(--accent-cyan); }
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-        /* Header / Hero */
-        header { padding: 8rem 6% 4rem; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 260px 1fr; gap: 3.5rem; align-items: center; }
-        .profile-img { width: 240px; height: 240px; border-radius: 16px; object-fit: cover; border: 1px solid var(--border-glow); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        .hero-text h1 { font-size: 2.8rem; font-weight: 700; margin-bottom: 0.4rem; letter-spacing: -0.5px; }
-        .hero-text h2 { font-size: 1.2rem; color: var(--accent-cyan); font-weight: 500; margin-bottom: 1.2rem; }
-        .hero-text p { color: var(--text-muted); font-size: 1rem; margin-bottom: 1.8rem; max-width: 780px; }
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
 
-        .hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle); }
-        .stat-card a { text-decoration: none; }
-        .stat-card h4 { font-size: 1.6rem; font-weight: 700; color: var(--accent-cyan); font-family: var(--font-code); }
-        .stat-card p { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+    a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
 
-        .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
-        .btn { padding: 0.65rem 1.4rem; border-radius: 8px; font-weight: 600; font-size: 0.88rem; text-decoration: none; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary { background: var(--accent-cyan); color: #090d16; }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-outline { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); color: var(--text-main); }
-        .btn-outline:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent-cyan); }
+    /* Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+    }
 
-        /* Shared Section Styles */
-        section { padding: 4rem 6%; max-width: 1200px; margin: 0 auto; }
-        .section-tag { font-family: var(--font-code); font-size: 0.8rem; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.4rem; }
-        .section-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
+    .nav-container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0.9rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        /* Badges */
-        .badge {
-            font-family: var(--font-code);
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 0.25rem 0.6rem;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .badge-modflow { background: rgba(20, 184, 166, 0.18); color: var(--accent-teal); border: 1px solid rgba(20, 184, 166, 0.4); }
-        .badge-blog { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
-        .badge-slope { background: rgba(245, 158, 11, 0.2); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.4); }
+    .brand {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+      letter-spacing: -0.01em;
+    }
 
-        /* Card Layouts */
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-        .grid-models { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; }
-        
-        .card { 
-            background: var(--bg-card); 
-            border: 1px solid var(--border-subtle); 
-            border-radius: 12px; 
-            padding: 1.75rem; 
-            transition: all 0.2s ease; 
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .card:hover { border-color: var(--border-glow); background: var(--bg-card-hover); transform: translateY(-2px); }
-        .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
-        .card-date { font-family: var(--font-code); font-size: 0.78rem; color: var(--text-muted); }
-        .card h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 10px; }
-        .card h3 i { color: var(--accent-cyan); }
-        .card p { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.4rem; line-height: 1.5; }
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 1.25rem;
+    }
 
-        /* Timeline */
-        .timeline { position: relative; border-left: 2px solid var(--border-glow); padding-left: 1.8rem; margin-left: 0.5rem; }
-        .timeline-item { margin-bottom: 2.5rem; position: relative; }
-        .timeline-dot { position: absolute; left: calc(-1.8rem - 5px); top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-cyan); }
-        .timeline-title { font-size: 1.15rem; font-weight: 600; }
-        .timeline-meta { font-family: var(--font-code); font-size: 0.82rem; color: var(--accent-cyan); margin-bottom: 0.6rem; }
-        .timeline-bullets { list-style: none; }
-        .timeline-bullets li { position: relative; padding-left: 1.2rem; color: var(--text-muted); font-size: 0.92rem; margin-bottom: 0.4rem; }
-        .timeline-bullets li::before { content: '•'; position: absolute; left: 0; color: var(--accent-cyan); }
+    nav a {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
 
-        /* Publications */
-        .pub-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 1.4rem; margin-bottom: 1rem; transition: border-color 0.2s, transform 0.2s; }
-        .pub-card:hover { border-color: var(--accent-cyan); transform: translateX(3px); }
-        .pub-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem; line-height: 1.4; }
-        .pub-authors { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.2rem; }
-        .pub-journal { font-style: italic; color: var(--accent-blue); font-size: 0.88rem; margin-bottom: 0.8rem; }
-        .doi-link { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan); text-decoration: none; background: rgba(56, 189, 248, 0.08); padding: 0.35rem 0.75rem; border-radius: 5px; border: 1px solid rgba(56, 189, 248, 0.2); }
-        .doi-link:hover { background: var(--accent-cyan); color: #090d16; font-weight: 600; }
+    nav a:hover {
+      color: var(--primary);
+      text-decoration: none;
+    }
 
-        footer { background: #050811; border-top: 1px solid var(--border-subtle); padding: 3rem 6% 2rem; color: var(--text-muted); font-size: 0.85rem; text-align: center; }
-        @media (max-width: 850px) { header { grid-template-columns: 1fr; text-align: center; } .profile-img { margin: 0 auto; } nav ul { display: none; } }
-    </style>
+    /* Container */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    section {
+      margin-bottom: 4rem;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      margin-bottom: 1.25rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.5rem 2rem;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 3rem;
+    }
+
+    .hero-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .hero-title h1 {
+      font-size: 2.25rem;
+      color: var(--primary);
+      line-height: 1.2;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-title .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .contact-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 1.2rem 0;
+      font-size: 0.9rem;
+    }
+
+    .contact-pill {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--text);
+    }
+
+    .hero-summary {
+      font-size: 1.05rem;
+      color: var(--text);
+      margin-top: 1rem;
+      line-height: 1.7;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-box {
+      text-align: center;
+      background: var(--surface-subtle);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .stat-number {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* Cards and Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .card ul {
+      margin-left: 1.2rem;
+      margin-top: 0.5rem;
+      font-size: 0.92rem;
+    }
+
+    .card li {
+      margin-bottom: 0.45rem;
+    }
+
+    .tag-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: auto;
+      padding-top: 1rem;
+    }
+
+    .tag {
+      background: var(--accent-subtle);
+      color: var(--primary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+    }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .timeline-item {
+      background: var(--surface);
+      border-left: 4px solid var(--accent);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      border-radius: 0 8px 8px 0;
+      padding: 1.5rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .timeline-date {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    .timeline-item ul {
+      margin-left: 1.2rem;
+      margin-top: 0.6rem;
+      font-size: 0.93rem;
+    }
+
+    .timeline-item li {
+      margin-bottom: 0.45rem;
+    }
+
+    /* Interactive Models */
+    .models-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 1.75rem;
+    }
+
+    .model-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      box-shadow: var(--card-shadow);
+    }
+
+    .model-canvas {
+      width: 100%;
+      height: 220px;
+      background: #0f172a;
+      border-radius: 6px;
+      display: block;
+      margin: 1rem 0;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    .control-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .control-item label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .model-readout {
+      margin-top: 0.75rem;
+      padding: 0.6rem;
+      background: var(--surface-subtle);
+      border-radius: 5px;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 4px;
+      background: var(--tag-bg);
+      color: var(--text);
+    }
+
+    .badge-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 768px) {
+      .models-wrapper {
+        grid-template-columns: 1fr;
+      }
+      .nav-container {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Main Navigation Bar -->
-    <nav>
-        <div class="brand"><i class="fa-solid fa-cube"></i> Dr. Kunwar Mrityunjai Sharma</div>
+  <header>
+    <div class="nav-container">
+      <div class="brand">Dr. Kunwar Mrityunjai Sharma</div>
+      <nav>
         <ul>
-            <li><a href="index.html" class="active">Home</a></li>
-            <li><a href="#latest">What's New</a></li>
-            <li><a href="#models">Models</a></li>
-            <li><a href="#experience">Experience</a></li>
-            <li><a href="#publications">Publications</a></li>
-            <li><a href="blog.html">Blog</a></li>
-            <li><a href="#contact">Contact</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#expertise">Expertise</a></li>
+          <li><a href="#experience">Experience</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#consultancy">Consultancy</a></li>
+          <li><a href="#models">Simulations</a></li>
+          <li><a href="#education">Education</a></li>
+          <li><a href="#publications">Publications</a></li>
+          <li><a href="#extracurricular">Activities</a></li>
+          <li><a href="#contact">Contact</a></li>
         </ul>
-    </nav>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Hero Header -->
-    <header id="about">
-        <div>
-            <img src="profile.jpg" alt="Dr. Kunwar Mrityunjai Sharma" class="profile-img" onerror="this.src='https://via.placeholder.com/240/090d16/38bdf8?text=Dr.+Sharma'">
+  <main class="container">
+
+    <!-- Hero & Summary -->
+    <section id="about" class="hero">
+      <div class="hero-header">
+        <div class="hero-title">
+          <h1>Kunwar Mrityunjai Sharma, Ph.D.</h1>
+          <div class="subtitle">Quantitative Analyst & Senior Researcher | Subsurface Modeling & Environmental Risk</div>
         </div>
-        <div class="hero-text">
-            <h1>Dr. Kunwar Mrityunjai Sharma</h1>
-            <h2>Engineering Geologist, Hydrogeologist & Subsurface Scientist</h2>
-            <p>Ph.D. researcher specializing in engineering geology, hydrogeology, MODFLOW-USG / USG-Transport numerical modeling, Connected Linear Networks (CLN), density-dependent flow, PFAS transport, and custom scientific Python pipelines (<code>pychan3d</code>) for water resources and safety assessments.</p>
-            
-            <div class="btn-group">
-                <a href="#models" class="btn btn-primary"><i class="fa-solid fa-flask"></i> Explore Models</a>
-                <a href="blog.html" class="btn btn-outline"><i class="fa-solid fa-newspaper"></i> Read Research Blog</a>
-                <a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank" class="btn btn-outline"><i class="fa-solid fa-graduation-cap"></i> Google Scholar</a>
-            </div>
+      </div>
 
-            <div class="hero-stats">
-                <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>200+</h4><p>Citations</p></a></div>
-                <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>8</h4><p>h-index</p></a></div>
-                <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>7</h4><p>i10-index</p></a></div>
-                <div class="stat-card"><a href="https://scholar.google.com/citations?user=YXjy5bwAAAAJ&hl=en" target="_blank"><h4>16</h4><p>Publications</p></a></div>
-            </div>
+      <div class="contact-bar">
+        <span class="contact-pill">📍 Espoo, Finland 02150</span>
+        <span class="contact-pill">✉️ <a href="mailto:Sharmamrityunjai@gmail.com">Sharmamrityunjai@gmail.com</a></span>
+        <span class="contact-pill">📞 +358 504795111</span>
+        <span class="contact-pill">🔗 <a href="https://linkedin.com/in/mrityunjaish" target="_blank" rel="noopener">linkedin.com/in/mrityunjaish</a></span>
+      </div>
+
+      <p class="hero-summary">
+        Quantitative analyst and senior researcher with a Ph.D. from IIT Bombay and over 6.5 years of experience in numerical modeling, environmental risk characterization, and multi-stakeholder project delivery. Experienced in leading cross-functional consortia, preparing competitive business and research proposals, and delivering advisory-level technical reports to national regulators across the Nordics. Skilled at translating complex quantitative data into clear strategic recommendations, financial and technical project plans, and risk assessments for energy, waste management, and sustainability projects.
+      </p>
+
+      <div class="stat-row">
+        <div class="stat-box">
+          <div class="stat-number">6.5+</div>
+          <div class="stat-label">Years Numerical Modeling</div>
         </div>
-    </header>
-
-    <!-- What's New / Latest Releases Section -->
-    <section id="latest">
-        <div class="section-tag">Recent Updates</div>
-        <h2 class="section-title"><i class="fa-solid fa-sparkles"></i> What's New</h2>
-
-        <div class="grid-3">
-            <div class="card">
-                <div>
-                    <div class="card-top">
-                        <span class="badge badge-modflow"><i class="fa-solid fa-network-wired"></i> USGT v2.8.0 Simulator</span>
-                        <span class="card-date">August 2026</span>
-                    </div>
-                    <h3>Hydrological flow and contaminant transport simulator</h3>
-                    <p>Advanced process-based simulator incorporating unstructured grids, Connected Linear Networks (CLN), PFAS precursor chain decay, Borehole Heat Exchangers (BHE), and density-dependent flow.</p>
-                </div>
-                <a href="modflow-usg-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch USG Simulator</a>
-            </div>
-
-            <div class="card">
-                <div>
-                    <div class="card-top">
-                        <span class="badge badge-slope"><i class="fa-solid fa-hill-rockslide"></i> Geotechnical Simulator</span>
-                        <span class="card-date">August 2026</span>
-                    </div>
-                    <h3>Slope Stability & Critical Failure Assessor</h3>
-                    <p>Limit Equilibrium Method calculator evaluating Factor of Safety ($FS$), critical slip arcs, and multi-layer soil stratigraphy with 1:1 metric edge rulers.</p>
-                </div>
-                <a href="slope-stability-model.html" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Slope Model</a>
-            </div>
-
-            <!-- Dynamic Blog Card (Automatically populated from Notion) -->
-            <div class="card" id="latestBlogCard">
-                <div>
-                    <div class="card-top">
-                        <span class="badge badge-blog"><i class="fa-solid fa-newspaper"></i> Latest Article</span>
-                        <span class="card-date" id="latestBlogDate">Loading...</span>
-                    </div>
-                    <h3 id="latestBlogTitle"><i class="fa-solid fa-spinner fa-spin"></i> Fetching latest post...</h3>
-                    <p id="latestBlogSummary">Connecting to Notion proxy...</p>
-                </div>
-                <a href="blog.html" id="latestBlogLink" class="btn btn-outline" style="width: 100%; justify-content: center;"><i class="fa-solid fa-arrow-right"></i> Read Article</a>
-            </div>
+        <div class="stat-box">
+          <div class="stat-number">17</div>
+          <div class="stat-label">Peer-Reviewed Papers</div>
         </div>
+        <div class="stat-box">
+          <div class="stat-number">9</div>
+          <div class="stat-label">Conference Proceedings</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">3</div>
+          <div class="stat-label">Nordic Regulators Advised</div>
+        </div>
+      </div>
     </section>
 
-    <!-- Dedicated Interactive Models Section -->
-    <section id="models">
-        <div class="section-tag">Interactive Simulations</div>
-        <h2 class="section-title"><i class="fa-solid fa-flask"></i> Dedicated Computational Process Models</h2>
-
-        <div class="grid-models">
-            <!-- 1. MODFLOW-USG / USG-Transport 2.8.0 Model -->
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-diagram-project" style="color: var(--accent-teal);"></i> MODFLOW-USG / USG-Transport v2.8.0 Simulator</h3>
-                    <p>Simulates advanced groundwater flow &amp; transport using unstructured Control Volume Finite Difference (CVFD) grids, Connected Linear Networks (CLN), PFAS precursor chain decay, geothermal BHE loops, Richards vadose flow, and IMS adaptive matrix solvers.</p>
-                </div>
-                <a href="modflow-usg-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch MODFLOW-USG Model</a>
-            </div>
-
-            <!-- 2. Slope Stability Model -->
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-hill-rockslide" style="color: var(--accent-amber);"></i> Slope Stability & Multi-Layer Stratigraphy Assessor</h3>
-                    <p>Computes Factor of Safety ($FS$) across user-defined multi-layer soil/rock profiles, cohesive-frictional layers ($c', \phi'$), pore water pressure ($r_u$), and crest surcharges with Ordinary Method of Slices.</p>
-                </div>
-                <a href="slope-stability-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Slope Model</a>
-            </div>
-
-            <!-- 3. KBS-3 Canister Spacing Model -->
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-cubes" style="color: var(--accent-red);"></i> KBS-3 DGR Canister Spacing & Thermal Sandbox</h3>
-                    <p>Examines thermal decay and plume interference across KBS-3 nuclear waste canisters at -450 m depth as a function of canister/tunnel spacing ($S$), decay age, and rock thermal conductivity ($k$).</p>
-                </div>
-                <a href="dgr-heat-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Canister Spacing Model</a>
-            </div>
-
-            <!-- 4. Soil-Atmosphere Carbon Model -->
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-wind" style="color: var(--accent-purple);"></i> Soil-Atmosphere Carbon & GHG Flux Model</h3>
-                    <p>Simulates trace gas exchanges (CO₂, CH₄, N₂O), soil temperature/moisture coupling, and land-atmosphere carbon fluxes under dynamic weather drivers.</p>
-                </div>
-                <a href="ghg-atmosphere-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch GHG Model</a>
-            </div>
-
-            <!-- 5. 2D Aquifer Contaminant Transport -->
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-droplet" style="color: var(--accent-pink);"></i> 2D Aquifer Contaminant Plume Model</h3>
-                    <p>Features FDM groundwater flow solver, interactive point-source placement, extraction pumping capture zones, no-flow barrier walls, dispersion dynamics (&alpha;<sub>L</sub>, &alpha;<sub>T</sub>), and radioactive decay.</p>
-                </div>
-                <a href="transport-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Transport Model</a>
-            </div>
-
-            <!-- 6. 2D Channel Network Model -->
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-network-wired" style="color: var(--accent-cyan);"></i> 2D Channel Network Model (CNM)</h3>
-                    <p>Features FDM Gauss-Seidel hydraulic solver, log-normal conductance distributions (&sigma;), and flow-proportional particle advective transport built with <code>pychan3d</code> principles.</p>
-                </div>
-                <a href="cnm-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch CNM Model</a>
-            </div>
-
-            <!-- 7. Matrix Infiltration Dynamics -->
-            <div class="card">
-                <div>
-                    <h3><i class="fa-solid fa-cloud-rain" style="color: var(--accent-blue);"></i> Matrix Infiltration Dynamics</h3>
-                    <p>Simulates variably saturated infiltration across clay barriers and soil profiles using Richards' equation dynamics, suction head (&psi;), and transient wetting fronts.</p>
-                </div>
-                <a href="infiltration-model.html" class="btn btn-primary" style="width: 100%; justify-content: center;"><i class="fa-solid fa-play"></i> Launch Infiltration Model</a>
-            </div>
+    <!-- Areas of Expertise -->
+    <section id="expertise">
+      <h2>Areas of Expertise</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Quantitative & Technical Analysis</h3>
+          <p class="card-meta">Numerical Simulation & Data Analytics</p>
+          <ul>
+            <li>Numerical simulation & finite element modeling</li>
+            <li>Scenario modeling & environmental risk assessment</li>
+            <li>Data-worth analysis & Bayesian calibration</li>
+            <li>Sensitivity analysis & uncertainty quantification</li>
+          </ul>
         </div>
+
+        <div class="card">
+          <h3>Project & Consortium Management</h3>
+          <p class="card-meta">International Research Leadership</p>
+          <ul>
+            <li>Cross-border multi-partner consortium leadership</li>
+            <li>Budget allocation & financial milestone tracking</li>
+            <li>Risk mitigation & quality compliance monitoring</li>
+            <li>Multi-agency institutional coordination</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Proposal & Business Development</h3>
+          <p class="card-meta">Bid Preparation & Scoping</p>
+          <ul>
+            <li>Scoping client requirements & industrial contracts</li>
+            <li>Drafting bilateral competitive project bids</li>
+            <li>Authoring multi-partner EU Horizon funding bids</li>
+            <li>Client pipeline technical translation</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Stakeholder & Regulatory Advisory</h3>
+          <p class="card-meta">Nordic Regulatory Liaison</p>
+          <ul>
+            <li>Direct liaison with Nordic regulators (SSM Sweden, NND Norway)</li>
+            <li>Translating numerical outputs for decision makers</li>
+            <li>Technical compliance reviews for deep repositories</li>
+            <li>Long-term containment safety assessments</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Software & Scientific Computing</h3>
+          <p class="card-meta">Languages, Frameworks & GIS</p>
+          <ul>
+            <li><strong>Programming:</strong> Python (NumPy, SciPy, PyTorch, GeoPandas, Scikit-Learn), C++, MATLAB, R, SQL, Bash</li>
+            <li><strong>Simulation:</strong> COMSOL Multiphysics, pychan3d, Finite Element Solvers</li>
+            <li><strong>Spatial Tools:</strong> QGIS, ArcGIS, Mesh Generation Tools</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Data Principles & Governance</h3>
+          <p class="card-meta">Standards & Version Control</p>
+          <ul>
+            <li>FAIR and CARE research data management</li>
+            <li>Git version control & open-source package pipelines</li>
+            <li>Automated test suites & open documentation</li>
+            <li>Active learning & semantic segmentation workflows</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
-    <!-- Career History Section -->
+    <!-- Professional Experience -->
     <section id="experience">
-        <div class="section-tag">Career History</div>
-        <h2 class="section-title"><i class="fa-solid fa-briefcase"></i> Research Experience</h2>
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-title">Senior Scientist</div>
-                <div class="timeline-meta">VTT Technical Research Centre of Finland | May 2023 – Dec 2025</div>
-                <ul class="timeline-bullets">
-                    <li>Led numerical groundwater flow, MODFLOW-USG transport, and slope stability modeling in rock masses and engineered barrier caps for national safety frameworks.</li>
-                    <li>Developed customized Python packages to convert 3D fracture networks into calculation matrices and integrated finite-element modeling with GoldSim.</li>
-                </ul>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-title">Researcher & Postdoctoral Fellow</div>
-                <div class="timeline-meta">Uppsala University, Sweden | Dec 2019 – Dec 2022</div>
-                <ul class="timeline-bullets">
-                    <li>Developed tracer transport models for deep geological repository safety programs funded by the Swedish Radiation Safety Authority (SSM).</li>
-                    <li>Refactored and optimized the open-source <code>pychan3d</code> Python package to translate Discrete Fracture Networks into Channel Network Models.</li>
-                </ul>
-            </div>
+      <h2>Professional Experience</h2>
+      <div class="timeline">
+
+        <div class="timeline-item">
+          <div class="timeline-header">
+            <h3>Senior Scientist | VTT Technical Research Centre of Finland</h3>
+            <span class="timeline-date">May 2023 - June 2026 | Espoo, Finland</span>
+          </div>
+          <ul>
+            <li>Analyzed cyclic triaxial compaction and consolidation datasets for clay and bentonite materials, evaluating deformation and sealing under high mechanical stress.</li>
+            <li>Engineered computational pipelines in Python implementing active learning algorithms to isolate high-uncertainty observations and optimize experimental sampling schedules.</li>
+            <li>Jointly coordinated a research consortium comprising VTT, the Geological Survey of Finland (GTK), and the University of Jyväskylä, managing milestones, cross-team data delivery, and technical reports.</li>
+            <li>Directed code modernization for the pychan3d hydrogeological simulation package, introducing modular data architectures, test suites, and open documentation.</li>
+            <li>Provided technical guidance to research staff on numerical modeling and statistical data interpretation.</li>
+          </ul>
         </div>
+
+        <div class="timeline-item">
+          <div class="timeline-header">
+            <h3>Researcher | Uppsala University</h3>
+            <span class="timeline-date">Dec 2021 - Dec 2022 | Uppsala, Sweden</span>
+          </div>
+          <ul>
+            <li><strong>Micro-to-Macro Subsurface Modeling:</strong> Built high-resolution 3D models to evaluate transport pathways and pore-scale connectivity under low-permeability conditions.</li>
+            <li><strong>Data Integration & Sensitivity Pipelines:</strong> Developed automated pipelines to integrate structural scan data and borehole logs from the Äspö Hard Rock Laboratory, assessing parameter sensitivities under sparse observations.</li>
+            <li><strong>Technical Reporting:</strong> Prepared compliance documentation and technical assessments for Swedish national regulatory review.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-header">
+            <h3>Postdoctoral Researcher | Uppsala University</h3>
+            <span class="timeline-date">Dec 2019 - Dec 2021 | Uppsala, Sweden</span>
+          </div>
+          <ul>
+            <li><strong>Diagnostic Structural Connectivity:</strong> Formulated diagnostic methods to quantify spatial heterogeneity and fractional connectivity in discontinuous media.</li>
+            <li><strong>Inverse Modeling & Calibration:</strong> Integrated heterogeneous experimental datasets using data-worth analysis to reduce non-uniqueness and improve predictive accuracy.</li>
+            <li><strong>3D Lattice Algorithmic Optimization:</strong> Optimized algorithms to translate 3D structural mapping datasets into computational simulation grids.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-header">
+            <h3>Research Associate | IIT Bombay</h3>
+            <span class="timeline-date">Apr 2019 - Sep 2019 | Mumbai, India</span>
+          </div>
+          <ul>
+            <li><strong>Microscale Multiphysics Modeling:</strong> Conducted finite element simulations in COMSOL Multiphysics coupling Navier-Stokes and Darcy-Brinkman fluid mechanics across complex pore and fracture geometries.</li>
+            <li><strong>Structural Analysis:</strong> Collaborated with engineering geology groups to evaluate pore pressure distribution and mechanical displacement.</li>
+          </ul>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-header">
+            <h3>Doctoral Researcher | IIT Bombay</h3>
+            <span class="timeline-date">July 2015 - Apr 2019 | Mumbai, India</span>
+          </div>
+          <ul>
+            <li><strong>Porous Media Analysis:</strong> Evaluated non-linear flow regimes, geometry variations, and hydraulic conductivity across physical specimens through laboratory testing and numerical solvers.</li>
+            <li><strong>Mathematical Formulation:</strong> Developed dual-porosity models to quantify dynamic matrix-pore fluid exchange.</li>
+          </ul>
+        </div>
+
+      </div>
     </section>
 
-    <!-- Scientific Publications -->
+    <!-- Key Research & Technical Projects -->
+    <section id="projects">
+      <h2>Key Research & Technical Projects</h2>
+      <div class="grid-2">
+
+        <div class="card">
+          <h3>Waste Characterisation & Disposal Methodology (NND Project)</h3>
+          <p class="card-meta">VTT Technical Research Centre of Finland</p>
+          <p>Executed technical evaluations across two dedicated work packages delivering detailed radioactive waste characterisation and technical recommendations on deep repository disposal methods for Norwegian Nuclear Decommissioning.</p>
+          <div class="tag-container">
+            <span class="tag">NND Norway</span>
+            <span class="tag">Deep Repository</span>
+            <span class="tag">Radioactive Waste</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Constitutive & Geotechnical Modeling (SAFER-SAGE)</h3>
+          <p class="card-meta">VTT Technical Research Centre of Finland</p>
+          <p>Executed constitutive and statistical modeling of cyclic triaxial test data to evaluate non-linear deformation, shear strength, and hydro-mechanical sealing limits of compacted soils under extreme confining stress.</p>
+          <div class="tag-container">
+            <span class="tag">Bentonite Barriers</span>
+            <span class="tag">Cyclic Triaxial</span>
+            <span class="tag">Constitutive Models</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Subsurface Flow & Table Dynamics (GG_LIFECYCLE)</h3>
+          <p class="card-meta">VTT Project Management & Government Grant</p>
+          <p>Formulated coupled numerical simulations to predict transient rainfall infiltration, groundwater table fluctuations, and long-term drainage performance around containment systems.</p>
+          <div class="tag-container">
+            <span class="tag">Project Manager</span>
+            <span class="tag">Transient Infiltration</span>
+            <span class="tag">Groundwater Dynamics</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Stochastic Network & Transport Modeling (pychan3d / SSM Project)</h3>
+          <p class="card-meta">Uppsala University & Swedish Radiation Safety Authority</p>
+          <p>Optimized and refactored the open-source pychan3d library in Python and C++, generating large-scale stochastic channel networks to simulate transport pathways and breakthrough times under sparse data constraints.</p>
+          <div class="tag-container">
+            <span class="tag">pychan3d</span>
+            <span class="tag">SSM Sweden</span>
+            <span class="tag">Channel Networks</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Transient Pressure & Flow-Dimension Analysis</h3>
+          <p class="card-meta">Uppsala University & Äspö Hard Rock Laboratory</p>
+          <p>Developed an apparent flow-dimension methodology to detect structural anomalies and spatial heterogeneity from noisy, transient hydraulic data streams in crystalline rock.</p>
+          <div class="tag-container">
+            <span class="tag">Äspö HRL</span>
+            <span class="tag">Flow Dimension</span>
+            <span class="tag">Hydraulic Testing</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Soft Computing for Soil Characterization</h3>
+          <p class="card-meta">IIT Bombay</p>
+          <p>Built artificial neural network (ANN) models to predict the modulus of elasticity and mechanical properties of soils from index testing data, replacing slow empirical correlations with data-driven surrogates.</p>
+          <div class="tag-container">
+            <span class="tag">Neural Networks</span>
+            <span class="tag">Surrogate Modeling</span>
+            <span class="tag">Geomechanics</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Positions of Responsibility -->
+      <div style="margin-top: 2rem;">
+        <h3>Positions of Responsibility</h3>
+        <div class="grid-3" style="margin-top: 1rem;">
+          <div class="card">
+            <h4>Project Manager</h4>
+            <p class="card-meta">GG_LIFECYCLE Project, VTT</p>
+            <p style="font-size: 0.9rem;">Directed project scope, budget allocation, technical milestones, and client reporting for multi-scale subsurface flow and infiltration dynamics.</p>
+          </div>
+          <div class="card">
+            <h4>Deputy Project Manager</h4>
+            <p class="card-meta">SAFER-HAGEN Project, VTT</p>
+            <p style="font-size: 0.9rem;">Co-managed a multi-institution research consortium involving VTT, GTK, and University of Jyväskylä, overseeing research deliverables and hazard characterization.</p>
+          </div>
+          <div class="card">
+            <h4>Coordinator (Activities & Games)</h4>
+            <p class="card-meta">Research Day 2025, VTT</p>
+            <p style="font-size: 0.9rem;">Organized inter-departmental technical presentations, poster sessions, and cross-functional scientific discussions.</p>
+          </div>
+          <div class="card">
+            <h4>Marketing & Sponsorship</h4>
+            <p class="card-meta">Indian Landslide Congress (2017)</p>
+            <p style="font-size: 0.9rem;">Led digital marketing and sponsorship drives for national engineering geology conference at IIT Bombay.</p>
+          </div>
+          <div class="card">
+            <h4>Registration Coordinator</h4>
+            <p class="card-meta">INDOROCK (2016)</p>
+            <p style="font-size: 0.9rem;">Coordinated delegate logistics, registrations, and technical session execution at IIT Bombay.</p>
+          </div>
+          <div class="card">
+            <h4>Team Leader & Invigilator</h4>
+            <p class="card-meta">Kol Dam CAT Plan, Himachal Pradesh</p>
+            <p style="font-size: 0.9rem;">Supervised field team operations and environmental monitoring programs across forest divisions.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Consultancy & Industrial Work -->
+    <section id="consultancy">
+      <h2>Consultancy & Industrial Work</h2>
+      <div class="grid-2">
+
+        <div class="card">
+          <h3>Client Technical Advisory | Norwegian Nuclear Decommissioning (NND)</h3>
+          <p class="card-meta">Norway</p>
+          <p>Delivered numerical evaluation reports and predictive transport analysis for radioactive waste containment and licensing reviews.</p>
+        </div>
+
+        <div class="card">
+          <h3>Slope Stability & Rockfall Mitigation | Pune-Mumbai Expressway</h3>
+          <p class="card-meta">Maharashtra State Road Development Corporation (MSRDC)</p>
+          <p>Performed field investigations, discontinuity mapping, and kinematic slope stability analysis to design rockfall protection systems along transport corridors.</p>
+        </div>
+
+        <div class="card">
+          <h3>Heritage Infrastructure Stability Assessment | Sinhagad Fort</h3>
+          <p class="card-meta">Pune, India (2017)</p>
+          <p>Conducted field geotechnical evaluations and structural slope stability assessments to prevent rockfall hazards along heritage access roads.</p>
+        </div>
+
+        <div class="card">
+          <h3>Foundation & Slope Stability Evaluation | Halkara Building Site</h3>
+          <p class="card-meta">Mumbai, India (2015 - 2017)</p>
+          <p>Analyzed foundation condition data, rock mass stability, and retaining requirements for urban infrastructure development.</p>
+        </div>
+
+        <div class="card">
+          <h3>Underground Tunnel Stability Analysis | Kiratpur-Manali Highway</h3>
+          <p class="card-meta">Himachal Pradesh, India (2015)</p>
+          <p>Evaluated rock mass properties and excavation support requirements for high-altitude transport tunnel construction.</p>
+        </div>
+
+        <div class="card">
+          <h3>Geomechanical Investigation | Saptashringi Gad Temple</h3>
+          <p class="card-meta">Nashik, India (2014 - 2016)</p>
+          <p>Assessed joint orientation kinematics and slope stability to safeguard pilgrimage walkways from rockfall hazards.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Interactive Computational Simulations -->
+    <section id="models">
+      <h2>Interactive Computational Physics Demonstrations</h2>
+      <div class="models-wrapper">
+
+        <!-- Model 1: Channel Network Simulation -->
+        <div class="model-card">
+          <h3>1. 2D Stochastic Channel Network (pychan3d Flow)</h3>
+          <p class="card-meta">Discrete channel connectivity and fluid velocity pathways</p>
+          <canvas id="networkCanvas" class="model-canvas"></canvas>
+          <div class="controls-grid">
+            <div class="control-item">
+              <label for="densitySlider">Channel Density: <span id="densityVal">45</span></label>
+              <input type="range" id="densitySlider" min="20" max="80" value="45">
+            </div>
+            <div class="control-item">
+              <label for="gradientSlider">Hydraulic Head Gradient: <span id="gradVal">1.5</span></label>
+              <input type="range" id="gradientSlider" min="0.2" max="3.0" step="0.1" value="1.5">
+            </div>
+          </div>
+          <div class="model-readout">
+            <span>Active Flow Paths: <strong id="pathCount">--</strong></span>
+            <span>Effective Bulk K: <strong id="bulkK">--</strong> m/s</span>
+          </div>
+        </div>
+
+        <!-- Model 2: 1D Solute Transport & Breakthrough -->
+        <div class="model-card">
+          <h3>2. 1D Solute Transport & Breakthrough Curve</h3>
+          <p class="card-meta">Advection-dispersion equation in porous barrier media</p>
+          <canvas id="transportCanvas" class="model-canvas"></canvas>
+          <div class="controls-grid">
+            <div class="control-item">
+              <label for="velocitySlider">Pore Velocity v (m/yr): <span id="velVal">0.45</span></label>
+              <input type="range" id="velocitySlider" min="0.05" max="1.5" step="0.05" value="0.45">
+            </div>
+            <div class="control-item">
+              <label for="dispersionSlider">Dispersion Coeff D (m²/yr): <span id="dispVal">0.12</span></label>
+              <input type="range" id="dispersionSlider" min="0.01" max="0.5" step="0.01" value="0.12">
+            </div>
+          </div>
+          <div class="model-readout">
+            <span>Breakthrough C/C₀ at 5m: <strong id="cBreak">--</strong></span>
+            <span>Travel Time t₅₀: <strong id="tBreak">--</strong> yrs</span>
+          </div>
+        </div>
+
+        <!-- Model 3: Geotechnical Slope Stability Assessor -->
+        <div class="model-card">
+          <h3>3. Geotechnical Slope Stability (Planar Kinematics)</h3>
+          <p class="card-meta">Limit equilibrium factor of safety for jointed rock slopes</p>
+          <canvas id="slopeCanvas" class="model-canvas"></canvas>
+          <div class="controls-grid">
+            <div class="control-item">
+              <label for="frictionSlider">Friction Angle φ (°): <span id="fricVal">32</span></label>
+              <input type="range" id="frictionSlider" min="15" max="45" value="32">
+            </div>
+            <div class="control-item">
+              <label for="slopeSlider">Discontinuity Dip β (°): <span id="dipVal">35</span></label>
+              <input type="range" id="slopeSlider" min="20" max="60" value="35">
+            </div>
+          </div>
+          <div class="model-readout">
+            <span>Factor of Safety (FS): <strong id="fsValue">--</strong></span>
+            <span>Status: <strong id="fsStatus">--</strong></span>
+          </div>
+        </div>
+
+        <!-- Model 4: Deep Repository Thermal Spacing -->
+        <div class="model-card">
+          <h3>4. KBS-3 Canister Thermal Decay & Buffer Spacing</h3>
+          <p class="card-meta">Transient radial heat conduction around spent nuclear fuel canisters</p>
+          <canvas id="thermalCanvas" class="model-canvas"></canvas>
+          <div class="controls-grid">
+            <div class="control-item">
+              <label for="spacingSlider">Canister Spacing (m): <span id="spaceVal">9.0</span></label>
+              <input type="range" id="spacingSlider" min="6.0" max="14.0" step="0.5" value="9.0">
+            </div>
+            <div class="control-item">
+              <label for="ageSlider">Post-Disposal Time (yrs): <span id="ageVal">25</span></label>
+              <input type="range" id="ageSlider" min="5" max="100" step="1" value="25">
+            </div>
+          </div>
+          <div class="model-readout">
+            <span>Peak Buffer Temp: <strong id="tempPeak">--</strong> °C</span>
+            <span>Safety Limit: <strong>&lt; 100.0 °C</strong></span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Education & Collaborations -->
+    <section id="education">
+      <h2>Education & Academic Credentials</h2>
+      <div class="grid-3">
+
+        <div class="card">
+          <h3>Ph.D. in Hydrogeology & Engineering Geology</h3>
+          <p class="card-meta">Indian Institute of Technology (IIT) Bombay | 2015 - 2019</p>
+          <p><strong>Thesis:</strong> Numerical Analysis of fluid flow through rock discontinuities</p>
+          <div class="tag-container">
+            <span class="tag">MHRD Scholarship Recipient</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>M.Sc. in Applied Geology</h3>
+          <p class="card-meta">Indian Institute of Technology (IIT) Bombay | 2013 - 2015</p>
+          <p><strong>Dissertation:</strong> Effect of discontinuities on the permeability of the rock mass</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem;">
+            Coursework: Groundwater Geology, Statistical Methods, Programming, Modern Analytical Methods
+          </p>
+        </div>
+
+        <div class="card">
+          <h3>B.Sc. (Honours) in Geology</h3>
+          <p class="card-meta">Hansraj College, University of Delhi | 2010 - 2013</p>
+          <p>Comprehensive foundation in Structural Geology, Earth System Science, Petrology, Stratigraphy, Hydrogeology, and Engineering Geology.</p>
+        </div>
+
+      </div>
+
+      <div style="margin-top: 2rem;">
+        <h3>Collaborative Institutional Network</h3>
+        <p style="margin-top: 0.5rem; font-size: 0.95rem; color: var(--text-muted);">
+          Active research and engineering collaborations across European and North American institutions:
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.75rem;">
+          <span class="badge">Uppsala University (Sweden)</span>
+          <span class="badge">Research Institutes of Sweden (RISE)</span>
+          <span class="badge">University of Jyväskylä (Finland)</span>
+          <span class="badge">Geological Survey of Finland (GTK)</span>
+          <span class="badge">Stockholm University (Sweden)</span>
+          <span class="badge">Lawrence Berkeley National Laboratory (USA)</span>
+          <span class="badge">Swedish Radiation Safety Authority (SSM)</span>
+          <span class="badge">Southwest Research Institute (USA)</span>
+          <span class="badge">Clearwater Hardrock Consultancy (USA)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Publications & Scientific Output -->
     <section id="publications">
-        <div class="section-tag">Peer-Reviewed Research & Proceedings</div>
-        <h2 class="section-title"><i class="fa-solid fa-book-journal-whills"></i> Scientific Publications</h2>
-
-        <div class="pub-card">
-            <div class="pub-title">1. Impact of Rainfall Patterns on a Near-Surface Radioactive Waste Disposal Facility: Climate Change and Long-Term Perspectives</div>
-            <div class="pub-authors">Park, J.B., Sharma, K.M. (2025)</div>
-            <div class="pub-journal">Journal of Nuclear Fuel Cycle and Waste Technology, 23(2), 239-264.</div>
-            <a href="https://doi.org/10.7733/jnfcwt.2025.016" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.7733/jnfcwt.2025.016</a>
+      <h2>Publications & Scientific Output</h2>
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <p style="font-size: 1rem; line-height: 1.7;">
+          Author of <strong>17 peer-reviewed journal articles</strong> and <strong>9 international conference proceedings</strong> in premier hydrogeological and geomechanical journals, including <em>Water Resources Research</em>, <em>Advances in Water Resources</em>, <em>Hydrogeology Journal</em>, and <em>Journal of Nuclear Fuel Cycle and Waste Technology</em>.
+        </p>
+        <div style="margin-top: 1rem;">
+          <h4>Invited Lectures & International Conferences:</h4>
+          <ul style="margin-left: 1.2rem; margin-top: 0.5rem; font-size: 0.92rem;">
+            <li>European Geosciences Union (EGU General Assembly), Vienna, Austria</li>
+            <li>Computational Methods in Water Resources (CMWR), Gdańsk, Poland</li>
+            <li>American Geophysical Union (AGU Fall Meeting), USA</li>
+            <li>Department of Civil Engineering, Monash University, Melbourne, Australia</li>
+          </ul>
         </div>
-
-        <div class="pub-card">
-            <div class="pub-title">2. Characteristics of flow and transport in low-permeability fractured rock based on a channel network model</div>
-            <div class="pub-authors">Sharma, K.M., Tsang, C.-F., Geier, J., Pensado, O., Stothoff, S., Niemi, A. (2025)</div>
-            <div class="pub-journal">Advances in Water Resources, 202, 105016.</div>
-            <a href="https://doi.org/10.1016/j.advwatres.2025.105016" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1016/j.advwatres.2025.105016</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">3. Channel Network Model of Flow and Transport in Low-Permeability Fractured Rock and its Characteristics</div>
-            <div class="pub-authors">Sharma, K.M., Tsang, C.F., Geier, J., Pensado, O., Stothoff, S., Niemi, A. (2023)</div>
-            <div class="pub-journal">SSRN Electronic Journal, 5012672.</div>
-            <a href="https://doi.org/10.2139/ssrn.5012672" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.2139/ssrn.5012672</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">4. Channel network modeling of flow and transport in fractured rock at the Äspö HRL: Data-worth analysis for model development, calibration and prediction</div>
-            <div class="pub-authors">Dessirier, B., Sharma, K.M., Pedersen, J., Tsang, C.F., Niemi, A. (2023)</div>
-            <div class="pub-journal">Water Resources Research, 59(5), e2022WR033816.</div>
-            <a href="https://doi.org/10.1029/2022WR033816" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1029/2022WR033816</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">5. Apparent flow-dimension approach to the study of heterogeneous fracture network systems</div>
-            <div class="pub-authors">Sharma, K.M., Dessirier, B., Tsang, C.F., Niemi, A. (2023)</div>
-            <div class="pub-journal">Hydrogeology Journal, 31(4), 873-891.</div>
-            <a href="https://doi.org/10.1007/s10040-023-02796-3" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s10040-023-02796-3</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">6. An investigation into flow and transport in a complex fracture network in deep crystalline rock based on a channel network model</div>
-            <div class="pub-authors">Sharma, K.M., Geier, J., Dessirier, B., Stothoff, S., Pensado, O., Tsang, C.F. (2022)</div>
-            <div class="pub-journal">The XXIV International Conference on Computational Methods in Water Resources (CMWR 2022), Gdańsk, Poland.</div>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">7. Calibration of a channel network model against Äspö field data and its application to long term prediction of tracer transport</div>
-            <div class="pub-authors">Dessirier, B., Sharma, K.M., Tsang, C.F., Niemi, A. (2022)</div>
-            <div class="pub-journal">European Geosciences Union (EGU) General Assembly 2022, Vienna, Austria.</div>
-            <a href="https://doi.org/10.5194/egusphere-egu22-9706" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.5194/egusphere-egu22-9706</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">8. Simplified Computations of Radionuclide Transport in Complex Fracture Networks in Deep Crystalline Rock</div>
-            <div class="pub-authors">Pensado, O., Stothoff, S., Sharma, K.M., Geier, J., Niemi, A., Tsang, C.F. (2022)</div>
-            <div class="pub-journal">Proceedings of the 2022 International High-Level Radioactive Waste Conference.</div>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">9. Use of apparent flow dimension in transient pressure analysis to evaluate non-uniform flow in heterogeneous porous media</div>
-            <div class="pub-authors">Sharma, K.M., Dessirier, B., Tsang, C.F., Niemi, A. (2022)</div>
-            <div class="pub-journal">EGU General Assembly Conference Abstracts, EGU22-9617.</div>
-            <a href="https://doi.org/10.5194/egusphere-egu22-9617" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.5194/egusphere-egu22-9617</a>
-        </div>
-
-        <div class="pub-card">
-            <div class="pub-title">10. Empirical Slope Stability Assessment Along the Road Corridor NH-7, in the Lesser Himalayan</div>
-            <div class="pub-authors">Ansari, T.A., Sharma, K.M., Singh, T.N. (2019)</div>
-            <div class="pub-journal">Geotechnical and Geological Engineering, 37, 5391-5407.</div>
-            <a href="https://doi.org/10.1007/s10706-019-00988-w" target="_blank" class="doi-link"><i class="fa-solid fa-arrow-up-right-from-square"></i> DOI: 10.1007/s10706-019-00988-w</a>
-        </div>
+      </div>
     </section>
 
-    <!-- Contact Information -->
+    <!-- Extracurricular Activities & Leadership -->
+    <section id="extracurricular">
+      <h2>Extracurricular Activities & Leadership</h2>
+      <div class="grid-3">
+
+        <div class="card">
+          <h3>Music & Stage Performance</h3>
+          <p class="card-meta">Lead Guitarist & Vocalist</p>
+          <ul>
+            <li>Live concerts before audiences exceeding 1,000 attendees at the Helsinki Annual Fest (2024, 2025, 2026).</li>
+            <li>Featured performances at the Stockholm Cultural Fest (2020, 2021, 2022).</li>
+            <li>Winner of Battle of the Bands (PG Cult, IIT Bombay, 2016 - 2017).</li>
+            <li>Proficient keyboardist and active drum learner.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Competitive Sports & Strategy</h3>
+          <p class="card-meta">Cricket & Tournament Chess</p>
+          <ul>
+            <li>Active competitive chess player with a 1450 rating.</li>
+            <li>Winner of the PG Sports Cricket Tournament, IIT Bombay (2013 - 2014).</li>
+            <li>Winner of the Energy Science Premier League (ESPL) Cricket Tournament, IIT Bombay.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Honors & Creative Arts</h3>
+          <p class="card-meta">Campus Leadership & Scout Service</p>
+          <ul>
+            <li>Awarded "Jewel of Hostel 16", IIT Bombay (2013 - 2014) for residential leadership.</li>
+            <li>Conferred the "Rajya Puraskar" (Governor's Award) for Scout and Guide Services (2007).</li>
+            <li>Regional awards in competitive dance and institutional recognition for photography.</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Contact -->
     <section id="contact">
-        <div class="card" style="text-align: center; padding: 3.5rem 2rem; border: 1px solid var(--border-glow);">
-            <h2>Contact Information</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.8rem;">Espoo, Uusimaa, Finland</p>
-            <a href="mailto:Sharmamrityunjai@gmail.com" class="btn btn-primary"><i class="fa-solid fa-envelope"></i> Sharmamrityunjai@gmail.com</a>
+      <h2>Get In Touch</h2>
+      <div class="card" style="text-align: center; padding: 2.5rem 1.5rem;">
+        <p style="font-size: 1.1rem; margin-bottom: 1.2rem;">
+          Open for technical consulting, regulatory advisory, research consortium collaborations, and quantitative modeling projects.
+        </p>
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem;">
+          <a href="mailto:Sharmamrityunjai@gmail.com" class="badge badge-primary" style="padding: 0.6rem 1.2rem; font-size: 0.95rem; text-decoration: none;">
+            Email: Sharmamrityunjai@gmail.com
+          </a>
+          <a href="https://linkedin.com/in/mrityunjaish" target="_blank" rel="noopener" class="badge" style="padding: 0.6rem 1.2rem; font-size: 0.95rem; border: 1px solid var(--border); text-decoration: none;">
+            LinkedIn Profile
+          </a>
         </div>
+        <p style="margin-top: 1.2rem; font-size: 0.9rem; color: var(--text-muted);">
+          Espoo, Finland 02150 | Phone: +358 504795111
+        </p>
+      </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Dr. Kunwar Mrityunjai Sharma | <a href="http://mrityunjai.site" style="color:var(--accent-cyan)">mrityunjai.site</a></p>
-    </footer>
+  </main>
 
-    <!-- Script to dynamically fetch the newest blog post from Notion -->
-    <script>
-        const WORKER_URL = "https://notion-blog-proxy.sharmamrityunjai.workers.dev";
+  <footer>
+    <div class="container" style="padding: 0;">
+      <p>&copy; 2026 Dr. Kunwar Mrityunjai Sharma. Hosted on GitHub Pages.</p>
+    </div>
+  </footer>
 
-        async function fetchLatestBlogPost() {
-            try {
-                const response = await fetch(WORKER_URL);
-                const data = await response.json();
+  <script>
+    // --- Model 1: 2D Channel Network (pychan3d Flow Simulation) ---
+    const netCanvas = document.getElementById('networkCanvas');
+    const netCtx = netCanvas.getContext('2d');
+    const densitySlider = document.getElementById('densitySlider');
+    const gradientSlider = document.getElementById('gradientSlider');
+    const densityVal = document.getElementById('densityVal');
+    const gradVal = document.getElementById('gradVal');
+    const pathCount = document.getElementById('pathCount');
+    const bulkK = document.getElementById('bulkK');
 
-                if (data.results && data.results.length > 0) {
-                    const latest = data.results[0];
-                    const props = latest.properties;
-                    const pageId = latest.id;
+    let channels = [];
 
-                    const titleProperty = Object.values(props).find(prop => prop.type === 'title');
-                    const title = titleProperty?.title[0]?.plain_text || "Latest Research Article";
+    function resizeCanvas(canvas) {
+      canvas.width = canvas.parentElement.clientWidth - 40;
+      canvas.height = 220;
+    }
 
-                    const dateRaw = props.Date?.date?.start || "";
-                    let formattedDate = "Recent";
-                    if (dateRaw) {
-                        formattedDate = new Date(dateRaw).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-                    }
+    function initNetwork() {
+      resizeCanvas(netCanvas);
+      const count = parseInt(densitySlider.value, 10);
+      densityVal.textContent = count;
+      gradVal.textContent = gradientSlider.value;
 
-                    const summary = props.Summary?.rich_text[0]?.plain_text || "Click below to read the latest research insights.";
+      channels = [];
+      const w = netCanvas.width;
+      const h = netCanvas.height;
 
-                    document.getElementById('latestBlogDate').innerText = formattedDate;
-                    document.getElementById('latestBlogTitle').innerText = title;
-                    document.getElementById('latestBlogSummary').innerText = summary;
-                    document.getElementById('latestBlogLink').href = `post.html?id=${pageId}`;
-                } else {
-                    document.getElementById('latestBlogTitle').innerText = "Research Blog";
-                    document.getElementById('latestBlogSummary').innerText = "Check back soon for new articles.";
-                }
-            } catch (err) {
-                console.error("Error updating home page blog card:", err);
-                document.getElementById('latestBlogTitle').innerText = "Research Blog";
-                document.getElementById('latestBlogSummary').innerText = "Read published articles and technical notes.";
-            }
+      for (let i = 0; i < count; i++) {
+        const x1 = Math.random() * w;
+        const y1 = Math.random() * h;
+        const angle = (Math.random() - 0.5) * 1.2;
+        const len = 40 + Math.random() * 80;
+        const x2 = x1 + Math.cos(angle) * len;
+        const y2 = y1 + Math.sin(angle) * len;
+        const aperture = 0.5 + Math.random() * 2.0;
+        channels.push({ x1, y1, x2, y2, aperture, phase: Math.random() * Math.PI * 2 });
+      }
+
+      const activePaths = Math.round(count * 0.72);
+      pathCount.textContent = activePaths;
+      const kEst = (count * 1.8e-8 * parseFloat(gradientSlider.value)).toExponential(2);
+      bulkK.textContent = kEst;
+    }
+
+    function drawNetwork(time) {
+      netCtx.fillStyle = '#0f172a';
+      netCtx.fillRect(0, 0, netCanvas.width, netCanvas.height);
+
+      const grad = parseFloat(gradientSlider.value);
+
+      channels.forEach(ch => {
+        netCtx.beginPath();
+        netCtx.moveTo(ch.x1, ch.y1);
+        netCtx.lineTo(ch.x2, ch.y2);
+        netCtx.strokeStyle = 'rgba(71, 85, 105, 0.45)';
+        netCtx.lineWidth = ch.aperture;
+        netCtx.stroke();
+
+        // Flow particles
+        const t = (time * 0.001 * grad + ch.phase) % 1;
+        const px = ch.x1 + (ch.x2 - ch.x1) * t;
+        const py = ch.y1 + (ch.y2 - ch.y1) * t;
+
+        netCtx.beginPath();
+        netCtx.arc(px, py, ch.aperture * 1.2, 0, Math.PI * 2);
+        netCtx.fillStyle = '#38bdf8';
+        netCtx.fill();
+      });
+
+      requestAnimationFrame(drawNetwork);
+    }
+
+    densitySlider.addEventListener('input', initNetwork);
+    gradientSlider.addEventListener('input', initNetwork);
+
+    // --- Model 2: 1D Solute Transport & Breakthrough ---
+    const transCanvas = document.getElementById('transportCanvas');
+    const transCtx = transCanvas.getContext('2d');
+    const velSlider = document.getElementById('velocitySlider');
+    const dispSlider = document.getElementById('dispersionSlider');
+    const velVal = document.getElementById('velVal');
+    const dispVal = document.getElementById('dispVal');
+    const cBreak = document.getElementById('cBreak');
+    const tBreak = document.getElementById('tBreak');
+
+    function erfc(x) {
+      const z = Math.abs(x);
+      const t = 1.0 / (1.0 + 0.5 * z);
+      const ans = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+      return x >= 0 ? ans : 2.0 - ans;
+    }
+
+    function drawTransport() {
+      resizeCanvas(transCanvas);
+      const w = transCanvas.width;
+      const h = transCanvas.height;
+
+      const v = parseFloat(velSlider.value);
+      const D = parseFloat(dispSlider.value);
+      velVal.textContent = v.toFixed(2);
+      dispVal.textContent = D.toFixed(2);
+
+      transCtx.fillStyle = '#0f172a';
+      transCtx.fillRect(0, 0, w, h);
+
+      // Axes
+      transCtx.strokeStyle = '#475569';
+      transCtx.lineWidth = 1;
+      transCtx.beginPath();
+      transCtx.moveTo(40, 20);
+      transCtx.lineTo(40, h - 30);
+      transCtx.lineTo(w - 20, h - 30);
+      transCtx.stroke();
+
+      // Axis labels
+      transCtx.fillStyle = '#94a3b8';
+      transCtx.font = '10px sans-serif';
+      transCtx.fillText('C/C₀', 10, 25);
+      transCtx.fillText('Time (Years)', w - 70, h - 10);
+      transCtx.fillText('1.0', 15, 30);
+      transCtx.fillText('0.0', 15, h - 30);
+
+      // Breakthrough curve at observation distance x = 5.0 m
+      const xTarget = 5.0;
+      const maxT = 25.0;
+      transCtx.beginPath();
+      transCtx.strokeStyle = '#38bdf8';
+      transCtx.lineWidth = 2.5;
+
+      for (let px = 40; px < w - 20; px++) {
+        const tYear = ((px - 40) / (w - 60)) * maxT;
+        if (tYear <= 0.05) {
+          transCtx.moveTo(px, h - 30);
+          continue;
         }
+        const z = (xTarget - v * tYear) / (2 * Math.sqrt(D * tYear));
+        const cRel = 0.5 * erfc(z);
+        const py = (h - 30) - cRel * (h - 60);
+        if (px === 40) transCtx.moveTo(px, py);
+        else transCtx.lineTo(px, py);
+      }
+      transCtx.stroke();
 
-        document.addEventListener("DOMContentLoaded", fetchLatestBlogPost);
-    </script>
+      // Metrics at t = 10 years
+      const tCheck = 10.0;
+      const zCur = (xTarget - v * tCheck) / (2 * Math.sqrt(D * tCheck));
+      const cNow = 0.5 * erfc(zCur);
+      cBreak.textContent = cNow.toFixed(3);
+      tBreak.textContent = (xTarget / v).toFixed(1);
+    }
+
+    velSlider.addEventListener('input', drawTransport);
+    dispSlider.addEventListener('input', drawTransport);
+
+    // --- Model 3: Geotechnical Slope Stability Assessor ---
+    const slopeCanvas = document.getElementById('slopeCanvas');
+    const slopeCtx = slopeCanvas.getContext('2d');
+    const fricSlider = document.getElementById('frictionSlider');
+    const dipSlider = document.getElementById('slopeSlider');
+    const fricVal = document.getElementById('fricVal');
+    const dipVal = document.getElementById('dipVal');
+    const fsValue = document.getElementById('fsValue');
+    const fsStatus = document.getElementById('fsStatus');
+
+    function drawSlope() {
+      resizeCanvas(slopeCanvas);
+      const w = slopeCanvas.width;
+      const h = slopeCanvas.height;
+
+      const phi = parseFloat(fricSlider.value);
+      const beta = parseFloat(dipSlider.value);
+      fricVal.textContent = phi;
+      dipVal.textContent = beta;
+
+      slopeCtx.fillStyle = '#0f172a';
+      slopeCtx.fillRect(0, 0, w, h);
+
+      // Factor of Safety calculation (limit equilibrium planar sliding with cohesion c = 12 kPa, gamma = 24 kN/m3, H = 10m)
+      const phiRad = (phi * Math.PI) / 180;
+      const betaRad = (beta * Math.PI) / 180;
+      const cohesion = 12.0;
+      const gammaH = 24.0 * 10.0;
+
+      const driving = Math.sin(betaRad);
+      const resisting = (cohesion / gammaH) + Math.cos(betaRad) * Math.tan(phiRad);
+      const fs = resisting / driving;
+
+      fsValue.textContent = fs.toFixed(2);
+      if (fs >= 1.5) {
+        fsStatus.textContent = 'Stable (Safe)';
+        fsStatus.style.color = '#4ade80';
+      } else if (fs >= 1.0) {
+        fsStatus.textContent = 'Marginal (Monitor)';
+        fsStatus.style.color = '#facc15';
+      } else {
+        fsStatus.textContent = 'Unstable (Hazard)';
+        fsStatus.style.color = '#f87171';
+      }
+
+      // Draw geometry
+      slopeCtx.beginPath();
+      slopeCtx.moveTo(50, h - 30);
+      slopeCtx.lineTo(w - 70, h - 30);
+      const topY = h - 30 - Math.tan(betaRad) * (w - 180);
+      slopeCtx.lineTo(70, Math.max(30, topY));
+      slopeCtx.closePath();
+      slopeCtx.fillStyle = '#1e293b';
+      slopeCtx.fill();
+      slopeCtx.strokeStyle = '#64748b';
+      slopeCtx.stroke();
+
+      // Discontinuity slip plane
+      slopeCtx.beginPath();
+      slopeCtx.moveTo(60, h - 30);
+      slopeCtx.lineTo(w - 100, Math.max(35, topY + 10));
+      slopeCtx.strokeStyle = fs >= 1.5 ? '#38bdf8' : (fs >= 1.0 ? '#facc15' : '#ef4444');
+      slopeCtx.lineWidth = 3;
+      slopeCtx.stroke();
+    }
+
+    fricSlider.addEventListener('input', drawSlope);
+    dipSlider.addEventListener('input', drawSlope);
+
+    // --- Model 4: Deep Repository Thermal Spacing ---
+    const thermCanvas = document.getElementById('thermalCanvas');
+    const thermCtx = thermCanvas.getContext('2d');
+    const spaceSlider = document.getElementById('spacingSlider');
+    const ageSlider = document.getElementById('ageSlider');
+    const spaceVal = document.getElementById('spaceVal');
+    const ageVal = document.getElementById('ageVal');
+    const tempPeak = document.getElementById('tempPeak');
+
+    function drawThermal() {
+      resizeCanvas(thermCanvas);
+      const w = thermCanvas.width;
+      const h = thermCanvas.height;
+
+      const spacing = parseFloat(spaceSlider.value);
+      const age = parseFloat(ageSlider.value);
+      spaceVal.textContent = spacing.toFixed(1);
+      ageVal.textContent = age;
+
+      thermCtx.fillStyle = '#0f172a';
+      thermCtx.fillRect(0, 0, w, h);
+
+      // Canister decay power approximation (1700 W initial, half-life decay)
+      const power = 1700 * Math.exp(-0.023 * age);
+      // Thermal peak in bentonite buffer (Ambient rock 12°C + Canister heat dissipation)
+      const ambient = 12.0;
+      const thermalCond = 2.6; // W/m*K
+      const peak = ambient + (power / (2 * Math.PI * thermalCond)) * Math.log(spacing / 0.52);
+
+      tempPeak.textContent = peak.toFixed(1);
+      if (peak < 100.0) {
+        tempPeak.style.color = '#4ade80';
+      } else {
+        tempPeak.style.color = '#f87171';
+      }
+
+      // Draw thermal distribution field
+      const centerX = w / 2;
+      const centerY = h / 2;
+      const maxRadius = Math.min(w, h) * 0.42;
+
+      for (let r = maxRadius; r > 8; r -= 6) {
+        const norm = (maxRadius - r) / maxRadius;
+        const tempAtR = ambient + (peak - ambient) * Math.pow(norm, 1.8);
+        const heatRatio = Math.min(1.0, Math.max(0, (tempAtR - ambient) / (95 - ambient)));
+
+        thermCtx.beginPath();
+        thermCtx.arc(centerX, centerY, r, 0, Math.PI * 2);
+        thermCtx.fillStyle = `rgba(${Math.round(239 * heatRatio + 15)}, ${Math.round(68 * heatRatio + 76)}, ${Math.round(68 * (1 - heatRatio) + 129)}, 0.4)`;
+        thermCtx.fill();
+      }
+
+      // Canister center
+      thermCtx.beginPath();
+      thermCtx.arc(centerX, centerY, 14, 0, Math.PI * 2);
+      thermCtx.fillStyle = '#f59e0b';
+      thermCtx.fill();
+      thermCtx.strokeStyle = '#ffffff';
+      thermCtx.lineWidth = 1.5;
+      thermCtx.stroke();
+
+      thermCtx.fillStyle = '#f8fafc';
+      thermCtx.font = '11px sans-serif';
+      thermCtx.fillText('KBS-3 Canister', centerX - 38, centerY + 30);
+    }
+
+    spaceSlider.addEventListener('input', drawThermal);
+    ageSlider.addEventListener('input', drawThermal);
+
+    // Initializer
+    window.addEventListener('resize', () => {
+      initNetwork();
+      drawTransport();
+      drawSlope();
+      drawThermal();
+    });
+
+    initNetwork();
+    requestAnimationFrame(drawNetwork);
+    drawTransport();
+    drawSlope();
+    drawThermal();
+  </script>
 </body>
 </html>
