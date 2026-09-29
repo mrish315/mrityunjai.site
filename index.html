@@ -140,12 +140,13 @@
       flex-wrap: wrap;
     }
 
+    /* Updated to portrait mode rectangle */
     .profile-avatar {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
+      width: 180px;
+      height: 230px;
+      border-radius: 10px;
       object-fit: cover;
-      border: 3px solid var(--accent);
+      border: 2px solid var(--border);
       flex-shrink: 0;
       box-shadow: var(--card-shadow);
     }
@@ -445,7 +446,7 @@
     <!-- Hero & Summary -->
     <section id="about" class="hero">
       <div class="hero-flex">
-        <img src="profile2.jpg" alt="Dr. Kunwar Mrityunjai Sharma" class="profile-avatar" onerror="this.src='https://via.placeholder.com/140/0f4c81/ffffff?text=Dr.+Sharma'">
+        <img src="profile2.jpg" alt="Dr. Kunwar Mrityunjai Sharma" class="profile-avatar" onerror="this.src='https://via.placeholder.com/180x230/0f4c81/ffffff?text=Dr.+Sharma'">
         <div class="hero-content">
           <div class="hero-title">
             <h1>Kunwar Mrityunjai Sharma, Ph.D.</h1>
@@ -827,7 +828,7 @@
       </div>
     </section>
 
-    <!-- Dedicated Interactive Simulations (Linking to separate files) -->
+    <!-- Dedicated Interactive Simulations -->
     <section id="models">
       <h2>Advanced Interactive Computational Simulations</h2>
       <div class="grid-3">
