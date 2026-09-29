@@ -7,49 +7,63 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --bg-dark: #090d16; 
-            --bg-card: rgba(17, 24, 39, 0.75); 
-            --accent-cyan: #38bdf8; 
-            --text-main: #f3f4f6; 
-            --text-muted: #9ca3af; 
-            --border-subtle: rgba(255,255,255,0.08); 
-            --font-code: 'Fira Code', monospace; 
+        :root {
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --surface-subtle: #f1f5f9;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --text-muted: #475569;
+            --primary: #0f4c81;
+            --primary-hover: #0a365c;
+            --accent: #0284c7;
+            --accent-subtle: #e0f2fe;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --font-code: 'Fira Code', monospace;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg-dark); color: var(--text-main); font-family: 'Inter', sans-serif; line-height: 1.8; }
+        body { background-color: var(--bg); color: var(--text); font-family: var(--font-main); line-height: 1.8; }
         
-        nav { padding: 1rem 6%; background: rgba(9,13,22,0.9); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; }
-        nav a { color: var(--accent-cyan); text-decoration: none; font-weight: 600; }
+        nav {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 6%; display: flex; justify-content: space-between; align-items: center;
+        }
+        nav a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; }
+        nav a:hover { color: var(--primary-hover); text-decoration: underline; }
         
         .container { max-width: 800px; margin: 3rem auto; padding: 0 6%; }
         
-        .post-header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); }
-        .post-meta { font-family: var(--font-code); font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.8rem; }
-        .post-title { font-size: 2.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 1rem; }
+        .post-header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+        .post-meta { font-family: var(--font-code); font-size: 0.85rem; color: var(--accent); margin-bottom: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .post-title { font-size: 2.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 1rem; color: var(--primary); letter-spacing: -0.02em; }
         
-        .post-content { font-size: 1.05rem; color: #e5e7eb; }
-        .post-content h1, .post-content h2, .post-content h3 { color: var(--text-main); margin: 2rem 0 1rem 0; font-weight: 700; }
+        .post-content { font-size: 1.05rem; color: var(--text); }
+        .post-content h1, .post-content h2, .post-content h3 { color: var(--primary); margin: 2rem 0 1rem 0; font-weight: 700; }
         .post-content h1 { font-size: 1.75rem; }
         .post-content h2 { font-size: 1.4rem; }
-        .post-content h3 { font-size: 1.2rem; }
-        .post-content p { margin-bottom: 1.4rem; }
-        .post-content ul, .post-content ol { margin: 0 0 1.4rem 1.5rem; }
+        .post-content h3 { font-size: 1.2rem; color: var(--text); }
+        .post-content p { margin-bottom: 1.4rem; color: var(--text-muted); }
+        .post-content ul, .post-content ol { margin: 0 0 1.4rem 1.5rem; color: var(--text-muted); }
         .post-content li { margin-bottom: 0.4rem; }
         
         .post-content blockquote { 
-            border-left: 3px solid var(--accent-cyan); 
+            border-left: 3px solid var(--accent); 
             padding: 0.8rem 1.2rem; 
             margin: 1.5rem 0; 
-            background: rgba(56, 189, 248, 0.05); 
+            background: var(--accent-subtle); 
             border-radius: 0 8px 8px 0;
-            color: var(--text-muted);
+            color: var(--text);
             font-style: italic;
         }
 
         .post-content pre { 
-            background: #0d1117; 
-            border: 1px solid var(--border-subtle); 
+            background: #0f172a; 
+            border: 1px solid var(--border); 
             border-radius: 8px; 
             padding: 1.2rem; 
             overflow-x: auto; 
@@ -61,10 +75,12 @@
 
         .post-content code { 
             font-family: var(--font-code); 
-            background: rgba(255,255,255,0.08); 
+            background: var(--surface-subtle); 
             padding: 0.2rem 0.4rem; 
             border-radius: 4px; 
             font-size: 0.9em; 
+            color: var(--primary);
+            border: 1px solid var(--border);
         }
 
         .post-content img {
@@ -72,7 +88,7 @@
             height: auto;
             border-radius: 8px;
             margin: 1.5rem 0;
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border);
         }
 
         .status-message {
@@ -90,7 +106,7 @@
 <body>
     <nav>
         <div><a href="blog.html"><i class="fa-solid fa-arrow-left"></i> Back to Blog</a></div>
-        <div style="color:var(--text-main); font-weight:700;">Research Insights</div>
+        <div style="color: var(--primary); font-weight: 700;">Research Insights</div>
     </nav>
 
     <div class="container">
@@ -112,7 +128,7 @@
                 if (item.annotations?.italic) text = `<em>${text}</em>`;
                 if (item.annotations?.code) text = `<code>${text}</code>`;
                 if (item.annotations?.strikethrough) text = `<del>${text}</del>`;
-                if (item.href) text = `<a href="${item.href}" target="_blank" style="color: var(--accent-cyan);">${text}</a>`;
+                if (item.href) text = `<a href="${item.href}" target="_blank" style="color: var(--accent);">${text}</a>`;
                 return text;
             }).join('');
         }
@@ -142,7 +158,7 @@
                     const imgUrl = value.type === 'external' ? value.external.url : value.file.url;
                     return `<img src="${imgUrl}" alt="Article Image" />`;
                 case 'divider':
-                    return `<hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 2rem 0;">`;
+                    return `<hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">`;
                 default:
                     return '';
             }
